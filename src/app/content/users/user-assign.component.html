@@ -1,0 +1,32 @@
+<div id="userAssign" class="col-lg-8">
+    <h3 class="h3">Assign Tickets</h3>
+    <form (ngSubmit)="assign()" #uAssignForm="ngForm">
+        <div class="form-group">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Category</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let ticket of tickets" [class.success]="isAssigned(ticket.Id)">
+                    <td>
+                        <input type="checkbox"
+                               class="checkbox"
+                               value="{{ ticket.Id }}"
+                               [checked]="isAssigned(ticket.Id)"
+                               (change)="assignTo($event, ticket)"
+                        />
+                    </td>
+                    <td>{{ getTicketCategory(ticket.Id) }}</td>
+                    <td>{{ ticket.Description }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="button" (click)="goBack()">Back</button>
+            <button type="submit">Assign</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,54 @@
+<div id="userUpdate" class="col-lg-8">
+    <h1 class="h1">User Details</h1>
+    <form *ngIf="user" (ngSubmit)="save(uUsername.value)" #uCreateForm="ngForm">
+        <div class="form-group">
+            <div>
+                <label for="uUserId">User ID: </label>
+                <span id="uUserId">{{ user.Id }}</span>
+            </div>
+            <div>
+                <label for="uUsername">Username:</label>
+                <input id="uUsername"
+                       class="form-control"
+                       [(ngModel)]="user.Username"
+                       required
+                       #uUsername="ngModel"
+                       name="uUsername"
+                />
+                <label for="uFirstName">First Name:</label>
+                <input id="uFirstName"
+                       class="form-control"
+                       [(ngModel)]="user.FirstName"
+                       required
+                       #uFirstName="ngModel"
+                       name="uFirstName"
+                >
+                <label for="uLastName">Last Name:</label>
+                <input id="uLastName"
+                       class="form-control"
+                       [(ngModel)]="user.LastName"
+                       required
+                       #uLastName="ngModel"
+                       name="uLastName"
+                >
+                <label for="uPassword">Password:</label>
+                <input id="uPassword"
+                       (ngModel)="user.Password"
+                       required
+                       #uLastName="ngModel"
+                       name="uPassword"
+                       class="form-control"
+                />
+                <button type="button" (click)="goBack()">Back</button>
+                <button type="button"
+                        [disabled]="uCreateForm.form.invalid || uCreateForm.form.pristine"
+                >
+                    Update Ticket
+                </button>
+                <div [hidden]="uCreateForm.valid" class="alert alert-danger fade in out">
+                    Category and Details fields required
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

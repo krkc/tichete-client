@@ -1,27 +1,38 @@
-# TicheteClient
+# tichete
+open source it ticketing system
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.5.
+### Current State / Change Log
+Feb 4 2018 - v0.1.0
+- Added an ORM (Sequelize) to help with supporting different database languages
+- Updated Angular to v5 and other npm packages to latest versions.
 
-## Development server
+May 21 2017 - v0.0.3
+- User login/authentication added.
+- Able to assign/unassign tickets to users, but ticket resolving not yet implemented.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+March 4 2017 - v0.0.2.1
+- Converted project to Angular-CLI with WebPack.
+- Able to assign/unassign tickets to users, but ticket resolving not yet implemented.
 
-## Code scaffolding
+### Instructions
+ - Install sqlite3 here: http://sqlite.org/download.html
+ - Clone this repo to your machine
+ - cd into the frontend and backend tichete directories and run "npm install" in each
+ - ~~From the frontend directory, run "gulp app_build" to copy node module files into public directory~~
+ - Run "npm start" from the backend and frontend directories, the default address will be http://localhost:3000
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Todos
 
-## Build
+ - Result pagination for tickets/users
+ - IT ticket addressing, responding, resolving, rejecting, commenting, etc
+ - Dedicated ticket search page
+ - Ticket locking when "Update" is clicked on the detail panel
+ - Site-wide permissions
+ - Dashboard 'active tickets' for admins, 'my active tickets' for non-admins
+ - SSL used during authentication
+ - Smart redirection for invalid URLs within app
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+---
+### License
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+GPLv3

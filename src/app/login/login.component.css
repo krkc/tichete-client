@@ -1,0 +1,10 @@
+.login-container {
+  width: 50%;
+  height: 20em;
+  margin: auto;
+  transition: 0.15s ease-in;
+}
+
+.login {
+  padding-top: 20em;
+}

@@ -1,0 +1,11 @@
+<h1>{{ naviHeading }}</h1>
+<nav>
+  <a routerLink="/dashboard" routerLinkActive="active" class="btn btn-default">Dashboard</a>
+  <a routerLink="/tickets" routerLinkActive="active" class="btn btn-default">View Tickets</a>
+  <a routerLink="/ticket" routerLinkActive="active" class="btn btn-default">Create a Ticket</a>
+  <a routerLink="/users" routerLinkActive="active" class="btn btn-default">View Users</a>
+  <a routerLink="/user" routerLinkActive="active" class="btn btn-default">Add a User</a>
+  <a href="#" class="btn btn-default">App Settings</a>
+  <a href="#" (click)="logOut()" class="btn btn-default">Logout</a>
+</nav>
+<ticket-search></ticket-search>

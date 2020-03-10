@@ -1,0 +1,44 @@
+.selected {
+  background-color: #CFD8DC !important;
+  color: gray;
+}
+[hidden] {
+  display: none !important;
+}
+.tickets {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+  width: 90%;
+}
+.tickets li {
+  cursor: pointer;
+  background-color: #EEE;
+  border-radius: 4px;
+}
+.tickets li.selected:hover {
+  background-color: #BBD8DC !important;
+  color: #464646;
+}
+.tickets li:hover {
+  color: #607D8B;
+  background-color: #DDD;
+}
+.tickets .text {
+  position: relative;
+  top: -3px;
+}
+.tickets .badge {
+  color: white;
+  background-color: #607D8B;
+  border-radius: 4px 0 0 4px;
+}
+
+#ticketsList {
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+.assigned li {
+  /* change assigned list item styling */
+}

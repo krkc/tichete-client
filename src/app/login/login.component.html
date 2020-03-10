@@ -1,0 +1,38 @@
+<div class="login-container">
+    <mat-card class="login" flex="50">
+      <form (ngSubmit)="onLogin()" #tLoginForm="ngForm">
+        <mat-card-header>
+          <mat-card-title>Tichete Sign-In</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field>
+            <input matInput
+                   placeholder="Email Address"
+                   value="name@email.com"
+                   type="email"
+                   id="emailInput"
+                   name="emailInput"
+                   [(ngModel)]="emailInput"
+                   required />
+          </mat-form-field>
+          <mat-form-field>
+            <input
+              matInput
+              placeholder="Password"
+              type="password"
+              id="passwdInput"
+              name="passwdInput"
+              [(ngModel)]="passwdInput"
+              required />
+          </mat-form-field>
+          <div [hidden]="tLoginForm.valid" class="alert alert-danger fade in out">
+            Email address and password fields required
+          </div>
+          <div [hidden]="!credsInvalid" id="invalidCreds" class="alert alert-danger fade in out">Email address and/or password invalid</div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button md-button type="submit" [disabled]="!tLoginForm.form.valid">Log In</button>
+        </mat-card-actions>
+      </form>
+    </mat-card>
+</div>

@@ -1,0 +1,45 @@
+<div id="user-create" class="col-lg-8">
+    <h1 class="h1">Add a New User</h1>
+    <form (ngSubmit)="add(uUsername.value, uFirstName.value, uLastName.value, uPassword.value)" #uCreateForm="ngForm">
+        <div class="form-group">
+            <label for="uUsername">Username:</label>
+            <input id="uUsername"
+                      (ngModel)="user.Username"
+                      required
+                      #uUsername="ngModel"
+                      name="uUsername"
+                      class="form-control"
+            />
+            <label for="uFirstName">First Name:</label>
+            <input id="uFirstName"
+                   (ngModel)="user.FirstName"
+                   required
+                   #uFirstName="ngModel"
+                   name="uFirstName"
+                   class="form-control"
+            />
+            <label for="uLastName">Last Name:</label>
+            <input id="uLastName"
+                   (ngModel)="user.LastName"
+                   required
+                   #uLastName="ngModel"
+                   name="uLastName"
+                   class="form-control"
+            />
+            <label for="uPassword">Password:</label>
+            <input id="uPassword"
+                   (ngModel)="user.Password"
+                   required
+                   #uPassword="ngModel"
+                   name="uPassword"
+                   class="form-control"
+            />
+            <button type="submit" [disabled]="!uCreateForm.form.valid" class="form-control">
+                Submit New User
+            </button>
+            <div [hidden]="uCreateForm.valid" class="alert alert-danger fade in out">
+                Username, First Name, Last Name, and Password fields required
+            </div>
+        </div>
+    </form>
+</div>

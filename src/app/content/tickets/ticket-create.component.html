@@ -1,0 +1,64 @@
+<div id="ticket-create" class="col-lg-8">
+  <h1 class="h1">Submit a New Ticket</h1>
+  <form (ngSubmit)="add(tDescription.value, tCategory.value)" #tCreateForm="ngForm">
+    <div class="form-group">
+      <label for="tCategory">Category:</label>
+      <select id="tCategory"
+              (ngModel)="ticket.CategoryId"
+              name="tCategory"
+              class="form-control"
+              required
+              #tCategory="ngModel"
+      >
+        <option value="">
+          Choose a Category
+        </option>
+        <option *ngFor="let category of categories" value="{{ category.Id }}">
+          {{ category.Name }}
+        </option>
+      </select>
+      <label for="tDescription">Description:</label>
+      <textarea id="tDescription"
+             (ngModel)="ticket.Description"
+             required
+             #tDescription="ngModel"
+             name="tDescription"
+             class="form-control"
+             rows="5"
+      ></textarea>
+      <button type="submit" [disabled]="!tCreateForm.form.valid" class="form-control">
+        Submit Ticket
+      </button>
+      <div [hidden]="tCreateForm.valid" class="alert alert-danger fade in out">
+        Category and Details fields required
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Success Modal -->
+<div id="summary-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Your ticket has been submitted successfully.</h4>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="ticket">
+          Your ticket Id # is: {{ ticket.Id }}<br /><br />
+          Ticket Summary:<br />
+          Ticket ID: {{ ticket.Id }}<br />
+          Ticket Category: {{ category }}<br />
+          Ticket description:<br />
+          {{ ticket.Description }}
+        </div>
+      </div>
+      <div class="modal-footer" style="text-align: center">
+        <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div id="ticketUpdate" class="col-lg-8">
+  <h1 class="h1">Ticket Details</h1>
+  <form *ngIf="ticket" (ngSubmit)="save" #tCreateForm="ngForm">
+    <div class="form-group">
+      <div>
+        <label>ID: </label>
+        {{ticket.Id}}
+      </div>
+      <div>
+        <label>Category:</label>
+        <select id="tCategory"
+                [(ngModel)]="ticket.CategoryId"
+                name="tCategory"
+                class="form-control"
+                required
+                #tCategory="ngModel"
+        >
+          <option *ngFor="let category of categories"
+                  value="{{ category.Id }}"
+                  [selected]="ticket.CategoryId === category.Id"
+          >
+            {{ category.Name }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="tDescription">Description:</label>
+        <textarea id="tDescription"
+                  [(ngModel)]="ticket.Description"
+                  required
+                  #tDescription="ngModel"
+                  name="tDescription"
+                  class="form-control"
+                  rows="5"
+        ></textarea>
+        <button type="button" (click)="goBack()">Back</button>
+        <button type="submit"
+                [disabled]="tCreateForm.form.invalid || tCreateForm.form.pristine"
+        >
+          Update Ticket
+        </button>
+        <div [hidden]="tCreateForm.valid" class="alert alert-danger fade in out">
+          Category and Details fields required
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

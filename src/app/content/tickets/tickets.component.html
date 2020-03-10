@@ -1,0 +1,45 @@
+<div id="ticketsList" class="col-lg-8">
+  <h1 class="h1">Help Desk Tickets</h1>
+  <ul class="tickets list-group">
+    <li *ngFor="let ticket of tickets"
+        class="list-group-item"
+        (click)="onSelect(ticket)"
+        [class.selected]="ticket === selectedTicket"
+    >
+      <span [hidden]="selectedTicket === ticket">
+        <div class="badge">
+          {{ ticket.Id }}
+        </div>
+        {{ ticket.Description | preview }}
+      </span>
+      <div *ngIf="selectedTicket === ticket">
+        <span><strong>Category: </strong>{{ selectedCategory.Name }}</span><br />
+        <span><strong>Status: </strong>{{ selectedStatus.Name }}</span><br />
+        <div class="assigned">
+          <span><strong>Assigned Users: </strong></span><br />
+          <div *ngFor="let user of assigned">
+            {{ user.Username }}
+          </div>
+        </div>
+        <span><strong>Description: </strong>{{ ticket.Description }}</span>
+        <div class="btn-group-sm pull-right">
+          <button class="btn btn-default"
+                  (click)="onAssign()"
+          >
+            Assign To
+          </button>
+          <button class="btn btn-default"
+                  (click)="onEdit()"
+          >
+            Edit
+          </button>
+          <button class="btn btn-danger"
+                  (click)="onDelete(ticket); $event.stopPropagation()">
+            Delete
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </li>
+  </ul>
+</div>

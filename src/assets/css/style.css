@@ -1,0 +1,42 @@
+/* Master Styles */
+html {
+  height: 100%;
+}
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+h2, h3 {
+  color: #444;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
+}
+body {
+  margin: 0%;
+  height: 100%;
+}
+body, input[text], button {
+  color: #778;
+  font-family: Cambria, Georgia;
+}
+/* . . . */
+/* everywhere else */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.loading {
+  padding: 20%;
+  text-align: center;
+  font-size: x-large;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* angular material theme */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
