@@ -11,17 +11,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let ticket of tickets" [class.success]="isAssigned(ticket.Id)">
+                <tr *ngFor="let ticket of tickets" [class.success]="isAssigned(ticket.id)">
                     <td>
                         <input type="checkbox"
                                class="checkbox"
-                               value="{{ ticket.Id }}"
-                               [checked]="isAssigned(ticket.Id)"
+                               value="{{ ticket.id }}"
+                               [checked]="isAssigned(ticket.id)"
                                (change)="assignTo($event, ticket)"
                         />
                     </td>
-                    <td>{{ getTicketCategory(ticket.Id) }}</td>
-                    <td>{{ ticket.Description }}</td>
+                    <td>{{ getTicketCategory(ticket.id) }}</td>
+                    <td>{{ ticket.description }}</td>
                 </tr>
                 </tbody>
             </table>

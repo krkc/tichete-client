@@ -28,6 +28,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/bootstrap/scss/bootstrap.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
@@ -67,7 +68,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tichete-client:build"
+            "browserTarget": "tichete-client:build",
+            "proxyConfig": "src/proxy.conf.json"
           },
           "configurations": {
             "production": {
@@ -93,6 +95,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/bootstrap/scss/bootstrap.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],

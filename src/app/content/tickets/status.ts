@@ -1,5 +1,5 @@
-export class TStatus {
-    Id: number;
-    Name: string;
-    Active: number;
+export class TicketStatus {
+    id: number;
+    name: string;
+    active: number;
 }

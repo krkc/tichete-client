@@ -12,18 +12,18 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let user of users" [class.success]="isAssigned(user.Id)">
+                <tr *ngFor="let user of users" [class.success]="isAssigned(user.id)">
                     <td>
                         <input type="checkbox"
                                class="checkbox"
-                               value="{{ user.Id }}"
-                               [checked]="isAssigned(user.Id)"
+                               value="{{ user.id }}"
+                               [checked]="isAssigned(user.id)"
                                (change)="assignTo($event, user)"
                         />
                     </td>
-                    <td>{{ user.Username }}</td>
-                    <td>{{ user.FirstName }}</td>
-                    <td>{{ user.LastName }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.lastName }}</td>
                 </tr>
                 </tbody>
             </table>

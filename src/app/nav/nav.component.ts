@@ -5,7 +5,7 @@ import { AuthenticationService } from '../service/authentication.service';
 @Component({
   selector: 'navi-pane',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css']
+  styleUrls: ['./nav.component.scss']
 })
 export class NavComponent {
   naviHeading = 'Tichete Ticketing System';

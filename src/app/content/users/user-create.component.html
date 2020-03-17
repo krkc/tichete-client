@@ -1,18 +1,26 @@
 <div id="user-create" class="col-lg-8">
     <h1 class="h1">Add a New User</h1>
-    <form (ngSubmit)="add(uUsername.value, uFirstName.value, uLastName.value, uPassword.value)" #uCreateForm="ngForm">
+    <form (ngSubmit)="add()" #uCreateForm="ngForm">
         <div class="form-group">
             <label for="uUsername">Username:</label>
             <input id="uUsername"
-                      (ngModel)="user.Username"
+                      [(ngModel)]="user.username"
                       required
                       #uUsername="ngModel"
                       name="uUsername"
                       class="form-control"
             />
+            <label for="uEmail">Email:</label>
+            <input id="uEmail"
+                      [(ngModel)]="user.email"
+                      required
+                      #uEmail="ngModel"
+                      name="uEmail"
+                      class="form-control"
+            />
             <label for="uFirstName">First Name:</label>
             <input id="uFirstName"
-                   (ngModel)="user.FirstName"
+                   [(ngModel)]="user.firstName"
                    required
                    #uFirstName="ngModel"
                    name="uFirstName"
@@ -20,7 +28,7 @@
             />
             <label for="uLastName">Last Name:</label>
             <input id="uLastName"
-                   (ngModel)="user.LastName"
+                   [(ngModel)]="user.lastName"
                    required
                    #uLastName="ngModel"
                    name="uLastName"
@@ -28,7 +36,7 @@
             />
             <label for="uPassword">Password:</label>
             <input id="uPassword"
-                   (ngModel)="user.Password"
+                   [(ngModel)]="user.password"
                    required
                    #uPassword="ngModel"
                    name="uPassword"

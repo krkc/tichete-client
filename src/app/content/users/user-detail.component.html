@@ -4,21 +4,29 @@
         <div class="form-group">
             <div>
                 <label for="uUserId">User ID: </label>
-                <span id="uUserId">{{ user.Id }}</span>
+                <span id="uUserId">{{ user.id }}</span>
             </div>
             <div>
                 <label for="uUsername">Username:</label>
                 <input id="uUsername"
                        class="form-control"
-                       [(ngModel)]="user.Username"
+                       [(ngModel)]="user.username"
                        required
                        #uUsername="ngModel"
                        name="uUsername"
                 />
+                <label for="uEmail">Email:</label>
+                <input id="uEmail"
+                       class="form-control"
+                       [(ngModel)]="user.email"
+                       required
+                       #uEmail="ngModel"
+                       name="uEmail"
+                />
                 <label for="uFirstName">First Name:</label>
                 <input id="uFirstName"
                        class="form-control"
-                       [(ngModel)]="user.FirstName"
+                       [(ngModel)]="user.firstName"
                        required
                        #uFirstName="ngModel"
                        name="uFirstName"
@@ -26,14 +34,14 @@
                 <label for="uLastName">Last Name:</label>
                 <input id="uLastName"
                        class="form-control"
-                       [(ngModel)]="user.LastName"
+                       [(ngModel)]="user.lastName"
                        required
                        #uLastName="ngModel"
                        name="uLastName"
                 >
                 <label for="uPassword">Password:</label>
                 <input id="uPassword"
-                       (ngModel)="user.Password"
+                       (ngModel)="user.password"
                        required
                        #uLastName="ngModel"
                        name="uPassword"

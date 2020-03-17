@@ -7,7 +7,7 @@ import * as $ from 'jquery';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   public emailInput: string;
@@ -21,26 +21,25 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  onLogin() {
+  onLogin = () => {
     this.credsInvalid = false;
     this.authService.login(this.emailInput, this.passwdInput)
-      .then(res => (res === 0) ? this.onLoginSuccess() : this.onInvalidCredentials(res))
-      .catch(err => this.onLoginError(err));
+      .then(this.onLoginSuccess)
+      .catch(this.onLoginError);
   }
 
-  onLoginSuccess() {
+  onLoginSuccess = (user) => {
     $('.login-container')
       .css('transform', 'translateY(-30em)');
 
-    // setTimeout(() => { this.router.navigate(['dashboard']); }, 300);
     setTimeout(() => { this.router.navigate(['']); }, 300);
   }
 
-  onInvalidCredentials(statusCode: string) {
+  onInvalidCredentials = (statusCode: string) => {
     this.credsInvalid = true;
   }
 
-  onLoginError(error: string) {
+  onLoginError = (error: string) => {
     console.log('Login Error: ' + error);
   }
 }

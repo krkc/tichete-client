@@ -4,29 +4,29 @@
     <div class="form-group">
       <div>
         <label>ID: </label>
-        {{ticket.Id}}
+        {{ticket.id}}
       </div>
       <div>
         <label>Category:</label>
         <select id="tCategory"
-                [(ngModel)]="ticket.CategoryId"
+                [(ngModel)]="ticket.categoryId"
                 name="tCategory"
                 class="form-control"
                 required
                 #tCategory="ngModel"
         >
           <option *ngFor="let category of categories"
-                  value="{{ category.Id }}"
-                  [selected]="ticket.CategoryId === category.Id"
+                  value="{{ category.id }}"
+                  [selected]="ticket.categoryId === category.id"
           >
-            {{ category.Name }}
+            {{ category.name }}
           </option>
         </select>
       </div>
       <div>
         <label for="tDescription">Description:</label>
         <textarea id="tDescription"
-                  [(ngModel)]="ticket.Description"
+                  [(ngModel)]="ticket.description"
                   required
                   #tDescription="ngModel"
                   name="tDescription"

@@ -3,63 +3,80 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
+import { Observable, forkJoin } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class UserService {
+  private apiUrl = '/api';
   private usersUrl = '/api/users';  // URL to users web api
   private userUrl = '/api/user'; // URL to user web api
   private headers: HttpHeaders;
   private options;
   constructor(
     private http: HttpClient,
+    private authService: AuthenticationService,
   ) {
-    this.headers.append('Content-Type', 'application/json');
+    this.headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     this.options = { 'headers': this.headers };
-    this.headers = new HttpHeaders(this.options);
   }
 
-  getUser(id: number): Promise<User> {
-    return this.getUsers()
-      .then(users => users.find(user => user.Id === id));
-  }
+  getUser = (userId: number) => {
+    const url = `${this.usersUrl}/${userId}`;
+    return this.http.get<User>(url);
+  };
 
-  getUsers(): Promise<User[]> {
+  getUsers = (): Promise<User[]> => {
     return this.http.get<User[]>(this.usersUrl)
       .toPromise()
       .catch(this.handleError);
   }
 
-  getAssignments(userId: number): Promise<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.userUrl}/${userId}/assigned`)
+  getTicketFeed = (): Observable<Ticket[]> => {
+    const subscribedCategoriesUrl = `${this.apiUrl}${this.authService.currentUserValue._links.subscribedTickets.href}`;
+    return this.http.get<any>(subscribedCategoriesUrl)
+      .pipe(
+        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
+        mergeMap((tickets) => {
+          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
+        })
+      );
+  }
+
+  getAssignments = (user: User): Promise<Ticket[]> => {
+    const assignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
+    return this.http.get<Ticket[]>(assignedTicketsUrl)
       .toPromise()
       .catch(this.handleError);
   }
 
-  updateAssignments(userId: number, assignedTickets: number[], unassignedTickets: number[]): Promise<Ticket[]> {
-    const url = `${this.userUrl}/${userId}/assign`;
+  updateAssignments = (user: User, assignedTickets: number[], unassignedTickets: number[]): Promise<Ticket[]> => {
+    const url = `${this.userUrl}/${user.id}/assign`;
+
     return this.http.put<Ticket[]>(url, JSON.stringify({ added: assignedTickets, removed: unassignedTickets }), this.options)
       .toPromise()
       .catch(this.handleError);
   }
 
   update(user: User): Promise<User> {
-    const url = `${this.userUrl}/${user.Id}`;
+    const url = `${this.userUrl}/${user.id}`;
     return this.http
       .put<User>(url, JSON.stringify(user), this.options)
       .toPromise()
       .catch(this.handleError);
   }
 
-  async create(_username: string, _firstName: string, _lastname: string, _password: string): Promise<User> {
+  async create(user: User): Promise<User> {
     return this.http
-      .post<User>(this.userUrl,
-        JSON.stringify({ Username: _username, FirstName: _firstName, LastName: _lastname, Password: _password }), this.options)
+      .post<User>(this.usersUrl,
+        JSON.stringify(user), this.options)
       .toPromise()
       .catch(err => this.handleError(err));
   }
 
   delete(id: number): Promise<void> {
-    const url = `${this.userUrl}/${id}`;
+    const url = `${this.usersUrl}/${id}`;
     return this.http.delete(url)
       .toPromise()
       .catch(this.handleError);

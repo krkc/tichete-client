@@ -10,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
       <router-outlet></router-outlet>
     </div>
   `,
-  styleUrls: ['./home-layout.component.css']
+  styleUrls: ['./home-layout.component.scss']
 })
 export class HomeLayoutComponent implements OnInit {
 

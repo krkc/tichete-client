@@ -37,18 +37,18 @@ export class UsersComponent implements OnInit {
         }
 
         this.userService
-            .getAssignments(user.Id)
+            .getAssignments(user.id)
             .then((_assignedTickets: Ticket[]) => {
                 this.assignments = _assignedTickets;
             });
     }
 
     onAssign(): void {
-        this.router.navigate(['/user/assign', this.selectedUser.Id])
+        this.router.navigate(['/user/assign', this.selectedUser.id])
     }
 
     onEdit(): void {
-        this.router.navigate(['/user/detail', this.selectedUser.Id]);
+        this.router.navigate(['/user/detail', this.selectedUser.id]);
     }
 
     onDelete(user: User): void {
@@ -57,7 +57,7 @@ export class UsersComponent implements OnInit {
                 'This user is assigned to one or more active tickets.' +
                 'Assignments must be removed before this user can be deleted.' +
                 'Would you like to remove assignments?',
-                () => { this.router.navigate(['/user/assign', user.Id]); },
+                () => { this.router.navigate(['/user/assign', user.id]); },
                 null
             );
             return;
@@ -72,7 +72,7 @@ export class UsersComponent implements OnInit {
 
     private deleteUser(user: User): void {
         this.userService
-            .delete(user.Id)
+            .delete(user.id)
             .then((err: any) => {
                 if (err) {
                     alertify.alert('Error', `Error ${err.errno}: ${err.code}`);

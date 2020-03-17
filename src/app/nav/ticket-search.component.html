@@ -4,7 +4,7 @@
   <div>
     <div *ngFor="let ticket of tickets | async"
          (click)="gotoDetail(ticket)" class="search-result" >
-      {{ticket.Description}}
+      {{ticket.description}}
     </div>
   </div>
 </div>

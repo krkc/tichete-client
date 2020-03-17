@@ -7,7 +7,7 @@ import { UserService } from "../../service/user.service";
 @Component({
     selector: 'ticket-assign',
     templateUrl: './ticket-assign.component.html',
-    styleUrls: ['./ticket-assign.component.css']
+    styleUrls: ['./ticket-assign.component.scss']
 })
 export class TicketAssignComponent implements OnInit {
     users: User[] = [];
@@ -27,10 +27,10 @@ export class TicketAssignComponent implements OnInit {
             this.ticketId = +params['id'];
             this.userService.getUsers()
                 .then(users => this.users = users);
-            this.ticketService.getAssignments(this.ticketId)
+            this.ticketService.getAssignedUsers(this.ticketId)
                 .subscribe(assigned => {
                     if (assigned) {
-                        this.assignedIds = assigned.map(_assn => _assn.Id)
+                        this.assignedIds = assigned.map(_assn => _assn.id)
                     }
                 });
         });
@@ -45,23 +45,23 @@ export class TicketAssignComponent implements OnInit {
     assignTo(e: Event, _user: User): void {
         if ((<HTMLInputElement>e.target).checked) {
             // Add assignment
-            let removalIndex = this.removedAssignmentIds.findIndex(_removal => _removal === +_user.Id);
+            let removalIndex = this.removedAssignmentIds.findIndex(_removal => _removal === +_user.id);
             if (removalIndex >= 0) {
-                this.removedAssignmentIds.splice(this.removedAssignmentIds.indexOf(+_user.Id), 1);
+                this.removedAssignmentIds.splice(this.removedAssignmentIds.indexOf(+_user.id), 1);
             }
-            let assignedIndex = this.assignedIds.findIndex(_assignedId => _assignedId === +_user.Id);
+            let assignedIndex = this.assignedIds.findIndex(_assignedId => _assignedId === +_user.id);
             if (assignedIndex < 0) {
-                this.addedAssignmentIds.push(+_user.Id);
+                this.addedAssignmentIds.push(+_user.id);
             }
         } else {
             // Remove assignment
-            let additionIndex = this.addedAssignmentIds.findIndex(_addition => _addition === +_user.Id);
+            let additionIndex = this.addedAssignmentIds.findIndex(_addition => _addition === +_user.id);
             if (additionIndex >= 0) {
-                this.addedAssignmentIds.splice(this.addedAssignmentIds.indexOf(+_user.Id), 1);
+                this.addedAssignmentIds.splice(this.addedAssignmentIds.indexOf(+_user.id), 1);
             }
-            let assignedIndex = this.assignedIds.findIndex(_assignedId => _assignedId === +_user.Id);
+            let assignedIndex = this.assignedIds.findIndex(_assignedId => _assignedId === +_user.id);
             if (assignedIndex >= 0) {
-                this.removedAssignmentIds.push(+_user.Id);
+                this.removedAssignmentIds.push(+_user.id);
             }
         }
     }
@@ -69,7 +69,7 @@ export class TicketAssignComponent implements OnInit {
     assign(): void {
         this.ticketService.updateAssignments(this.ticketId, this.addedAssignmentIds, this.removedAssignmentIds)
             .subscribe(assigned => {
-               this.assignedIds = assigned.map(assignee => assignee.Id);
+               this.assignedIds = assigned.map(assignee => assignee.id);
             });
         this.assignedIds = [];
     }

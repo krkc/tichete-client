@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 
 import { Ticket } from './ticket';
 import { TicketService } from '../../service/ticket.service';
-import { TCategory } from './category';
+import { TicketCategory } from './category';
 /*
 TODO: Change this component to ticket-update
 TODO: Need component(s) for ticket conversation threads
@@ -11,10 +11,10 @@ TODO: Need component(s) for ticket conversation threads
 @Component({
   selector: 'my-ticket-detail',
   templateUrl: './ticket-detail.component.html',
-  styleUrls: ['./ticket-detail.component.css']
+  styleUrls: ['./ticket-detail.component.scss']
 })
 export class TicketDetailComponent implements OnInit {
-  public categories: TCategory[];
+  public categories: TicketCategory[];
   public ticket: Ticket;
 
   constructor(
@@ -24,13 +24,13 @@ export class TicketDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.forEach((params: Params) => {
-      let id = +params['id'];
-      this.ticketService.getTicket(id)
+      let ticketId = +params['id'];
+      this.ticketService.getTicket(ticketId)
         .subscribe(ticket => this.ticket = ticket);
     });
 
-    this.ticketService.getCategories().subscribe((_categories: TCategory[]) => {
-      this.categories = _categories;
+    this.ticketService.getCategories().subscribe((categories: TicketCategory[]) => {
+      this.categories = categories;
     });
   }
 

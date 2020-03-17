@@ -11,7 +11,7 @@ import { Ticket } from '../content/tickets/ticket';
 @Component({
   selector: 'ticket-search',
   templateUrl: './ticket-search.component.html',
-  styleUrls:  ['./ticket-search.component.css'],
+  styleUrls:  ['./ticket-search.component.scss'],
   providers: [TicketSearchService]
 })
 export class TicketSearchComponent implements OnInit {
@@ -39,7 +39,7 @@ export class TicketSearchComponent implements OnInit {
   }
 
   gotoDetail(ticket: Ticket): void {
-    let link = ['/ticket/detail', ticket.Id];
+    let link = ['/ticket/detail', ticket.id];
     this.router.navigate(link);
   }
 }

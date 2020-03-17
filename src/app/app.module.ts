@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -33,9 +33,11 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { ContentComponent } from './content/content.component';
+import { MatSelectModule } from '@angular/material/select';
+import { User } from './content/users/user';
 
 export function tokenGetter() {
-  return localStorage.getItem("access_token");
+  return (JSON.parse(localStorage.getItem("current_user")) as User)?.token;
 }
 
 @NgModule({
@@ -61,18 +63,20 @@ export function tokenGetter() {
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        whitelistedDomains: ["example.com"],
+        whitelistedDomains: ["localhost:*"],
         blacklistedRoutes: ["example.com/examplebadroute/"]
       }
     }),
     AppRoutingModule,
     BrowserAnimationsModule,
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    MatSelectModule,
   ],
   providers: [
     TicketService,

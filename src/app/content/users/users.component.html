@@ -8,19 +8,19 @@
         >
       <span [hidden]="selectedUser === user">
         <div class="badge">
-          {{ user.Id }}
+          {{ user.id }}
         </div>
-        {{ user.Username }}
+        {{ user.username }}
       </span>
             <div *ngIf="selectedUser === user">
-                <span><strong>Username: </strong>{{ user.Username }}</span><br />
-                <span><strong>First Name: </strong>{{ user.FirstName }}</span><br />
-                <span><strong>Last Name: </strong>{{ user.LastName }}</span><br />
+                <span><strong>Username: </strong>{{ user.username }}</span><br />
+                <span><strong>First Name: </strong>{{ user.firstName }}</span><br />
+                <span><strong>Last Name: </strong>{{ user.lastName }}</span><br />
                 <div class="assigned">
                     <span><strong>Assigned Tickets: </strong></span><br />
                     <ul>
                         <li *ngFor="let ticket of assignments">
-                            {{ ticket.Description | preview }}
+                            {{ ticket.description | preview }}
                         </li>
                     </ul>
                 </div>

@@ -5,11 +5,12 @@ import { Ticket } from './tickets/ticket';
 import { TicketService } from '../service/ticket.service';
 import { AuthenticationService } from '../service/authentication.service';
 import { Observable } from "rxjs";
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   tickets: Ticket[];
@@ -17,6 +18,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private ticketService: TicketService,
+    private userService: UserService,
     private authService: AuthenticationService
   ) {
   }
@@ -25,7 +27,8 @@ export class DashboardComponent implements OnInit {
     this.isLoggedIn$ = this.authService.isLoggedIn();
     this.isLoggedIn$.subscribe(loggedInResponse => {
       if (loggedInResponse) {
-        this.ticketService.getTickets().subscribe(response => {
+        this.authService.currentUserValue;
+        this.userService.getTicketFeed().subscribe((response) => {
           this.tickets = response.slice(1, 5);
         });
       } else {
@@ -35,6 +38,6 @@ export class DashboardComponent implements OnInit {
   }
 
   gotoDetail(ticket: Ticket): void {
-    this.router.navigate(['/ticket/detail', ticket.Id]);
+    this.router.navigate(['/ticket/detail', ticket.id]);
   }
 }

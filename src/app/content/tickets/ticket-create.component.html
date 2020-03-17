@@ -1,35 +1,21 @@
 <div id="ticket-create" class="col-lg-8">
   <h1 class="h1">Submit a New Ticket</h1>
-  <form (ngSubmit)="add(tDescription.value, tCategory.value)" #tCreateForm="ngForm">
+  <form [formGroup]="ticketCreateForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="tCategory">Category:</label>
-      <select id="tCategory"
-              (ngModel)="ticket.CategoryId"
-              name="tCategory"
-              class="form-control"
-              required
-              #tCategory="ngModel"
-      >
-        <option value="">
-          Choose a Category
-        </option>
-        <option *ngFor="let category of categories" value="{{ category.Id }}">
-          {{ category.Name }}
-        </option>
-      </select>
-      <label for="tDescription">Description:</label>
-      <textarea id="tDescription"
-             (ngModel)="ticket.Description"
-             required
-             #tDescription="ngModel"
-             name="tDescription"
-             class="form-control"
-             rows="5"
-      ></textarea>
-      <button type="submit" [disabled]="!tCreateForm.form.valid" class="form-control">
+      <mat-form-field>
+        <mat-label>Categories:</mat-label>
+        <mat-select formControlName="tagSelector" multiple required>
+          <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <label>
+        Description:
+        <textarea type="text" formControlName="description" required class="form-control" rows="5"></textarea>
+      </label>
+      <button type="submit" [disabled]="!ticketCreateForm.valid" class="form-control">
         Submit Ticket
       </button>
-      <div [hidden]="tCreateForm.valid" class="alert alert-danger fade in out">
+      <div [hidden]="ticketCreateForm.valid" class="alert alert-danger fade in out">
         Category and Details fields required
       </div>
     </div>
@@ -47,12 +33,11 @@
       </div>
       <div class="modal-body">
         <div *ngIf="ticket">
-          Your ticket Id # is: {{ ticket.Id }}<br /><br />
+          Your ticket Id # is: {{ ticket.id }}<br /><br />
           Ticket Summary:<br />
-          Ticket ID: {{ ticket.Id }}<br />
-          Ticket Category: {{ category }}<br />
+          Ticket ID: {{ ticket.id }}<br />
           Ticket description:<br />
-          {{ ticket.Description }}
+          {{ ticket.description }}
         </div>
       </div>
       <div class="modal-footer" style="text-align: center">

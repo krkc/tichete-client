@@ -9,20 +9,18 @@ import { UserService } from '../../service/user.service';
     styleUrls: ['./user-create.component.css']
 })
 export class UserCreateComponent implements OnInit {
-    public user: User;
+    public user: User = new User();
 
     constructor(
         private router: Router,
         private userService: UserService
-    ) {
-
-    }
+    ) { }
 
     ngOnInit() {
     }
 
-    async add(_username: string, _firstname: string, _lastname: string, _password): Promise<void> {
-      this.user = await this.userService.create(_username, _firstname, _lastname, _password);
+    async add(): Promise<void> {
+      this.user = await this.userService.create(this.user);
       this.router.navigate(['users']);
     }
 }

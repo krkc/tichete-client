@@ -12,9 +12,9 @@ import { UserDetailComponent } from './content/users/user-detail.component';
 import { UserCreateComponent } from './content/users/user-create.component';
 import { UserAssignComponent } from './content/users/user-assign.component';
 import { AuthGuard } from './guards/auth.guard';
-import {HomeLayoutComponent} from './layouts/home-layout/home-layout.component';
-import {LoginLayoutComponent} from './layouts/login-layout/login-layout.component';
-import {ContentComponent} from './content/content.component';
+import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
+import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
+import { ContentComponent } from './content/content.component';
 
 const routes: Routes = [
   {
