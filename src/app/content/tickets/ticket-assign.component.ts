@@ -3,6 +3,7 @@ import { TicketService } from "../../service/ticket.service";
 import { ActivatedRoute, Params } from "@angular/router";
 import { User } from "../users/user";
 import { UserService } from "../../service/user.service";
+import { Ticket } from './ticket';
 
 @Component({
     selector: 'ticket-assign',
@@ -14,7 +15,7 @@ export class TicketAssignComponent implements OnInit {
     addedAssignmentIds: number[] = [];
     removedAssignmentIds: number[] = [];
     assignedIds: number[] = [];
-    private ticketId: number;
+    private ticket: Ticket;
 
     constructor(
         private ticketService: TicketService,
@@ -24,15 +25,19 @@ export class TicketAssignComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
-            this.ticketId = +params['id'];
-            this.userService.getUsers()
-                .then(users => this.users = users);
-            this.ticketService.getAssignedUsers(this.ticketId)
+            const ticketId = +params['id'];
+            this.ticketService.getTicket(ticketId).subscribe((ticket) => {
+              this.ticket = ticket;
+              this.ticketService.getAssignedUsers(this.ticket)
                 .subscribe(assigned => {
                     if (assigned) {
                         this.assignedIds = assigned.map(_assn => _assn.id)
                     }
                 });
+            });
+
+            this.userService.getUsers()
+                .subscribe(users => this.users = users);
         });
     }
 
@@ -67,7 +72,7 @@ export class TicketAssignComponent implements OnInit {
     }
 
     assign(): void {
-        this.ticketService.updateAssignments(this.ticketId, this.addedAssignmentIds, this.removedAssignmentIds)
+        this.ticketService.updateAssignments(this.ticket.id, this.addedAssignmentIds, this.removedAssignmentIds)
             .subscribe(assigned => {
                this.assignedIds = assigned.map(assignee => assignee.id);
             });

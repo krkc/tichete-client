@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Ticket } from './tickets/ticket';
-import { TicketService } from '../service/ticket.service';
 import { AuthenticationService } from '../service/authentication.service';
 import { Observable } from "rxjs";
 import { UserService } from '../service/user.service';
@@ -13,11 +12,10 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  tickets: Ticket[];
+  feedTickets: Ticket[];
   isLoggedIn$: Observable<boolean>;
   constructor(
     private router: Router,
-    private ticketService: TicketService,
     private userService: UserService,
     private authService: AuthenticationService
   ) {
@@ -29,7 +27,7 @@ export class DashboardComponent implements OnInit {
       if (loggedInResponse) {
         this.authService.currentUserValue;
         this.userService.getTicketFeed().subscribe((response) => {
-          this.tickets = response.slice(1, 5);
+          this.feedTickets = response.slice(1, 5);
         });
       } else {
         this.router.navigate(['/login']);

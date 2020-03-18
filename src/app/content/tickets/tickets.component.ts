@@ -28,7 +28,7 @@ export class TicketsComponent implements OnInit {
     this.ticketService.getTickets().subscribe((tickets: Ticket[]) => {
       this.tickets = tickets;
     });
-    this.ticketService.getStatuses().then((statuses: TicketStatus[]) => {
+    this.ticketService.getStatuses().subscribe((statuses: TicketStatus[]) => {
       this.statuses = statuses;
     });
   }
@@ -70,7 +70,7 @@ export class TicketsComponent implements OnInit {
 
   private deleteTicket(ticket: Ticket): void {
     this.ticketService
-      .delete(ticket.id)
+      .delete(ticket)
       .subscribe((err: any) => {
         if (err) {
           alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
@@ -91,7 +91,7 @@ export class TicketsComponent implements OnInit {
 
     if (!ticket.taggedCategories) {
       this.ticketService
-        .getTaggedCategories(ticket.id)
+        .getTaggedCategories(ticket)
         .subscribe((taggedCategories: TicketCategory[]) => {
           ticket.taggedCategories = taggedCategories;
         });
@@ -99,7 +99,7 @@ export class TicketsComponent implements OnInit {
 
     if (!ticket.assignedUsers) {
       this.ticketService
-        .getAssignedUsers(ticket.id)
+        .getAssignedUsers(ticket)
         .subscribe((assignedUsers: User[]) => {
           ticket.assignedUsers = assignedUsers;
         });

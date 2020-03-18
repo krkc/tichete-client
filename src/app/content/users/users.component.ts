@@ -21,7 +21,7 @@ export class UsersComponent implements OnInit {
         private userService: UserService) { }
 
     getUsers(): void {
-        this.userService.getUsers().then(users => this.users = users);
+        this.userService.getUsers().subscribe(users => this.users = users);
     }
 
     ngOnInit(): void {
@@ -37,8 +37,8 @@ export class UsersComponent implements OnInit {
         }
 
         this.userService
-            .getAssignments(user.id)
-            .then((_assignedTickets: Ticket[]) => {
+            .getAssignments(user)
+            .subscribe((_assignedTickets: Ticket[]) => {
                 this.assignments = _assignedTickets;
             });
     }
@@ -72,8 +72,8 @@ export class UsersComponent implements OnInit {
 
     private deleteUser(user: User): void {
         this.userService
-            .delete(user.id)
-            .then((err: any) => {
+            .delete(user)
+            .subscribe((err: any) => {
                 if (err) {
                     alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
                     return;

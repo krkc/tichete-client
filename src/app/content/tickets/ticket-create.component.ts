@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Ticket } from './ticket';
 import { TicketService } from '../../service/ticket.service';
 import { TicketCategory } from './category';
-import { FormControl, FormGroup, RequiredValidator } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
 import * as $ from 'jquery';
 
@@ -42,9 +42,9 @@ export class TicketCreateComponent implements OnInit {
     // TODO: Throws exception "$(...).modal is not a function" when user no longer authenticated
     // this.router.navigate(['/detail', newTicket.Id]);
     // this.category = this.categories.find(c => c.id.toString() === this.ticket.categoryId.toString()).name;
-    ($('#summary-modal') as any).modal();
-    $('#summary-modal').on('hidden.bs.modal', () => {
+    // ($('#summary-modal') as any).modal();
+    // $('#summary-modal').on('hidden.bs.modal', () => {
       this.router.navigate(['tickets']);
-    });
+    // });
   }
 }

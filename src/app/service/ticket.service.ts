@@ -11,9 +11,9 @@ import { Observable, of, OperatorFunction, forkJoin } from 'rxjs';
 @Injectable()
 export class TicketService {
   private apiUrl = 'api';
-  private ticketsUrl = 'api/tickets';  // URL to tickets web api
-  private categoriesUrl = 'api/tickets/categories'; // URL to api
-  private statusesUrl = 'api/tickets/statuses'; // URL to api
+  private ticketsUrl = `${this.apiUrl}/tickets`;
+  private categoriesUrl = `${this.apiUrl}/tickets/categories`;
+  private statusesUrl = `${this.apiUrl}/tickets/categories`;
   private headers: HttpHeaders;
   private options;
 
@@ -28,6 +28,7 @@ export class TicketService {
     const url = `${this.ticketsUrl}/${ticketId}`;
     return this.http.get<Ticket>(url);
   };
+
   getTickets = () => {
     return this.http.get<any>(this.ticketsUrl)
       .pipe(
@@ -37,29 +38,7 @@ export class TicketService {
         })
       );
   };
-  getCategories() {
-    return this.http.get<TicketCategory[]>(this.categoriesUrl);
-  };
-  getStatuses = () => {
-    return this.http.get<TicketStatus[]>(this.statusesUrl)
-      .toPromise()
-      .catch(this.handleError);
-  };
-  getTaggedCategories = (ticketId: number) => {
-    return this.http.get<TicketCategory[]>(`${this.ticketsUrl}/${ticketId}/tagged-categories`);
-  };
-  getAssignedUsers = (ticketId: number) => {
-    return this.http.get<User[]>(`${this.ticketsUrl}/${ticketId}/assigned-users`);
-  };
-  updateAssignments = (ticketId: number, assignedUsers: number[], unassignedUsers: number[]) => {
-    const url = `${this.ticketsUrl}/${ticketId}/assign`;
-    return this.http.put<User[]>(
-      url,
-      JSON.stringify({ added: assignedUsers, removed: unassignedUsers }),
-      this.options).pipe<User[]>(
-        catchError(this.handleError<any>('updateAssignments'))
-      );
-  };
+
   update = (ticket: Ticket) => {
     const url = `${this.ticketsUrl}/${ticket.id}`;
     return this.http.put<Ticket>(
@@ -67,6 +46,7 @@ export class TicketService {
       ticket,
       this.options);
   };
+
   create = (description: string, taggedCategoryIds: number[]) => {
     return this.http
       .post<Ticket>(
@@ -79,10 +59,40 @@ export class TicketService {
           catchError(this.handleError<any>('createTicket'))
         );
   };
-  delete = (id: number) => {
-    const url = `${this.ticketsUrl}/${id}`;
-    return this.http.delete(url);
+
+  delete = (ticket: Ticket) => {
+    const deleteTicketUrl = `${this.apiUrl}${ticket._links.self.href}`;
+    return this.http.delete(deleteTicketUrl);
   };
+
+  getCategories() {
+    return this.http.get<TicketCategory[]>(this.categoriesUrl);
+  };
+
+  getStatuses = () => {
+    return this.http.get<TicketStatus[]>(this.statusesUrl);
+  };
+
+  getTaggedCategories = (ticket: Ticket) => {
+    const getTaggedCategoriesUrl = `${this.apiUrl}${ticket._links.taggedCategories.href}`;
+    return this.http.get<TicketCategory[]>(getTaggedCategoriesUrl);
+  };
+
+  getAssignedUsers = (ticket: Ticket) => {
+    const getAssignedUsersUrl = `${this.apiUrl}${ticket._links.assignedUsers.href}`;
+    return this.http.get<User[]>(getAssignedUsersUrl);
+  };
+
+  updateAssignments = (ticketId: number, assignedUsers: number[], unassignedUsers: number[]) => {
+    const url = `${this.ticketsUrl}/${ticketId}/assign`;
+    return this.http.put<User[]>(
+      url,
+      JSON.stringify({ added: assignedUsers, removed: unassignedUsers }),
+      this.options).pipe<User[]>(
+        catchError(this.handleError<any>('updateAssignments'))
+      );
+  };
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.

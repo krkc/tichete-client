@@ -29,7 +29,7 @@ export class UserAssignComponent implements OnInit {
     this.route.params.forEach((params: Params) => {
       this.userService.getUser(+params['id']).subscribe(user => {
         this.userService.getAssignments(user)
-          .then(_assigned => {
+          .subscribe(_assigned => {
             if (_assigned) {
               this.assignedIds = _assigned.map(_assn => _assn.id)
             }
@@ -86,7 +86,7 @@ export class UserAssignComponent implements OnInit {
       const assigned: Ticket[] = await this.userService.updateAssignments(
         this.user,
         this.addedAssignmentIds,
-        this.removedAssignmentIds);
+        this.removedAssignmentIds).toPromise();
       this.assignedIds = assigned.map(_assignee => _assignee.id);
     } catch (err) {
       console.log(err);

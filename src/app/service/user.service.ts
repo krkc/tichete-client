@@ -3,23 +3,22 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
-import { Observable, forkJoin } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { Observable, forkJoin, of } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class UserService {
-  private apiUrl = '/api';
-  private usersUrl = '/api/users';  // URL to users web api
-  private userUrl = '/api/user'; // URL to user web api
+  private apiUrl: string = '/api';
+  private usersUrl: string = `${this.apiUrl}/users`;
   private headers: HttpHeaders;
-  private options;
+  private options: { headers: HttpHeaders };
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
   ) {
     this.headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.options = { 'headers': this.headers };
+    this.options = { headers: this.headers };
   }
 
   getUser = (userId: number) => {
@@ -27,10 +26,33 @@ export class UserService {
     return this.http.get<User>(url);
   };
 
-  getUsers = (): Promise<User[]> => {
-    return this.http.get<User[]>(this.usersUrl)
-      .toPromise()
-      .catch(this.handleError);
+  getUsers = () => {
+    return this.http.get<any>(this.usersUrl)
+      .pipe(
+        map((usersData) => usersData._embedded.users as User[]),
+        mergeMap((users) => {
+          return forkJoin(users.map((user) => this.http.get<User>(`${this.apiUrl}/${user._links.self.href}`)))
+        })
+      );
+  };
+
+  create(user: User) {
+    return this.http
+      .post<User>(this.usersUrl,
+        JSON.stringify(user), this.options).pipe<User>(
+          catchError(this.handleError<User>('createUser'))
+        );
+  }
+
+  update(user: User) {
+    const updateUsersUrl = `${this.apiUrl}${user._links.self.href}`;
+    return this.http
+      .put<User>(updateUsersUrl, JSON.stringify(user), this.options);
+  }
+
+  delete(user: User) {
+    const deleteUserUrl = `${this.apiUrl}${user._links.self.href}`;
+    return this.http.delete(deleteUserUrl);
   }
 
   getTicketFeed = (): Observable<Ticket[]> => {
@@ -44,45 +66,34 @@ export class UserService {
       );
   }
 
-  getAssignments = (user: User): Promise<Ticket[]> => {
+  getAssignments = (user: User) => {
     const assignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
-    return this.http.get<Ticket[]>(assignedTicketsUrl)
-      .toPromise()
-      .catch(this.handleError);
+    return this.http.get<Ticket[]>(assignedTicketsUrl);
   }
 
-  updateAssignments = (user: User, assignedTickets: number[], unassignedTickets: number[]): Promise<Ticket[]> => {
-    const url = `${this.userUrl}/${user.id}/assign`;
-
-    return this.http.put<Ticket[]>(url, JSON.stringify({ added: assignedTickets, removed: unassignedTickets }), this.options)
-      .toPromise()
-      .catch(this.handleError);
+  updateAssignments = (user: User, toAssignTicketIds: number[], toUnassignTicketIds: number[]) => {
+    const assignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
+    const additionsAndRemovals = JSON.stringify({
+      added: toAssignTicketIds,
+      removed: toUnassignTicketIds
+    });
+    return this.http.put<Ticket[]>(assignedTicketsUrl, additionsAndRemovals, this.options)
+      .pipe<Ticket[]>(
+        catchError(this.handleError<Ticket[]>('updateAssignments'))
+      );
   }
 
-  update(user: User): Promise<User> {
-    const url = `${this.userUrl}/${user.id}`;
-    return this.http
-      .put<User>(url, JSON.stringify(user), this.options)
-      .toPromise()
-      .catch(this.handleError);
-  }
-
-  async create(user: User): Promise<User> {
-    return this.http
-      .post<User>(this.usersUrl,
-        JSON.stringify(user), this.options)
-      .toPromise()
-      .catch(err => this.handleError(err));
-  }
-
-  delete(id: number): Promise<void> {
-    const url = `${this.usersUrl}/${id}`;
-    return this.http.delete(url)
-      .toPromise()
-      .catch(this.handleError);
-  }
-
-  private handleError(error: any): Promise<any> {
-    return Promise.reject(error.message || error);
+  /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }
