@@ -23,11 +23,10 @@ export class TicketDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-      let ticketId = +params['id'];
-      this.ticketService.getTicket(ticketId)
-        .subscribe(ticket => this.ticket = ticket);
-    });
+    this.route.data
+      .subscribe((data: { ticket: Ticket }) => {
+        this.ticket = data.ticket;
+      });
 
     this.ticketService.getCategories().subscribe((categories: TicketCategory[]) => {
       this.categories = categories;

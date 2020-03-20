@@ -1,11 +1,48 @@
-<h1>{{ naviHeading }}</h1>
-<nav>
-  <a routerLink="/dashboard" routerLinkActive="active" class="btn btn-default">Dashboard</a>
-  <a routerLink="/tickets" routerLinkActive="active" class="btn btn-default">View Tickets</a>
-  <a routerLink="/ticket" routerLinkActive="active" class="btn btn-default">Create a Ticket</a>
-  <a routerLink="/users" routerLinkActive="active" class="btn btn-default">View Users</a>
-  <a routerLink="/user" routerLinkActive="active" class="btn btn-default">Add a User</a>
-  <a href="#" class="btn btn-default">App Settings</a>
-  <a href="#" (click)="logOut()" class="btn btn-default">Logout</a>
-</nav>
-<ticket-search></ticket-search>
+<div class="container">
+  <h1 class="py-3">{{ naviHeading }}</h1>
+  <nav class="navbar">
+    <ul class="navbar-nav w-100">
+      <li class="nav-item mx-auto">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          class="btn btn-default"
+          >Dashboard</a
+        >
+      </li>
+      <li class="nav-item mx-auto">
+        <a
+          routerLink="/tickets"
+          routerLinkActive="active"
+          class="btn btn-default"
+          >View Tickets</a
+        >
+      </li>
+      <li class="nav-item mx-auto">
+        <a
+          routerLink="/ticket"
+          routerLinkActive="active"
+          class="btn btn-default"
+          >Create a Ticket</a
+        >
+      </li>
+      <li class="nav-item mx-auto">
+        <a routerLink="/users" routerLinkActive="active" class="btn btn-default"
+          >View Users</a
+        >
+      </li>
+      <li class="nav-item mx-auto">
+        <a routerLink="/user" routerLinkActive="active" class="btn btn-default"
+          >Add a User</a
+        >
+      </li>
+      <li class="nav-item mx-auto">
+        <a href="#" class="btn btn-default">App Settings</a>
+      </li>
+      <li class="nav-item mx-auto">
+        <a href="#" class="btn btn-default" (click)="logOut()">Logout</a>
+      </li>
+    </ul>
+  </nav>
+  <ticket-search></ticket-search>
+</div>

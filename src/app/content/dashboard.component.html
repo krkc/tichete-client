@@ -1,8 +1,7 @@
-<h3>My Feed</h3>
-<div class="grid grid-pad">
-  <div *ngFor="let ticket of feedTickets" (click)="gotoDetail(ticket)" class="col-1-4">
-    <div class="module ticket">
-      <h4>{{ ticket.description }}</h4>
-    </div>
+<h3 class="my-3 text-center">My Submitted Tickets</h3>
+<h3 class="my-3 text-center">My Feed</h3>
+<div id="tickets" class="row justify-content-around">
+  <div *ngFor="let ticket of feedTickets" (click)="gotoDetail(ticket)" class="col-5 ticket my-1">
+    <h4>{{ ticket.description }}</h4>
   </div>
 </div>

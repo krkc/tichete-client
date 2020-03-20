@@ -1,47 +1,49 @@
-<div id="usersList" class="col-lg-8">
-    <h1 class="h1">Tichete Users</h1>
-    <ul class="users list-group">
-        <li *ngFor="let user of users"
-            class="list-group-item"
-            (click)="onSelect(user)"
-            [class.selected]="user === selectedUser"
-        >
+<div id="usersList">
+  <h1 class="h1">Tichete Users</h1>
+  <ul class="users list-group">
+    <li
+      *ngFor="let user of users"
+      class="list-group-item"
+      (click)="onSelect(user)"
+      [class.selected]="user === selectedUser"
+    >
       <span [hidden]="selectedUser === user">
         <div class="badge">
           {{ user.id }}
         </div>
         {{ user.username }}
       </span>
-            <div *ngIf="selectedUser === user">
-                <span><strong>Username: </strong>{{ user.username }}</span><br />
-                <span><strong>First Name: </strong>{{ user.firstName }}</span><br />
-                <span><strong>Last Name: </strong>{{ user.lastName }}</span><br />
-                <div class="assigned">
-                    <span><strong>Assigned Tickets: </strong></span><br />
-                    <ul>
-                        <li *ngFor="let ticket of assignments">
-                            {{ ticket.description | preview }}
-                        </li>
-                    </ul>
-                </div>
-                <div class="btn-group-sm pull-right">
-                    <button class="btn btn-default"
-                            (click)="onAssign()"
-                    >
-                        Assignments
-                    </button>
-                    <button class="btn btn-default"
-                            (click)="onEdit()"
-                    >
-                        Edit
-                    </button>
-                    <button class="btn btn-danger"
-                            (click)="onDelete(user); $event.stopPropagation()">
-                        Delete
-                    </button>
-                </div>
-                <div class="clearfix"></div>
-            </div>
-        </li>
-    </ul>
+      <div *ngIf="selectedUser === user">
+        <span><strong>Username: </strong>{{ user.username }}</span
+        ><br />
+        <span><strong>First Name: </strong>{{ user.firstName }}</span
+        ><br />
+        <span><strong>Last Name: </strong>{{ user.lastName }}</span
+        ><br />
+        <div class="assigned">
+          <span><strong>Assigned Tickets: </strong></span><br />
+          <ul>
+            <li *ngFor="let ticket of assignments">
+              {{ ticket.description | preview }}
+            </li>
+          </ul>
+        </div>
+        <div class="btn-group-sm pull-right">
+          <button class="btn btn-default" (click)="onAssign()">
+            Assignments
+          </button>
+          <button class="btn btn-default" (click)="onEdit()">
+            Edit
+          </button>
+          <button
+            class="btn btn-danger"
+            (click)="onDelete(user); $event.stopPropagation()"
+          >
+            Delete
+          </button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </li>
+  </ul>
 </div>

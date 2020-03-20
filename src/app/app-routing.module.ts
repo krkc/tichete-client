@@ -15,6 +15,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { ContentComponent } from './content/content.component';
+import { UserDetailResolverService } from './content/users/user-detail-resolver.service';
+import { TicketDetailResolverService } from './content/tickets/ticket-detail-resolver.service';
 
 const routes: Routes = [
   {
@@ -51,7 +53,10 @@ const routes: Routes = [
               },
               {
                 path: 'detail/:id',
-                component: TicketDetailComponent
+                component: TicketDetailComponent,
+                resolve: {
+                  ticket: TicketDetailResolverService
+                }
               },
               {
                 path: 'assign/:id',
@@ -69,7 +74,10 @@ const routes: Routes = [
               },
               {
                 path: 'detail/:id',
-                component: UserDetailComponent
+                component: UserDetailComponent,
+                resolve: {
+                  user: UserDetailResolverService
+                }
               },
               {
                 path: 'assign/:id',

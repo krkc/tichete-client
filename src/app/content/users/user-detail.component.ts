@@ -27,20 +27,17 @@ export class UserDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.params.forEach((params: Params) => {
-      let id = +params['id'];
-      this.userService.getUser(id)
-        .subscribe(user => {
-          this.user = user
-          this.userUpdateForm.setValue({
-            username: this.user.username,
-            email: this.user.email,
-            firstName: this.user.firstName,
-            lastName: this.user.lastName,
-            password: '',
-          });
+    this.route.data
+      .subscribe((data: { user: User }) => {
+        this.user = data.user;
+        this.userUpdateForm.setValue({
+          username: this.user.username,
+          email: this.user.email,
+          firstName: this.user.firstName,
+          lastName: this.user.lastName,
+          password: '',
         });
-    });
+      });
   };
 
   goBack(): void {
@@ -58,6 +55,6 @@ export class UserDetailComponent implements OnInit {
     }
 
     this.userService.update(this.user)
-        .subscribe(this.goBack);
+      .subscribe(this.goBack);
   }
 }

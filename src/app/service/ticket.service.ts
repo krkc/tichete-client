@@ -12,8 +12,8 @@ import { Observable, of, OperatorFunction, forkJoin } from 'rxjs';
 export class TicketService {
   private apiUrl = 'api';
   private ticketsUrl = `${this.apiUrl}/tickets`;
-  private categoriesUrl = `${this.apiUrl}/tickets/categories`;
-  private statusesUrl = `${this.apiUrl}/tickets/categories`;
+  private categoriesUrl = `${this.ticketsUrl}/categories`;
+  private statusesUrl = `${this.ticketsUrl}/statuses`;
   private headers: HttpHeaders;
   private options;
 
@@ -70,7 +70,13 @@ export class TicketService {
   };
 
   getStatuses = () => {
-    return this.http.get<TicketStatus[]>(this.statusesUrl);
+    return this.http.get<any>(this.statusesUrl)
+      .pipe(
+        map((statusesData) => statusesData._embedded.ticketStatus as TicketStatus[]),
+        mergeMap((statuses) => {
+          return forkJoin(statuses.map((status) => this.http.get<TicketStatus>(`${this.apiUrl}/${status._links.self.href}`)))
+        })
+      );
   };
 
   getTaggedCategories = (ticket: Ticket) => {
