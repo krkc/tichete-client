@@ -1,14 +1,8 @@
-label {
-  display: inline-block;
-  width: 3em;
-  margin: .5em 0;
-  color: #607D8B;
-  font-weight: bold;
+.ticket-categories {
+  width: 100%;
 }
-input {
-  height: 2em;
-  font-size: 1em;
-  padding-left: .4em;
+.ticket-description {
+  width: 100%;
 }
 button {
   margin-top: 20px;
@@ -26,9 +20,4 @@ button:disabled {
   background-color: #eee;
   color: #ccc;
   cursor: auto;
-}
-
-#ticketUpdate {
-  margin-top: 3em;
-  margin-bottom: 3em;
 }

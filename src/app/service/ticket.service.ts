@@ -6,7 +6,7 @@ import { TicketCategory } from '../content/tickets/category';
 import { User } from '../content/users/user';
 import { TicketStatus } from '../content/tickets/status';
 import { catchError, mergeMap, map } from 'rxjs/operators';
-import { Observable, of, OperatorFunction, forkJoin } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 
 @Injectable()
 export class TicketService {
@@ -41,23 +41,22 @@ export class TicketService {
 
   update = (ticket: Ticket) => {
     const url = `${this.ticketsUrl}/${ticket.id}`;
-    return this.http.put<Ticket>(
+    return this.http.patch<Ticket>(
       url,
       ticket,
       this.options);
   };
 
-  create = (description: string, taggedCategoryIds: number[]) => {
-    return this.http
-      .post<Ticket>(
-        this.ticketsUrl,
-        JSON.stringify({
-          description,
-          taggedCategoryIds
-        }),
-        this.options).pipe<Ticket>(
-          catchError(this.handleError<any>('createTicket'))
-        );
+  create = (description: string, ticketCategoryIds: number[]) => {
+    return this.http.post<Ticket>(
+      this.ticketsUrl,
+      JSON.stringify({
+        description,
+        ticketCategoryIds
+      }),
+      this.options).pipe<Ticket>(
+        catchError(this.handleError<any>('createTicket'))
+      );
   };
 
   delete = (ticket: Ticket) => {
@@ -66,7 +65,13 @@ export class TicketService {
   };
 
   getCategories() {
-    return this.http.get<TicketCategory[]>(this.categoriesUrl);
+    return this.http.get<any>(this.categoriesUrl)
+      .pipe(
+        map((ticketCategoriesData) => ticketCategoriesData._embedded.ticketCategorys as TicketCategory[]),
+        mergeMap((ticketCategories) => {
+          return forkJoin(ticketCategories.map((ticketCategory) => this.http.get<TicketCategory>(`${this.apiUrl}/${ticketCategory._links.self.href}`)));
+        })
+      );
   };
 
   getStatuses = () => {
@@ -89,15 +94,23 @@ export class TicketService {
     return this.http.get<User[]>(getAssignedUsersUrl);
   };
 
-  updateAssignments = (ticketId: number, assignedUsers: number[], unassignedUsers: number[]) => {
-    const url = `${this.ticketsUrl}/${ticketId}/assign`;
-    return this.http.put<User[]>(
-      url,
-      JSON.stringify({ added: assignedUsers, removed: unassignedUsers }),
-      this.options).pipe<User[]>(
-        catchError(this.handleError<any>('updateAssignments'))
-      );
-  };
+  addAssignments = (ticket: Ticket, userIdsToAdd: number[]) => {
+    const addAssignmentsUrl = `${this.ticketsUrl}/${ticket.id}/assigned-users/${userIdsToAdd}`;
+  }
+
+  removeAssignments = (ticket: Ticket, userIdsToRemove: number[]) => {
+    const removeAssignmentsUrl = `/users/assignments/:assignmentId`;
+  }
+
+  // updateAssignments = (ticketId: number, assignedUsers: number[], unassignedUsers: number[]) => {
+  //   const url = `${this.ticketsUrl}/${ticketId}/assign`;
+  //   return this.http.put<User[]>(
+  //     url,
+  //     JSON.stringify({ added: assignedUsers, removed: unassignedUsers }),
+  //     this.options).pipe<User[]>(
+  //       catchError(this.handleError<any>('updateAssignments'))
+  //     );
+  // };
 
   /**
    * Handle Http operation that failed.

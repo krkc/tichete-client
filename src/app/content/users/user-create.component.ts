@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from './user';
 import { Router } from '@angular/router';
 import { UserService } from '../../service/user.service';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'user-create',
@@ -10,6 +11,7 @@ import { UserService } from '../../service/user.service';
 })
 export class UserCreateComponent implements OnInit {
   public user: User = new User();
+  public userCreateForm: FormGroup;
 
   constructor(
     private router: Router,
@@ -17,11 +19,18 @@ export class UserCreateComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.userCreateForm = new FormGroup({
+      username: new FormControl(),
+      email: new FormControl(),
+      firstName: new FormControl(),
+      lastName: new FormControl(),
+      password: new FormControl(),
+    });
   }
 
-  add() {
-    this.userService.create(this.user)
-      .subscribe((user) => this.user = user);
-    this.router.navigate(['users']);
+  onSubmit() {
+    const vals = this.userCreateForm.value;
+    this.userService.create(vals as User).subscribe(newUser => this.user = newUser);
+      this.router.navigate(['users']);
   }
 }

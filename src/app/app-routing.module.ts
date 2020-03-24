@@ -3,10 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { LoginComponent } from './login/login.component';
 import { TicketsComponent } from './content/tickets/tickets.component';
-import { TicketDetailComponent } from './content/tickets/ticket-detail.component';
+import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
 import { TicketCreateComponent } from './content/tickets/ticket-create.component';
 import { DashboardComponent } from './content/dashboard.component';
-import { TicketAssignComponent } from './content/tickets/ticket-assign.component';
+import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.component';
 import { UsersComponent } from './content/users/users.component';
 import { UserDetailComponent } from './content/users/user-detail.component';
 import { UserCreateComponent } from './content/users/user-create.component';
@@ -16,7 +16,7 @@ import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { ContentComponent } from './content/content.component';
 import { UserDetailResolverService } from './content/users/user-detail-resolver.service';
-import { TicketDetailResolverService } from './content/tickets/ticket-detail-resolver.service';
+import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 
 const routes: Routes = [
   {

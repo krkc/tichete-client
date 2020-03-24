@@ -5,6 +5,9 @@ export class TicketCategory {
     id: number;
     name: string;
 
+    _links: any;
+    _embedded: any;
+
     taggedTickets: Ticket[];
     subscribedUsers: User[];
 }

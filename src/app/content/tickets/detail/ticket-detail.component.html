@@ -1,0 +1,35 @@
+<div id="ticketUpdate" class="col-lg-8">
+  <h1 class="h1">Ticket Details</h1>
+  Ticket ID#: {{ ticket.id }}<br />
+  <!-- Submitted By: {{ ticket?.creatorId }}<br />
+  Submitted On: {{ ticket?.createdAt | date }}<br /> -->
+  <form [formGroup]="ticketUpdateForm" (ngSubmit)="onTicketUpdate()">
+    <mat-form-field class="ticket-categories">
+      <mat-label>Categories:</mat-label>
+      <mat-select formControlName="taggedCategories" multiple required>
+        <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+    <mat-form-field class="ticket-description">
+      <mat-label>Description:</mat-label>
+      <textarea formControlName="description" matInput rows="5"></textarea>
+    </mat-form-field>
+    <br />
+    <button type="button" (click)="goBack()">Back</button>
+    <button
+      type="submit"
+      [disabled]="!ticketUpdateForm.valid || ticketUpdateForm.pristine"
+    >
+      Update Ticket
+    </button>
+    <div
+      [class.fade]="ticketUpdateForm.valid"
+      [class.show]="!ticketUpdateForm.valid"
+      class="alert alert-danger mt-3"
+    >
+      Category and Details fields required
+    </div>
+  </form>
+  <ticket-assign></ticket-assign>
+</div>

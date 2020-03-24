@@ -1,0 +1,49 @@
+<h1 class="h1">Assigned Users</h1>
+<div class="row form-group align-items-center">
+  <div class="col form-group">
+    <form id="removeAssignmentsForm" [formGroup]="removeAssignmentsForm" (ngSubmit)="onRemoveAssignees()">
+      <label for="assigneesSelector">Currently assigned users:</label>
+      <select
+        formControlName="assigneesSelector"
+        id="assigneesSelector"
+        name="assigneesSelector"
+        class="form-control"
+        multiple
+      >
+        <option
+          *ngFor="let assignedUser of ticket?.assignedUsers"
+          [value]="assignedUser.id"
+          >{{ assignedUser.firstName + " " + assignedUser.lastName }}</option
+        >
+      </select>
+    </form>
+  </div>
+  <div class="col-1 px-0 text-center">
+    <button
+      form="addAssignmentsForm"
+      type="submit"
+      [disabled]="!addAssignmentsForm.dirty"
+    >
+      &lt;-</button
+    ><br />
+    <button
+      form="removeAssignmentsForm"
+      type="submit"
+      [disabled]="!removeAssignmentsForm.dirty"
+    >
+      -&gt;
+    </button>
+  </div>
+  <div class="col form-group">
+    <form id="addAssignmentsForm" [formGroup]="addAssignmentsForm" (ngSubmit)="onAddAssignees()">
+      <mat-form-field class="ticket-categories">
+        <mat-label>Choose a user to assign:</mat-label>
+        <mat-select formControlName="allUsersSelector" multiple>
+          <mat-option *ngFor="let user of users" [value]="user.id">{{
+            user.firstName + " " + user.lastName
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
+</div>

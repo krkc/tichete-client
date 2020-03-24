@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Ticket } from './ticket';
 import { TicketService } from '../../service/ticket.service';
 import { TicketCategory } from './category';
-import { FormControl, FormGroup } from '@angular/forms';
-import * as bootstrap from 'bootstrap';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'ticket-create',
@@ -16,35 +14,27 @@ import * as $ from 'jquery';
 export class TicketCreateComponent implements OnInit {
   public categories: TicketCategory[];
   public ticket: Ticket;
-  // public category: string;
   public ticketCreateForm: FormGroup;
 
   constructor(
     private router: Router,
     private ticketService: TicketService,
+    private fb: FormBuilder
   ) {
-    this.ticket = new Ticket();
     this.categories = [];
+
+    this.ticketCreateForm = this.fb.group({
+      tagSelector: [],
+      description: ['', Validators.required],
+    });
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.ticketService.getCategories().subscribe(categories => this.categories = categories);
-    this.ticketCreateForm = new FormGroup({
-      tagSelector: new FormControl(),
-      description: new FormControl(this.ticket.description),
-    });
   }
 
   onSubmit() {
     const vals = this.ticketCreateForm.value;
-    const description = vals.description.trim();
-    this.ticketService.create(description, vals.tagSelector).subscribe(newTicket => this.ticket = newTicket);
-    // TODO: Throws exception "$(...).modal is not a function" when user no longer authenticated
-    // this.router.navigate(['/detail', newTicket.Id]);
-    // this.category = this.categories.find(c => c.id.toString() === this.ticket.categoryId.toString()).name;
-    // ($('#summary-modal') as any).modal();
-    // $('#summary-modal').on('hidden.bs.modal', () => {
-      this.router.navigate(['tickets']);
-    // });
+    this.ticketService.create(vals.description, vals.tagSelector).subscribe(() => this.router.navigate(['tickets']));
   }
 }

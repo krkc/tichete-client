@@ -18,9 +18,9 @@ import { UserCreateComponent } from './content/users/user-create.component';
 import { UserDetailComponent } from './content/users/user-detail.component';
 import { UsersComponent } from './content/users/users.component';
 import { TicketsComponent } from './content/tickets/tickets.component';
-import { TicketAssignComponent } from './content/tickets/ticket-assign.component';
+import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.component';
 import { TicketCreateComponent } from './content/tickets/ticket-create.component';
-import { TicketDetailComponent } from './content/tickets/ticket-detail.component';
+import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
 import { DashboardComponent } from './content/dashboard.component';
 import { NavComponent } from './nav/nav.component';
 
