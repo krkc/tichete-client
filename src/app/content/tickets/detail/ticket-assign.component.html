@@ -11,9 +11,9 @@
         multiple
       >
         <option
-          *ngFor="let assignedUser of ticket?.assignedUsers"
-          [value]="assignedUser.id"
-          >{{ assignedUser.firstName + " " + assignedUser.lastName }}</option
+          *ngFor="let assignment of assignments"
+          [value]="assignment.id"
+          >{{ assignment.user?.firstName + " " + assignment.user?.lastName }}</option
         >
       </select>
     </form>
@@ -39,7 +39,7 @@
       <mat-form-field class="ticket-categories">
         <mat-label>Choose a user to assign:</mat-label>
         <mat-select formControlName="allUsersSelector" multiple>
-          <mat-option *ngFor="let user of users" [value]="user.id">{{
+          <mat-option *ngFor="let user of availableUsers" [value]="user.id">{{
             user.firstName + " " + user.lastName
           }}</mat-option>
         </mat-select>

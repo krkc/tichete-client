@@ -41,11 +41,7 @@ export class TicketsComponent implements OnInit {
     }
   }
 
-  onAssign(): void {
-    this.router.navigate(['/ticket/assign', this.selectedTicket.id]);
-  }
-
-  onEdit(): void {
+  onDetail(): void {
     this.router.navigate(['/ticket/detail', this.selectedTicket.id]);
   }
 

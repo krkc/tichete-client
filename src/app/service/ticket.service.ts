@@ -91,26 +91,14 @@ export class TicketService {
 
   getAssignedUsers = (ticket: Ticket) => {
     const getAssignedUsersUrl = `${this.apiUrl}${ticket._links.assignedUsers.href}`;
-    return this.http.get<User[]>(getAssignedUsersUrl);
+    return this.http.get<any>(getAssignedUsersUrl)
+    .pipe(
+      map((usersData) => usersData._embedded.users as User[]),
+      mergeMap((users) => {
+        return forkJoin(users.map((user) => this.http.get<User>(`${this.apiUrl}/${user._links.self.href}`)))
+      })
+    );
   };
-
-  addAssignments = (ticket: Ticket, userIdsToAdd: number[]) => {
-    const addAssignmentsUrl = `${this.ticketsUrl}/${ticket.id}/assigned-users/${userIdsToAdd}`;
-  }
-
-  removeAssignments = (ticket: Ticket, userIdsToRemove: number[]) => {
-    const removeAssignmentsUrl = `/users/assignments/:assignmentId`;
-  }
-
-  // updateAssignments = (ticketId: number, assignedUsers: number[], unassignedUsers: number[]) => {
-  //   const url = `${this.ticketsUrl}/${ticketId}/assign`;
-  //   return this.http.put<User[]>(
-  //     url,
-  //     JSON.stringify({ added: assignedUsers, removed: unassignedUsers }),
-  //     this.options).pipe<User[]>(
-  //       catchError(this.handleError<any>('updateAssignments'))
-  //     );
-  // };
 
   /**
    * Handle Http operation that failed.
