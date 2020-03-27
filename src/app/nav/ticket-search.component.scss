@@ -1,18 +1,17 @@
-#search-component {
-  color: #555;
-  text-align: center;
+:host {
+  margin-top: 2rem !important;
 }
-.search-result{
-  border-bottom: 1px solid gray;
-  border-left: 1px solid gray;
-  border-right: 1px solid gray;
-  width: 100%;
-  height: 30px;
-  padding: 5px;
-  background-color: white;
-  cursor: pointer;
-}
-#search-box{
-  width: 100%;
-  height: 25px;
-}
+// .search-result{
+//   border-bottom: 1px solid gray;
+//   border-left: 1px solid gray;
+//   border-right: 1px solid gray;
+//   width: 100%;
+//   height: 30px;
+//   padding: 5px;
+//   background-color: white;
+//   cursor: pointer;
+// }
+// #search-box{
+//   width: 100%;
+//   height: 25px;
+// }

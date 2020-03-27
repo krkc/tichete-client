@@ -1,17 +1,26 @@
-h1 {
-  text-align: center;
-  font-size: 1.3rem;
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+nav {
   color: white;
-  margin-bottom: 0;
-}
-h2 {
-  font-size: 2em;
-  margin-top: 0;
-  padding-top: 0;
+  background-color: #607D8B !important;
 }
 nav a:hover {
   color: #CFD8DC;
 }
 nav a.active {
   color: rgb(80, 81, 83);
+}
+@include media-breakpoint-up(md) {
+  nav {
+    height: 100%;
+  }
+  
+  #navbarSupportedContent {
+    flex-wrap: wrap;
+  }
+}
+
+ticket-search {
+  margin-top: auto;
 }

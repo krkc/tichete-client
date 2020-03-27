@@ -1,8 +1,12 @@
-<div class="container">
-  <h1 class="py-3">{{ naviHeading }}</h1>
-  <nav class="navbar">
-    <ul class="navbar-nav w-100">
-      <li class="nav-item mx-auto">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark align-items-start">
+  <a class="navbar-brand d-block d-md-none" href="#">{{ naviHeading }}</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <a class="navbar-brand d-md-block d-none w-100" href="#">{{ naviHeading }}</a><br />
+    <ul class="navbar-nav flex-column mr-auto">
+      <li class="nav-item">
         <a
           routerLink="/dashboard"
           routerLinkActive="active"
@@ -10,39 +14,47 @@
           >Dashboard</a
         >
       </li>
-      <li class="nav-item mx-auto">
-        <a
-          routerLink="/tickets"
-          routerLinkActive="active"
-          class="btn btn-default"
-          >View Tickets</a
-        >
+      <li class="nav-item dropdown">
+        <a class="btn btn-default dropdown-toggle" href="#" id="ticketsNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Tickets
+        </a>
+        <div class="dropdown-menu" aria-labelledby="ticketsNavbarDropdownMenuLink">
+          <a
+            routerLink="/ticket"
+            routerLinkActive="active"
+            class="dropdown-item btn btn-default"
+            >Submit ticket</a>
+          <a
+            routerLinkActive="active"
+            routerLink="/tickets"
+            class="dropdown-item btn btn-default"
+            >View tickets</a>
+        </div>
       </li>
-      <li class="nav-item mx-auto">
-        <a
-          routerLink="/ticket"
-          routerLinkActive="active"
-          class="btn btn-default"
-          >Create a Ticket</a
-        >
+      <li class="nav-item dropdown">
+        <a class="btn btn-default dropdown-toggle" href="#" id="usersNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Users
+        </a>
+        <div class="dropdown-menu" aria-labelledby="usersNavbarDropdownMenuLink">
+          <a
+            routerLink="/user"
+            routerLinkActive="active"
+            class="dropdown-item btn btn-default"
+            >Add user</a>
+          <a
+            routerLinkActive="active"
+            routerLink="/users"
+            class="dropdown-item btn btn-default"
+            >View users</a>
+        </div>
       </li>
-      <li class="nav-item mx-auto">
-        <a routerLink="/users" routerLinkActive="active" class="btn btn-default"
-          >View Users</a
-        >
-      </li>
-      <li class="nav-item mx-auto">
-        <a routerLink="/user" routerLinkActive="active" class="btn btn-default"
-          >Add a User</a
-        >
-      </li>
-      <li class="nav-item mx-auto">
+      <li class="nav-item">
         <a href="#" class="btn btn-default">App Settings</a>
       </li>
-      <li class="nav-item mx-auto">
+      <li class="nav-item">
         <a href="#" class="btn btn-default" (click)="logOut()">Logout</a>
       </li>
     </ul>
-  </nav>
-  <ticket-search></ticket-search>
-</div>
+    <ticket-search></ticket-search>
+  </div>
+</nav>
