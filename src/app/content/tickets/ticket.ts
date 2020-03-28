@@ -6,9 +6,9 @@ export class Ticket {
   id: number;
   name: string;
   description: string;
-  submittedById: string;
-  submittedOn: Date;
-  assignedToId: string;
+  creatorId: number;
+  createdAt: Date;
+  assignedToId: number;
   categoryId: number;
   statusId: number;
   details: string;
@@ -16,6 +16,7 @@ export class Ticket {
   _links: any;
   _embedded: any;
 
+  submittedBy: User;
   status: TicketStatus;
   taggedCategories: TicketCategory[];
   assignedUsers: User[];

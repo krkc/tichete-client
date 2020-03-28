@@ -14,11 +14,7 @@
         {{ user.username }}
       </span>
       <div *ngIf="selectedUser === user">
-        <span><strong>Username: </strong>{{ user.username }}</span
-        ><br />
-        <span><strong>First Name: </strong>{{ user.firstName }}</span
-        ><br />
-        <span><strong>Last Name: </strong>{{ user.lastName }}</span
+        <span><strong>Name: </strong>{{ user.getDisplayName() }}</span
         ><br />
         <div class="assigned">
           <span><strong>Assigned Tickets: </strong></span><br />
@@ -29,11 +25,10 @@
           </ul>
         </div>
         <div class="btn-group-sm pull-right">
-          <button class="btn btn-default" (click)="onAssign()">
-            Assignments
-          </button>
-          <button class="btn btn-default" (click)="onEdit()">
-            Edit
+          <button class="btn btn-default"
+                  (click)="onDetail()"
+          >
+            View
           </button>
           <button
             class="btn btn-danger"

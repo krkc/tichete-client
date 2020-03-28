@@ -20,34 +20,20 @@ export class UsersComponent implements OnInit {
         private router: Router,
         private userService: UserService) { }
 
-    getUsers(): void {
-        this.userService.getUsers().subscribe(users => this.users = users);
-    }
-
     ngOnInit(): void {
-        this.getUsers();
+        this.userService.getUsers()
+            .subscribe(users => this.users = users);
     }
 
     onSelect(user: User): void {
         if (this.selectedUser === user) {
             this.selectedUser = null;
+        } else {
+            this.selectedUser = this.getPopulatedUser(user);
         }
-        else {
-            this.selectedUser = user;
-        }
-
-        this.userService
-            .getAssignments(user)
-            .subscribe((_assignedTickets: Ticket[]) => {
-                this.assignments = _assignedTickets;
-            });
     }
 
-    onAssign(): void {
-        this.router.navigate(['/user/assign', this.selectedUser.id])
-    }
-
-    onEdit(): void {
+    onDetail(): void {
         this.router.navigate(['/user/detail', this.selectedUser.id]);
     }
 
@@ -83,4 +69,16 @@ export class UsersComponent implements OnInit {
                 if (this.selectedUser === user) { this.selectedUser = null; }
             });
     }
+
+    private getPopulatedUser(user: User) {    
+        if (!user.assignedTickets) {
+          this.userService
+            .getAssignments(user)
+            .subscribe((assignedTickets: Ticket[]) => {
+              user.assignedTickets = assignedTickets;
+            });
+        }
+    
+        return user;
+      }
 }

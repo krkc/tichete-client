@@ -23,7 +23,8 @@ export class UserService {
 
   getUser = (userId: number) => {
     const url = `${this.usersUrl}/${userId}`;
-    return this.http.get<User>(url);
+    return this.http.get<User>(url)
+      .pipe(map(user => new User(user)));
   };
 
   getUsers = () => {
@@ -31,7 +32,12 @@ export class UserService {
       .pipe(
         map((usersData) => usersData._embedded.users as User[]),
         mergeMap((users) => {
-          return forkJoin(users.map((user) => this.http.get<User>(`${this.apiUrl}/${user._links.self.href}`)))
+          return forkJoin(users.map((userData) => {
+            return this.http.get<User>(`${this.apiUrl}/${userData._links.self.href}`)
+              .pipe(
+                map(user => new User(user))
+              )
+          }))
         })
       );
   };
@@ -47,7 +53,8 @@ export class UserService {
   update(user: User) {
     const updateUsersUrl = `${this.apiUrl}${user._links.self.href}`;
     return this.http
-      .put<User>(updateUsersUrl, JSON.stringify(user), this.options);
+      .put<User>(updateUsersUrl, JSON.stringify(user), this.options)
+      .pipe(map(user => new User(user)));
   }
 
   delete(user: User) {
@@ -67,8 +74,15 @@ export class UserService {
   }
 
   getAssignments = (user: User) => {
-    const assignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
-    return this.http.get<Ticket[]>(assignedTicketsUrl);
+    const getAssignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
+
+    return this.http.get<any>(getAssignedTicketsUrl)
+      .pipe(
+        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
+        mergeMap((tickets) => {
+          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
+        })
+      );
   }
 
   updateAssignments = (user: User, toAssignTicketIds: number[], toUnassignTicketIds: number[]) => {

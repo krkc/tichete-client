@@ -23,7 +23,7 @@
         <div class="assigned">
           <span><strong>Assigned Users: </strong></span><br />
           <div *ngFor="let user of ticket.assignedUsers">
-            {{ user.username }}
+            {{ user.getDisplayName() }}
           </div>
         </div>
         <span><strong>Description: </strong>{{ ticket.description }}</span>

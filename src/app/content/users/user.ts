@@ -16,4 +16,16 @@ export class User {
     assignedTickets?: Ticket[];
     submittedTickets?: Ticket[];
     subscribedCategories?: TicketCategory[];
+
+    constructor(data?: any) {
+        if (!data) return;
+        
+        for (let key in data) {
+            this[key] = data[key];
+        }
+    }
+
+    getDisplayName = () => {
+        return `${this.firstName} ${this.lastName}`;
+    }
 }

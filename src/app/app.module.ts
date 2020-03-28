@@ -36,6 +36,7 @@ import { LoginLayoutComponent } from './layouts/login-layout/login-layout.compon
 import { ContentComponent } from './content/content.component';
 import { MatSelectModule } from '@angular/material/select';
 import { User } from './content/users/user';
+import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.component';
 
 export function tokenGetter() {
   return (JSON.parse(localStorage.getItem("current_user")) as User)?.token;
@@ -59,7 +60,8 @@ export function tokenGetter() {
     TicketSearchComponent,
     HomeLayoutComponent,
     LoginLayoutComponent,
-    ContentComponent
+    ContentComponent,
+    TicketFormComponent
   ],
   imports: [
     BrowserModule,

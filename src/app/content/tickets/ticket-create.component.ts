@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 import { Ticket } from './ticket';
-import { TicketService } from '../../service/ticket.service';
-import { TicketCategory } from './category';
 
 @Component({
   selector: 'ticket-create',
@@ -12,29 +9,18 @@ import { TicketCategory } from './category';
   styleUrls: ['./ticket-create.component.scss']
 })
 export class TicketCreateComponent implements OnInit {
-  public categories: TicketCategory[];
   public ticket: Ticket;
-  public ticketCreateForm: FormGroup;
 
   constructor(
-    private router: Router,
-    private ticketService: TicketService,
-    private fb: FormBuilder
+    private route: ActivatedRoute,
   ) {
-    this.categories = [];
-
-    this.ticketCreateForm = this.fb.group({
-      tagSelector: [],
-      description: ['', Validators.required],
-    });
+    this.ticket = new Ticket();
   }
 
-  ngOnInit() {
-    this.ticketService.getCategories().subscribe(categories => this.categories = categories);
-  }
-
-  onSubmit() {
-    const vals = this.ticketCreateForm.value;
-    this.ticketService.create(vals.description, vals.tagSelector).subscribe(() => this.router.navigate(['tickets']));
+  ngOnInit(): void {
+    // this.route.data
+    //   .subscribe((data: { ticket: Ticket }) => {
+    //     this.ticket = data.ticket;
+    //   });
   }
 }

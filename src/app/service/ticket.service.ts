@@ -40,7 +40,7 @@ export class TicketService {
   };
 
   update = (ticket: Ticket) => {
-    const url = `${this.ticketsUrl}/${ticket.id}`;
+    const url = `${this.ticketsUrl}/${ticket.id}`;    
     return this.http.patch<Ticket>(
       url,
       ticket,
@@ -92,12 +92,15 @@ export class TicketService {
   getAssignedUsers = (ticket: Ticket) => {
     const getAssignedUsersUrl = `${this.apiUrl}${ticket._links.assignedUsers.href}`;
     return this.http.get<any>(getAssignedUsersUrl)
-    .pipe(
-      map((usersData) => usersData._embedded.users as User[]),
-      mergeMap((users) => {
-        return forkJoin(users.map((user) => this.http.get<User>(`${this.apiUrl}/${user._links.self.href}`)))
-      })
-    );
+      .pipe(
+        map((usersData) => usersData._embedded.users as User[]),
+        mergeMap((users) => {
+          return forkJoin(users.map((userData) => {
+            return this.http.get<User>(`${this.apiUrl}/${userData._links.self.href}`)
+              .pipe(map(user => new User(user)))
+          }))
+        })
+      );
   };
 
   /**

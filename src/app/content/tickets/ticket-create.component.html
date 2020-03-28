@@ -1,25 +1,6 @@
 <div id="ticket-create" class="col-lg-8">
   <h1 class="h1">Submit a New Ticket</h1>
-  <form [formGroup]="ticketCreateForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <mat-form-field>
-        <mat-label>Categories:</mat-label>
-        <mat-select formControlName="tagSelector" multiple>
-          <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <label>
-        Description:
-        <textarea type="text" formControlName="description" class="form-control" rows="5"></textarea>
-      </label>
-      <button type="submit" [disabled]="!ticketCreateForm.valid" class="form-control">
-        Submit Ticket
-      </button>
-      <div [hidden]="ticketCreateForm.valid" class="alert alert-danger fade in out">
-        Category and Details fields required
-      </div>
-    </div>
-  </form>
+  <ticket-form [ticket]="ticket"></ticket-form>
 </div>
 
 <!-- Success Modal -->
