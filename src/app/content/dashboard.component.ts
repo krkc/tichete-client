@@ -5,6 +5,7 @@ import { Ticket } from './tickets/ticket';
 import { AuthenticationService } from '../service/authentication.service';
 import { Observable } from "rxjs";
 import { UserService } from '../service/user.service';
+import { TicketService } from '../service/ticket.service';
 
 @Component({
   selector: 'dashboard',
@@ -12,27 +13,22 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  myTickets: Ticket[];
   feedTickets: Ticket[];
-  isLoggedIn$: Observable<boolean>;
+
   constructor(
     private router: Router,
     private userService: UserService,
-    private authService: AuthenticationService
-  ) {
-  }
+    private ticketService: TicketService,
+  ) { }
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.authService.isLoggedIn();
-    this.isLoggedIn$.subscribe(loggedInResponse => {
-      if (loggedInResponse) {
-        this.authService.currentUserValue;
-        this.userService.getTicketFeed().subscribe((response) => {
-          this.feedTickets = response.slice(1, 5);
-        });
-      } else {
-        this.router.navigate(['/login']);
-      }
+    this.userService.getMyTickets().subscribe((response) => {
+      this.myTickets = response.slice(1, 5);
     });
+    this.userService.getTicketFeed().subscribe((response) => {
+      this.feedTickets = response.slice(1, 5);
+    });        
   }
 
   gotoDetail(ticket: Ticket): void {

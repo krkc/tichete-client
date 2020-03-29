@@ -62,6 +62,17 @@ export class UserService {
     return this.http.delete(deleteUserUrl);
   }
 
+  getMyTickets = (): Observable<Ticket[]> => {
+    const submittedTicketsUrl = `${this.apiUrl}${this.authService.currentUserValue._links.submittedTickets.href}`;
+    return this.http.get<any>(submittedTicketsUrl)
+      .pipe(
+        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
+        mergeMap((tickets) => {
+          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
+        })
+      );
+  };
+
   getTicketFeed = (): Observable<Ticket[]> => {
     const subscribedCategoriesUrl = `${this.apiUrl}${this.authService.currentUserValue._links.subscribedTickets.href}`;
     return this.http.get<any>(subscribedCategoriesUrl)

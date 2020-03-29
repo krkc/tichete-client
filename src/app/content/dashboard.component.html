@@ -1,7 +1,12 @@
-<h3 class="my-3 text-center">My Submitted Tickets</h3>
+<h3 class="my-3 text-center">My Tickets</h3>
+<div id="tickets" class="row justify-content-around">
+  <div *ngFor="let myTicket of myTickets" (click)="gotoDetail(myTicket)" class="col-5 ticket my-1">
+    <h4>{{ myTicket.description }}</h4>
+  </div>
+</div>
 <h3 class="my-3 text-center">My Feed</h3>
 <div id="tickets" class="row justify-content-around">
-  <div *ngFor="let ticket of feedTickets" (click)="gotoDetail(ticket)" class="col-5 ticket my-1">
-    <h4>{{ ticket.description }}</h4>
+  <div *ngFor="let feedTicket of feedTickets" (click)="gotoDetail(feedTicket)" class="col-5 ticket my-1">
+    <h4>{{ feedTicket.description }}</h4>
   </div>
 </div>
