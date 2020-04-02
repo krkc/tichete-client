@@ -98,6 +98,20 @@ export class TicketService {
       );
   };
 
+  createTicketStatus(ticketStatus: TicketStatus) {
+    return this.http.post<TicketStatus>(this.ticketStatusesUrl, ticketStatus);
+  }
+
+  updateTicketStatus(ticketStatus: TicketStatus) {
+    const ticketStatusUpdateUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
+    return this.http.patch<TicketStatus>(ticketStatusUpdateUrl, ticketStatus);
+  }
+
+  deleteTicketStatus(ticketStatus: TicketStatus) {
+    const ticketStatusDeleteUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
+    return this.http.delete(ticketStatusDeleteUrl);
+  }
+
   getTaggedCategories = (ticket: Ticket) => {
     const getTaggedCategoriesUrl = `${this.apiUrl}${ticket._links.taggedCategories.href}`;
     return this.http.get<TicketCategory[]>(getTaggedCategoriesUrl);

@@ -41,7 +41,8 @@ import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.c
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
 import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
 import { SubscriptionsComponent } from './content/settings/user-settings/subscriptions.component';
-import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories.component';
+import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories/ticket-categories.component';
+import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
 
 export function tokenGetter() {
   return (JSON.parse(localStorage.getItem("current_user")) as User)?.token;
@@ -70,7 +71,8 @@ export function tokenGetter() {
     UserSettingsComponent,
     AppSettingsComponent,
     SubscriptionsComponent,
-    TicketCategoriesComponent
+    TicketCategoriesComponent,
+    TicketStatusesComponent
   ],
   imports: [
     BrowserModule,

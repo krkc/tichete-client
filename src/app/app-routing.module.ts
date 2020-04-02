@@ -19,7 +19,8 @@ import { UserDetailResolverService } from './content/users/user-detail-resolver.
 import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
 import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
-import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories.component';
+import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories/ticket-categories.component';
+import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
 
 const routes: Routes = [
   {
@@ -115,6 +116,21 @@ const routes: Routes = [
               {
                 path: ':id',
                 component: TicketCategoriesComponent,
+                canActivate: [AuthGuard]
+              }
+            ]
+          },
+          {
+            path: 'settings/app/ticket-statuses',
+            children: [
+              {
+                path: '',
+                component: TicketStatusesComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: ':id',
+                component: TicketStatusesComponent,
                 canActivate: [AuthGuard]
               }
             ]

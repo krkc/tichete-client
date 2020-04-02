@@ -4,6 +4,7 @@ import { Ticket } from './ticket';
 export class TicketCategory {
     id: number;
     name: string;
+    description: string;
     createdAt: Date;
 
     _links: any;

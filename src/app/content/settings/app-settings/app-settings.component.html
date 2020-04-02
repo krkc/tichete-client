@@ -1,14 +1,22 @@
 <h2>Global Application Settings</h2>
-<ul>
-    <li>
+<div class="row">
+  <div class="col-sm-6">
+    <ul class="list-group">
+      <li class="list-group-item list-group-item-action">
+          <a
+            routerLink="/settings/app/ticket-categories"
+            routerLinkActive="active"
+            >Manage Ticket Categories</a
+          >
+      </li>
+      <li class="list-group-item list-group-item-action">
         <a
-          routerLink="/settings/app/ticket-categories"
+          routerLink="/settings/app/ticket-statuses"
           routerLinkActive="active"
-          class="btn btn-default"
-          >Manage Ticket Categories</a
+          class=""
+          >Manage Ticket Statuses</a
         >
-    </li>
-</ul>
-<mat-slide-toggle>Slide me!</mat-slide-toggle><br />
-<mat-slide-toggle>Slide me!</mat-slide-toggle><br />
-<mat-slide-toggle>Slide me!</mat-slide-toggle>
+      </li>
+    </ul>
+  </div>
+</div>

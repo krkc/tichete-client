@@ -1,7 +1,8 @@
 export class TicketStatus {
     id: number;
     name: string;
-    active: number;
+    description: string;
+    createdAt: Date;
 
     _links: any;
     _embedded: any;

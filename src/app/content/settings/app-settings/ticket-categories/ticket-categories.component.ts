@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TicketCategory } from '../../tickets/category';
+import { TicketCategory } from '../../../tickets/category';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
