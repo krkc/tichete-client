@@ -7,9 +7,8 @@ Mar 28 2020 - v0.0.1
 
 ### Instructions
  - Set up and run [tichete-server](https://github.com/krkc/tichete-server)
- - Install [angular-cli](https://angular.io/cli)
  - Clone this repo to your machine and cd into it
- - run "yarn install && ng serve"
+ - run "yarn install && yarn start"
  - client will be running on localhost:4200 by default
 
 ### Todos
