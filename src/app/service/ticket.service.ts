@@ -12,8 +12,8 @@ import { Observable, of, forkJoin } from 'rxjs';
 export class TicketService {
   private apiUrl = 'api';
   private ticketsUrl = `${this.apiUrl}/tickets`;
-  private categoriesUrl = `${this.ticketsUrl}/categories`;
-  private statusesUrl = `${this.ticketsUrl}/statuses`;
+  private ticketCategoriesUrl = `${this.ticketsUrl}/categories`;
+  private ticketStatusesUrl = `${this.ticketsUrl}/statuses`;
   private headers: HttpHeaders;
   private options;
 
@@ -64,8 +64,8 @@ export class TicketService {
     return this.http.delete(deleteTicketUrl);
   };
 
-  getCategories() {
-    return this.http.get<any>(this.categoriesUrl)
+  getTicketCategories() {
+    return this.http.get<any>(this.ticketCategoriesUrl)
       .pipe(
         map((ticketCategoriesData) => ticketCategoriesData._embedded.ticketCategorys as TicketCategory[]),
         mergeMap((ticketCategories) => {
@@ -74,8 +74,22 @@ export class TicketService {
       );
   };
 
-  getStatuses = () => {
-    return this.http.get<any>(this.statusesUrl)
+  createTicketCategory(ticketCategory: TicketCategory) {
+    return this.http.post<TicketCategory>(this.ticketCategoriesUrl, ticketCategory);
+  }
+
+  updateTicketCategory(ticketCategory: TicketCategory) {
+    const ticketCategoryUpdateUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
+    return this.http.patch<TicketCategory>(ticketCategoryUpdateUrl, ticketCategory);
+  }
+
+  deleteTicketCategory(ticketCategory: TicketCategory) {
+    const ticketCategoryDeleteUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
+    return this.http.delete(ticketCategoryDeleteUrl);
+  }
+
+  getTicketStatuses = () => {
+    return this.http.get<any>(this.ticketStatusesUrl)
       .pipe(
         map((statusesData) => statusesData._embedded.ticketStatus as TicketStatus[]),
         mergeMap((statuses) => {

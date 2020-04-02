@@ -17,6 +17,9 @@ import { LoginLayoutComponent } from './layouts/login-layout/login-layout.compon
 import { ContentComponent } from './content/content.component';
 import { UserDetailResolverService } from './content/users/user-detail-resolver.service';
 import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
+import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
+import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
+import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories.component';
 
 const routes: Routes = [
   {
@@ -36,19 +39,14 @@ const routes: Routes = [
           },
           {
             path: 'tickets',
-            component: TicketsComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'users',
-            component: UsersComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'ticket',
             children: [
               {
                 path: '',
+                component: TicketsComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: 'create',
                 component: TicketCreateComponent
               },
               {
@@ -66,10 +64,15 @@ const routes: Routes = [
             canActivate: [AuthGuard]
           },
           {
-            path: 'user',
+            path: 'users',
             children: [
               {
                 path: '',
+                component: UsersComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: 'create',
                 component: UserCreateComponent
               },
               {
@@ -90,6 +93,32 @@ const routes: Routes = [
             path: 'dashboard',
             component: DashboardComponent,
             canActivate: [AuthGuard]
+          },
+          {
+            path: 'settings/user',
+            component: UserSettingsComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'settings/app',
+            component: AppSettingsComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'settings/app/ticket-categories',
+            children: [
+              {
+                path: '',
+                component: TicketCategoriesComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: ':id',
+                component: TicketCategoriesComponent,
+                canActivate: [AuthGuard]
+              }
+            ]
+            
           }
         ]
       }

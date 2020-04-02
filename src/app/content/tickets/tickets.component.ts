@@ -28,7 +28,7 @@ export class TicketsComponent implements OnInit {
     this.ticketService.getTickets().subscribe((tickets: Ticket[]) => {
       this.tickets = tickets;
     });
-    this.ticketService.getStatuses().subscribe((statuses: TicketStatus[]) => {
+    this.ticketService.getTicketStatuses().subscribe((statuses: TicketStatus[]) => {
       this.statuses = statuses;
     });
   }
@@ -42,7 +42,7 @@ export class TicketsComponent implements OnInit {
   }
 
   onDetail(): void {
-    this.router.navigate(['/ticket/detail', this.selectedTicket.id]);
+    this.router.navigate(['/tickets/detail', this.selectedTicket.id]);
   }
 
   onDelete(ticket: Ticket): void {
@@ -51,7 +51,7 @@ export class TicketsComponent implements OnInit {
         'This ticket is active and has users assigned.' +
         'Assignments must be removed before this ticket can be deleted.' +
         'Would you like to remove assignments?',
-        () => { this.router.navigate(['/ticket/assign', ticket.id]); },
+        () => { this.router.navigate(['/tickets/assign', ticket.id]); },
         null
       );
       return;

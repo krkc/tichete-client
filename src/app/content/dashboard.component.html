@@ -1,11 +1,13 @@
 <h3 class="my-3 text-center">My Tickets</h3>
 <div id="tickets" class="row justify-content-around">
+  <div *ngIf="!myTickets?.length || myTickets.length < 1">You have no active tickets right now.</div>
   <div *ngFor="let myTicket of myTickets" (click)="gotoDetail(myTicket)" class="col-5 ticket my-1">
     <h4>{{ myTicket.description }}</h4>
   </div>
 </div>
 <h3 class="my-3 text-center">My Feed</h3>
 <div id="tickets" class="row justify-content-around">
+  <div *ngIf="!feedTickets?.length || feedTickets.length < 1">Subscribe to more ticket categories in My Settings.</div>
   <div *ngFor="let feedTicket of feedTickets" (click)="gotoDetail(feedTicket)" class="col-5 ticket my-1">
     <h4>{{ feedTicket.description }}</h4>
   </div>

@@ -35,8 +35,13 @@ import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { ContentComponent } from './content/content.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { User } from './content/users/user';
 import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.component';
+import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
+import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
+import { SubscriptionsComponent } from './content/settings/user-settings/subscriptions.component';
+import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories.component';
 
 export function tokenGetter() {
   return (JSON.parse(localStorage.getItem("current_user")) as User)?.token;
@@ -61,7 +66,11 @@ export function tokenGetter() {
     HomeLayoutComponent,
     LoginLayoutComponent,
     ContentComponent,
-    TicketFormComponent
+    TicketFormComponent,
+    UserSettingsComponent,
+    AppSettingsComponent,
+    SubscriptionsComponent,
+    TicketCategoriesComponent
   ],
   imports: [
     BrowserModule,
@@ -80,6 +89,7 @@ export function tokenGetter() {
     MatInputModule,
     MatCardModule,
     MatSelectModule,
+    MatSlideToggleModule,
   ],
   providers: [
     TicketService,

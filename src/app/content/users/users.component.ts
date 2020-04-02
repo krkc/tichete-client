@@ -34,7 +34,7 @@ export class UsersComponent implements OnInit {
     }
 
     onDetail(): void {
-        this.router.navigate(['/user/detail', this.selectedUser.id]);
+        this.router.navigate(['/users/detail', this.selectedUser.id]);
     }
 
     onDelete(user: User): void {
@@ -43,7 +43,7 @@ export class UsersComponent implements OnInit {
                 'This user is assigned to one or more active tickets.' +
                 'Assignments must be removed before this user can be deleted.' +
                 'Would you like to remove assignments?',
-                () => { this.router.navigate(['/user/assign', user.id]); },
+                () => { this.router.navigate(['/users/assign', user.id]); },
                 null
             );
             return;

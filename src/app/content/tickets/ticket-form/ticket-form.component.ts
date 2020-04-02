@@ -26,7 +26,7 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ticketService.getCategories().subscribe((categories: TicketCategory[]) => {
+    this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
       this.categories = categories;
     });
 

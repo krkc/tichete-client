@@ -39,7 +39,7 @@ export class UserAssignComponent implements OnInit {
       });
     });
 
-    this.ticketService.getCategories()
+    this.ticketService.getTicketCategories()
       .subscribe(_cat => {
         this.categories = _cat
         return this.ticketService.getTickets()
