@@ -1,14 +1,22 @@
-<h3 class="my-3 text-center">My Tickets</h3>
-<div id="tickets" class="row justify-content-around">
+<div class="row tickets">
+  <h3>My Tickets</h3>
   <div *ngIf="!myTickets?.length || myTickets.length < 1">You have no active tickets right now.</div>
-  <div *ngFor="let myTicket of myTickets" (click)="gotoDetail(myTicket)" class="col-5 ticket my-1">
-    <h4>{{ myTicket.description }}</h4>
+  <div *ngFor="let myTicket of myTickets" class="col-5 card ticket">
+    <div class="card-body">
+      <h5 class="card-title">{{ myTicket.name || myTicket.id }}</h5>
+      <p class="card-text">{{ myTicket.description | preview }}</p>
+      <a routerLink="{{ '/tickets/detail/' + myTicket.id }}" class="btn btn-primary">View</a>
+    </div>
   </div>
 </div>
-<h3 class="my-3 text-center">My Feed</h3>
-<div id="tickets" class="row justify-content-around">
+<div class="row tickets">
+  <h3>My Feed</h3>
   <div *ngIf="!feedTickets?.length || feedTickets.length < 1">Subscribe to more ticket categories in My Settings.</div>
-  <div *ngFor="let feedTicket of feedTickets" (click)="gotoDetail(feedTicket)" class="col-5 ticket my-1">
-    <h4>{{ feedTicket.description }}</h4>
+  <div *ngFor="let feedTicket of feedTickets" class="col-5 card ticket">
+    <div class="card-body">
+      <h5 class="card-title">{{ feedTicket.name || feedTicket.id }}</h5>
+      <p class="card-text">{{ feedTicket.description | preview }}</p>
+      <a routerLink="{{ '/tickets/detail/' + feedTicket.id }}" class="btn btn-primary">View</a>
+    </div>
   </div>
 </div>

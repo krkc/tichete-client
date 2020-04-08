@@ -1,13 +1,13 @@
-.ticket {
-  padding: 20px;
-  text-align: center;
-  color: #eee;
-  background-color: #607D8B;
-  border-radius: 2px;
+.tickets {
+    justify-content: space-around;
+
+    h3 {
+        width: 100%;
+        text-align: center;
+    }
 }
 
-.ticket:hover {
-    background-color: #EEE;
-    cursor: pointer;
-    color: #607d8b;
+.ticket {
+    margin-top: .25rem;
+    margin-bottom: .25rem;
 }

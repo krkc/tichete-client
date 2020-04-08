@@ -2,7 +2,7 @@
   <h1 class="h1">Help Desk Tickets</h1>
   <ul class="tickets list-group">
     <li *ngFor="let ticket of tickets"
-        class="list-group-item"
+        class="list-group-item ticket"
         (click)="onSelect(ticket)"
         [class.selected]="ticket === selectedTicket"
     >
@@ -12,27 +12,21 @@
         </div>
         {{ ticket.description | preview }}
       </span>
-      <div *ngIf="selectedTicket === ticket">
+      <div id="selected-ticket" *ngIf="selectedTicket === ticket">
         <span><strong>Status: </strong>{{ ticket.status?.name }}</span><br />
-        <div class="assigned">
-          <span><strong>Tagged Categories: </strong></span><br />
-          <div *ngFor="let category of ticket.taggedCategories">
-            {{ category.name }}
-          </div>
+        <span><strong>Tagged Categories: </strong></span><br />
+        <div class="tagged-category" *ngFor="let category of ticket.taggedCategories">
+          {{ category.name }}
         </div>
-        <div class="assigned">
-          <span><strong>Assigned Users: </strong></span><br />
-          <div *ngFor="let user of ticket.assignedUsers">
-            {{ user.getDisplayName() }}
-          </div>
+        <span><strong>Assigned Users: </strong></span><br />
+        <div class="assigned-user" *ngFor="let user of ticket.assignedUsers">
+          {{ user.getDisplayName() }}
         </div>
         <span><strong>Description: </strong>{{ ticket.description }}</span>
         <div class="btn-group-sm pull-right">
-          <button class="btn btn-default"
-                  (click)="onDetail()"
-          >
+          <button class="btn btn-primary" (click)="onDetail()">
             View
-          </button>
+          </button>&nbsp;
           <button class="btn btn-danger"
                   (click)="onDelete(ticket); $event.stopPropagation()">
             Delete

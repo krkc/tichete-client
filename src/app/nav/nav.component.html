@@ -1,55 +1,55 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark align-items-start">
-  <a class="navbar-brand d-block d-md-none" href="#">{{ naviHeading }}</a>
+  <a id="brand-topnav" class="navbar-brand d-block d-md-none" href="#">{{ naviHeading }}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <a class="navbar-brand d-md-block d-none w-100" href="#">{{ naviHeading }}</a><br />
+    <a id="brand-sidenav" class="navbar-brand d-md-block d-none w-100" href="#">{{ naviHeading }}</a><br />
     <ul class="navbar-nav flex-column mr-auto">
       <li class="nav-item">
-        <a routerLink="/dashboard" routerLinkActive="active" class="btn btn-default">Dashboard</a>
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="btn btn-default dropdown-toggle" href="#" id="ticketsNavbarDropdownMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="ticketsNavbarDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false"
           [ngClass]="{'active': ticketsSubmit.isActive || ticketsView.isActive}">
           Tickets
         </a>
         <div class="dropdown-menu" aria-labelledby="ticketsNavbarDropdownMenuLink">
           <a routerLink="/tickets/create" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="dropdown-item btn btn-default" #ticketsSubmit="routerLinkActive">Submit ticket</a>
+            class="dropdown-item" #ticketsSubmit="routerLinkActive">Submit ticket</a>
           <a routerLink="/tickets" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="dropdown-item btn btn-default" #ticketsView="routerLinkActive">View tickets</a>
+            class="dropdown-item" #ticketsView="routerLinkActive">View tickets</a>
         </div>
       </li>
       <li class="nav-item dropdown" routerLinkActive="active">
-        <a class="btn btn-default dropdown-toggle" href="#" id="usersNavbarDropdownMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="usersNavbarDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false" [ngClass]="{'active': usersSubmit.isActive || usersView.isActive}">
           Users
         </a>
         <div class="dropdown-menu" aria-labelledby="usersNavbarDropdownMenuLink">
           <a routerLink="/users/create" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="dropdown-item btn btn-default" #usersSubmit="routerLinkActive">Add user</a>
+            class="dropdown-item" #usersSubmit="routerLinkActive">Add user</a>
           <a routerLink="/users" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-            class="dropdown-item btn btn-default" #usersView="routerLinkActive">View users</a>
+            class="dropdown-item" #usersView="routerLinkActive">View users</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="btn btn-default dropdown-toggle" href="#" id="usersNavbarDropdownMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="#" id="usersNavbarDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false"
           [ngClass]="{'active': userSettings.isActive || appSettings.isActive}">
           Settings
         </a>
         <div class="dropdown-menu" aria-labelledby="usersNavbarDropdownMenuLink">
-          <a routerLink="/settings/user" routerLinkActive="active" class="dropdown-item btn btn-default"
+          <a routerLink="/settings/user" routerLinkActive="active" class="dropdown-item"
             #userSettings="routerLinkActive">My Settings</a>
-          <a routerLink="/settings/app" routerLinkActive="active" class="dropdown-item btn btn-default"
+          <a routerLink="/settings/app" routerLinkActive="active" class="dropdown-item"
             #appSettings="routerLinkActive">App Settings</a>
         </div>
       </li>
       <li class="nav-item">
-        <a href="#" class="btn btn-default" (click)="logOut()">Logout</a>
+        <a href="#" class="nav-link" (click)="logOut()">Logout</a>
       </li>
     </ul>
     <ticket-search></ticket-search>

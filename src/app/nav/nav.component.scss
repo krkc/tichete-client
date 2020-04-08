@@ -1,16 +1,7 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
-nav {
-  color: white;
-  background-color: #607D8B !important;
-}
-nav a:hover {
-  color: #CFD8DC;
-}
-nav a.active {
-  color: rgb(80, 81, 83);
-}
+
 @include media-breakpoint-up(md) {
   nav {
     height: 100%;

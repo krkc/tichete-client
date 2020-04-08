@@ -13,8 +13,6 @@ import { UserCreateComponent } from './content/users/user-create.component';
 import { UserAssignComponent } from './content/users/user-assign.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
-import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { ContentComponent } from './content/content.component';
 import { UserDetailResolverService } from './content/users/user-detail-resolver.service';
 import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
@@ -24,129 +22,117 @@ import { TicketStatusesComponent } from './content/settings/app-settings/ticket-
 
 const routes: Routes = [
   {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
     path: '',
     component: HomeLayoutComponent,
     canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        component: ContentComponent,
+        canActivate: [AuthGuard],
+        redirectTo: '/dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'tickets',
         children: [
           {
             path: '',
-            canActivate: [AuthGuard],
-            redirectTo: '/dashboard',
-            pathMatch: 'full'
-          },
-          {
-            path: 'tickets',
-            children: [
-              {
-                path: '',
-                component: TicketsComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: 'create',
-                component: TicketCreateComponent
-              },
-              {
-                path: 'detail/:id',
-                component: TicketDetailComponent,
-                resolve: {
-                  ticket: TicketDetailResolverService
-                }
-              },
-              {
-                path: 'assign/:id',
-                component: TicketAssignComponent
-              }
-            ],
+            component: TicketsComponent,
             canActivate: [AuthGuard]
           },
           {
-            path: 'users',
-            children: [
-              {
-                path: '',
-                component: UsersComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: 'create',
-                component: UserCreateComponent
-              },
-              {
-                path: 'detail/:id',
-                component: UserDetailComponent,
-                resolve: {
-                  user: UserDetailResolverService
-                }
-              },
-              {
-                path: 'assign/:id',
-                component: UserAssignComponent
-              }
-            ],
+            path: 'create',
+            component: TicketCreateComponent
+          },
+          {
+            path: 'detail/:id',
+            component: TicketDetailComponent,
+            resolve: {
+              ticket: TicketDetailResolverService
+            }
+          },
+          {
+            path: 'assign/:id',
+            component: TicketAssignComponent
+          }
+        ],
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'users',
+        children: [
+          {
+            path: '',
+            component: UsersComponent,
             canActivate: [AuthGuard]
           },
           {
-            path: 'dashboard',
-            component: DashboardComponent,
+            path: 'create',
+            component: UserCreateComponent
+          },
+          {
+            path: 'detail/:id',
+            component: UserDetailComponent,
+            resolve: {
+              user: UserDetailResolverService
+            }
+          },
+          {
+            path: 'assign/:id',
+            component: UserAssignComponent
+          }
+        ],
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'settings/user',
+        component: UserSettingsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'settings/app',
+        component: AppSettingsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'settings/app/ticket-categories',
+        children: [
+          {
+            path: '',
+            component: TicketCategoriesComponent,
             canActivate: [AuthGuard]
           },
           {
-            path: 'settings/user',
-            component: UserSettingsComponent,
+            path: ':id',
+            component: TicketCategoriesComponent,
             canActivate: [AuthGuard]
-          },
-          {
-            path: 'settings/app',
-            component: AppSettingsComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'settings/app/ticket-categories',
-            children: [
-              {
-                path: '',
-                component: TicketCategoriesComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: ':id',
-                component: TicketCategoriesComponent,
-                canActivate: [AuthGuard]
-              }
-            ]
-          },
-          {
-            path: 'settings/app/ticket-statuses',
-            children: [
-              {
-                path: '',
-                component: TicketStatusesComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: ':id',
-                component: TicketStatusesComponent,
-                canActivate: [AuthGuard]
-              }
-            ]
-            
           }
         ]
-      }
-    ]
-  },
-  {
-    path: '',
-    component: LoginLayoutComponent,
-    children: [
+      },
       {
-        path: 'login',
-        component: LoginComponent
+        path: 'settings/app/ticket-statuses',
+        children: [
+          {
+            path: '',
+            component: TicketStatusesComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: ':id',
+            component: TicketStatusesComponent,
+            canActivate: [AuthGuard]
+          }
+        ]
+        
       }
     ]
   }

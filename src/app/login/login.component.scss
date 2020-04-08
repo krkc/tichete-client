@@ -1,10 +1,11 @@
-.login-container {
-  width: 50%;
-  height: 20em;
-  margin: auto;
-  transition: 0.15s ease-in;
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.login {
-  padding-top: 20em;
+#login-card {
+  transition: 0.15s ease-in;
 }

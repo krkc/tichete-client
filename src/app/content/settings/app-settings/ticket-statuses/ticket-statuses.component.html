@@ -14,9 +14,9 @@
           <input matInput formControlName="description" placeholder="My status description">
       </mat-form-field>
         <div class="form-group">
-            <button type="button" (click)="goBack()">Back</button>
-            &nbsp;<button type="submit" [disabled]="ticketStatusForm.pristine">{{ selectedTicketStatus?.id ? "Update" : "Add" }}</button>
-            &nbsp;<button type="button" class="btn-danger" [hidden]="!selectedTicketStatus?.id" (click)="onTicketStatusDelete(); $event.stopPropagation()">Delete</button>
+            <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+            &nbsp;<button class="btn btn-primary" type="submit" [disabled]="ticketStatusForm.pristine">{{ selectedTicketStatus?.id ? "Update" : "Add" }}</button>
+            &nbsp;<button class="btn btn-danger" type="button" [hidden]="!selectedTicketStatus?.id" (click)="onTicketStatusDelete(); $event.stopPropagation()">Delete</button>
         </div>
     </form>
 </section>

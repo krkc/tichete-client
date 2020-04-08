@@ -38,23 +38,18 @@ export class AuthenticationService {
   }
 
   login = async (emailOrUsername: string, password: string): Promise<User> => {
-    try {
-      const authenticationInfo: any = await this.http.post<User>(
-        this.loginUrl,
-        { username: emailOrUsername, password },
-        { headers: this.headers }
-      ).toPromise();
-      const user = await this.http.get<User>(`${this.apiUrl}${authenticationInfo._links.authenticatedUser.href}`)
-        .toPromise();
-      if (user) {
-        user.token = authenticationInfo.token;
-        localStorage.setItem('current_user', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        return user;
-      }
-    }
-    catch (err) {
-      console.log(err);
+    const authenticationInfo: any = await this.http.post<User>(
+      this.loginUrl,
+      { username: emailOrUsername, password },
+      { headers: this.headers }
+    ).toPromise();
+    const user = await this.http.get<User>(`${this.apiUrl}${authenticationInfo._links.authenticatedUser.href}`)
+      .toPromise();
+    if (user) {
+      user.token = authenticationInfo.token;
+      localStorage.setItem('current_user', JSON.stringify(user));
+      this.currentUserSubject.next(user);
+      return user;
     }
   }
 

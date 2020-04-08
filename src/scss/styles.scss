@@ -1,0 +1,24 @@
+// Your variable overrides
+// $body-bg: gray;
+// $body-color: #111;
+
+// Bootstrap and its default variables
+@import "~bootstrap/scss/bootstrap";
+
+@import 'variables';
+
+html, body { height: 100%; }
+
+.loading {
+  padding: 20%;
+  text-align: center;
+  font-size: x-large;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@import "~alertifyjs/build/css/alertify.min.css";

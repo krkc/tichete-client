@@ -1,8 +1,15 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
+
 navi-pane {
   width: 100%;
+}
+.content-pane {
+  height: 100vh;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  overflow-y: auto;
 }
 
 @include media-breakpoint-up(md) {

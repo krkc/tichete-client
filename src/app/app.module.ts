@@ -32,8 +32,6 @@ import { AssignmentService } from './service/assignment.service';
 import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
-import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { ContentComponent } from './content/content.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { User } from './content/users/user';
@@ -65,8 +63,6 @@ export function tokenGetter() {
     DescriptionPreview,
     TicketSearchComponent,
     HomeLayoutComponent,
-    LoginLayoutComponent,
-    ContentComponent,
     TicketFormComponent,
     UserSettingsComponent,
     AppSettingsComponent,

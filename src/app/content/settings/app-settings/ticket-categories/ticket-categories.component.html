@@ -14,9 +14,9 @@
           <input matInput formControlName="description" placeholder="My category description">
       </mat-form-field>
         <div class="form-group">
-            <button type="button" (click)="goBack()">Back</button>
-            &nbsp;<button type="submit" [disabled]="ticketCategoryForm.pristine">{{ selectedTicketCategory?.id ? "Update" : "Add" }}</button>
-            &nbsp;<button type="button" class="btn-danger" [hidden]="!selectedTicketCategory?.id" (click)="onTicketCategoryDelete(); $event.stopPropagation()">Delete</button>
+            <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+            &nbsp;<button class="btn btn-primary" type="submit" [disabled]="ticketCategoryForm.pristine">{{ selectedTicketCategory?.id ? "Update" : "Add" }}</button>
+            &nbsp;<button class="btn btn-danger" type="button" [hidden]="!selectedTicketCategory?.id" (click)="onTicketCategoryDelete(); $event.stopPropagation()">Delete</button>
         </div>
     </form>
 </section>
