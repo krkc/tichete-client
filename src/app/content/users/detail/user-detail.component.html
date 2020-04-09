@@ -1,0 +1,8 @@
+<div id="userUpdate" class="col-lg-8">
+    <h1>User Details</h1>
+    <div *ngIf="user" class="mb-3">
+        User ID#: {{ user.id }}<br />
+    </div>
+    <user-form [user]="user"></user-form>
+    <user-assign></user-assign>
+</div>

@@ -1,12 +1,8 @@
 <div id="usersList">
   <h1 class="h1">Tichete Users</h1>
   <ul class="users list-group">
-    <li
-      *ngFor="let user of users"
-      class="list-group-item"
-      (click)="onSelect(user)"
-      [class.selected]="user === selectedUser"
-    >
+    <li *ngFor="let user of users" class="list-group-item user" (click)="onSelect(user)"
+      [class.selected]="user === selectedUser">
       <span [hidden]="selectedUser === user">
         <div class="badge">
           {{ user.id }}
@@ -14,8 +10,7 @@
         {{ user.username }}
       </span>
       <div *ngIf="selectedUser === user">
-        <span><strong>Name: </strong>{{ user.getDisplayName() }}</span
-        ><br />
+        <span><strong>Name: </strong>{{ user.getDisplayName() }}</span><br />
         <div class="assigned">
           <span><strong>Assigned Tickets: </strong></span><br />
           <ul>
@@ -25,15 +20,10 @@
           </ul>
         </div>
         <div class="btn-group-sm pull-right">
-          <button class="btn btn-default"
-                  (click)="onDetail()"
-          >
+          <button class="btn btn-primary" (click)="onDetail()">
             View
-          </button>
-          <button
-            class="btn btn-danger"
-            (click)="onDelete(user); $event.stopPropagation()"
-          >
+          </button>&nbsp;
+          <button class="btn btn-danger" (click)="onDelete(user); $event.stopPropagation()">
             Delete
           </button>
         </div>

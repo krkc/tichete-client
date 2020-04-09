@@ -1,0 +1,51 @@
+<h1 class="h1">Assigned Tickets</h1>
+<div class="row form-group align-items-center">
+  <div class="col form-group">
+    <form id="removeAssignmentsForm" [formGroup]="removeAssignmentsForm" (ngSubmit)="onRemoveAssignments()">
+      <label for="assignmentsSelector">Currently assigned tickets:</label>
+      <select
+        formControlName="assignmentsSelector"
+        id="assignmentsSelector"
+        name="assignmentsSelector"
+        class="form-control"
+        multiple
+      >
+        <option
+          *ngFor="let assignment of assignments"
+          [value]="assignment.id"
+          >{{ assignment.ticket?.description | preview }}</option
+        >
+      </select>
+    </form>
+  </div>
+  <div class="col-1 px-0 text-center">
+    <button
+      class="btn-assign"
+      form="addAssignmentsForm"
+      type="submit"
+      [disabled]="!addAssignmentsForm.dirty"
+    >
+      &lt;-</button
+    ><br />
+    <button
+    class="btn-assign"
+      form="removeAssignmentsForm"
+      type="submit"
+      [disabled]="!removeAssignmentsForm.dirty"
+    >
+      -&gt;
+    </button>
+  </div>
+  <div class="col form-group">
+    <form id="addAssignmentsForm" [formGroup]="addAssignmentsForm" (ngSubmit)="onAddAssignments()">
+      <mat-form-field>
+        <mat-label>Choose a ticket to assign:</mat-label>
+        <mat-select formControlName="allTicketsSelector" multiple>
+          <mat-option *ngFor="let ticket of availableTickets" [value]="ticket.id">{{
+            ticket.description | preview
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
+</div>

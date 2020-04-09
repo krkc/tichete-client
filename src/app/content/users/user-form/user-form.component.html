@@ -1,0 +1,29 @@
+<form [formGroup]="userForm" (ngSubmit)="onUserSubmit()">
+    <mat-form-field class="form-field">
+        <mat-label>Email:</mat-label>
+        <input formControlName="email" matInput type="email" autocomplete="email" />
+    </mat-form-field>
+    <mat-form-field class="form-field">
+        <mat-label>Username:</mat-label>
+        <input formControlName="username" matInput name="username" type="text" autocomplete="username" />
+    </mat-form-field>
+    <mat-form-field class="form-field">
+        <mat-label>First Name:</mat-label>
+        <input formControlName="firstName" matInput type="text" autocomplete="name" />
+    </mat-form-field>
+    <mat-form-field class="form-field">
+        <mat-label>Last Name:</mat-label>
+        <input formControlName="lastName" matInput name="lastName" type="text" autocomplete="additional-name" />
+    </mat-form-field>
+    <mat-form-field class="form-field">
+        <mat-label>Password:</mat-label>
+        <input formControlName="password" matInput name="password" type="password" autocomplete="new-password" />
+    </mat-form-field>
+    <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>&nbsp;
+    <button class="btn btn-primary" type="submit" [disabled]="!userForm.valid || userForm.pristine">
+        {{ (user.id) ? "Update" : "Create" }} User
+    </button>
+    <div [class.fade]="userForm.valid" [class.show]="!userForm.valid" class="alert alert-danger mt-3">
+        Fields required
+    </div>
+</form>

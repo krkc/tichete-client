@@ -8,12 +8,12 @@ import { TicketCreateComponent } from './content/tickets/ticket-create.component
 import { DashboardComponent } from './content/dashboard.component';
 import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.component';
 import { UsersComponent } from './content/users/users.component';
-import { UserDetailComponent } from './content/users/user-detail.component';
+import { UserDetailComponent } from './content/users/detail/user-detail.component';
 import { UserCreateComponent } from './content/users/user-create.component';
-import { UserAssignComponent } from './content/users/user-assign.component';
+import { UserAssignComponent } from './content/users/detail/user-assign.component';
 import { AuthGuard } from './guards/auth.guard';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
-import { UserDetailResolverService } from './content/users/user-detail-resolver.service';
+import { UserDetailResolverService } from './content/users/detail/user-detail-resolver.service';
 import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
 import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';

@@ -13,9 +13,9 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { TicketSearchComponent } from './nav/ticket-search.component';
 import { DescriptionPreview } from './content/tickets/tickets-description-preview.pipe';
-import { UserAssignComponent } from './content/users/user-assign.component';
+import { UserAssignComponent } from './content/users/detail/user-assign.component';
 import { UserCreateComponent } from './content/users/user-create.component';
-import { UserDetailComponent } from './content/users/user-detail.component';
+import { UserDetailComponent } from './content/users/detail/user-detail.component';
 import { UsersComponent } from './content/users/users.component';
 import { TicketsComponent } from './content/tickets/tickets.component';
 import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.component';
@@ -36,6 +36,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { User } from './content/users/user';
 import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.component';
+import { UserFormComponent } from './content/users/user-form/user-form.component';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
 import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
 import { SubscriptionsComponent } from './content/settings/user-settings/subscriptions.component';
@@ -64,6 +65,7 @@ export function tokenGetter() {
     TicketSearchComponent,
     HomeLayoutComponent,
     TicketFormComponent,
+    UserFormComponent,
     UserSettingsComponent,
     AppSettingsComponent,
     SubscriptionsComponent,

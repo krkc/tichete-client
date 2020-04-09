@@ -6,11 +6,11 @@
     <form id="loginForm" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
       <mat-form-field>
         <mat-label>Email Address</mat-label>
-        <input matInput formControlName="email" />
+        <input matInput formControlName="email" type="email" autocomplete="email" />
       </mat-form-field>&nbsp;
       <mat-form-field>
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" />
+        <input matInput formControlName="password" type="password" autocomplete="current-password" />
       </mat-form-field>
       <div [hidden]="!credsInvalid" class="alert alert-danger fade show">Email address and/or password invalid</div>
     </form>

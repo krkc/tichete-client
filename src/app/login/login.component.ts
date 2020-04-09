@@ -30,7 +30,6 @@ export class LoginComponent {
   onLoginSubmit = () => {
     this.requestPending = true;
     const formVals = this.loginForm.value;
-    console.log(formVals);
     
     this.credsInvalid = false;
     this.authService.login(formVals.email, formVals.password)

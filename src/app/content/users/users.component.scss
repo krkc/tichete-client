@@ -1,0 +1,16 @@
+.users {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+}
+
+.user {
+  &:hover {
+    cursor: pointer;
+    border-radius: 4px;
+  }
+}
+
+.badge {
+  border-radius: 4px 0 0 4px;
+}

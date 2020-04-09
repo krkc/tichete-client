@@ -9,7 +9,7 @@ import * as alertify from "alertifyjs";
 @Component({
     selector: 'my-users',
     templateUrl: './users.component.html',
-    styleUrls: ['./users.component.css']
+    styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
     public users: User[];
@@ -70,15 +70,15 @@ export class UsersComponent implements OnInit {
             });
     }
 
-    private getPopulatedUser(user: User) {    
+    private getPopulatedUser(user: User) {
         if (!user.assignedTickets) {
-          this.userService
-            .getAssignments(user)
-            .subscribe((assignedTickets: Ticket[]) => {
-              user.assignedTickets = assignedTickets;
-            });
+            this.userService
+                .getAssignments(user)
+                .subscribe((assignedTickets: Ticket[]) => {
+                    user.assignedTickets = assignedTickets;
+                });
         }
-    
+
         return user;
-      }
+    }
 }
