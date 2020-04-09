@@ -1,7 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import { TicketService } from "../../../service/ticket.service";
-import { ActivatedRoute, Params } from "@angular/router";
-import { UserService } from "../../../service/user.service";
 import { Ticket } from "../../tickets/ticket";
 import { User } from '../user';
 import { Assignment } from '../../assignment';
@@ -14,7 +12,7 @@ import { AssignmentService } from 'src/app/service/assignment.service';
   styleUrls: ['./user-assign.component.scss']
 })
 export class UserAssignComponent implements OnInit {
-  public user: User;
+  @Input() user: User;
   public allTickets: Ticket[];
   public availableTickets: Ticket[];
   public assignments: Assignment[];
@@ -23,9 +21,7 @@ export class UserAssignComponent implements OnInit {
 
   constructor(
     private assignmentService: AssignmentService,
-    private userService: UserService,
     private ticketService: TicketService,
-    private route: ActivatedRoute,
     private fb: FormBuilder
   ) {
     this.addAssignmentsForm = this.fb.group({
@@ -37,21 +33,15 @@ export class UserAssignComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-      const userId = +params['id'];
-      this.userService.getUser(userId).subscribe(user => {
-        this.user = user;
-        this.ticketService.getTickets().subscribe(allTickets => {
-          this.allTickets = allTickets;
-          this.assignmentService.getAssignments({ user }).subscribe(assignments => {
-            assignments.map(a => {
-              a.user = user;
-              a.ticket = allTickets.find(t => t.id === a.ticketId);
-            });
-            this.assignments = assignments;
-            this.availableTickets = allTickets.filter(t => !assignments.some(a => a.ticketId === t.id));
-          });
+    this.ticketService.getTickets().subscribe(allTickets => {
+      this.allTickets = allTickets;
+      this.assignmentService.getAssignments({ user: this.user }).subscribe(assignments => {
+        assignments.map(a => {
+          a.user = this.user;
+          a.ticket = allTickets.find(t => t.id === a.ticketId);
         });
+        this.assignments = assignments;
+        this.availableTickets = allTickets.filter(t => !assignments.some(a => a.ticketId === t.id));
       });
     });
   }
@@ -60,7 +50,7 @@ export class UserAssignComponent implements OnInit {
     const ticketIdsToAdd: number[] = this.addAssignmentsForm.value.allTicketsSelector;
     const ticketsToAdd = this.allTickets.filter(t => ticketIdsToAdd.indexOf(t.id) >= 0);
     ticketsToAdd.forEach(ticketToAdd => {
-      this.assignmentService.create(this.user, ticketToAdd).subscribe(newAssignment => {
+      this.assignmentService.create(this.user, ticketToAdd).subscribe(() => {
         this.assignmentService.getAssignments({ user: this.user }).subscribe(assignments => {
           assignments.map(a => {
             a.user = this.user;

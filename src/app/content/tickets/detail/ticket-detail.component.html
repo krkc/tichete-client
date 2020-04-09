@@ -7,5 +7,5 @@
     Submitted On: {{ ticket?.createdAt | date }}<br />
   </div>
   <ticket-form [ticket]="ticket"></ticket-form>
-  <ticket-assign></ticket-assign>
+  <ticket-assign [ticket]="ticket"></ticket-assign>
 </div>
