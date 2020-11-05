@@ -6,48 +6,105 @@ import { Ticket } from '../content/tickets/ticket';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
+import { Apollo, gql } from 'apollo-angular';
+import { BaseService } from '../content/base/base.service';
 
 @Injectable()
-export class UserService {
+export class UserService extends BaseService {
   private apiUrl: string = '/api';
-  private usersUrl: string = `${this.apiUrl}/users`;
   private headers: HttpHeaders;
   private options: { headers: HttpHeaders };
   constructor(
+    private apollo: Apollo,
     private http: HttpClient,
     private authService: AuthenticationService,
   ) {
+    super();
     this.headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     this.options = { headers: this.headers };
   }
 
   getUser = (userId: number) => {
-    const url = `${this.usersUrl}/${userId}`;
-    return this.http.get<User>(url)
-      .pipe(map(user => new User(user)));
+    return this.apollo.query({
+      query: gql`
+        query GetUser($id: Int!) {
+          user(id: $id) {
+            id
+            email
+            username
+            firstName
+            lastName
+            assignedTickets {
+              id
+              ticket {
+                id
+                name
+                description
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        id: userId
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['user'] as User;
+    }));
   };
 
-  getUsers = () => {
-    return this.http.get<any>(this.usersUrl)
-      .pipe(
-        map((usersData) => usersData._embedded.users as User[]),
-        mergeMap((users) => {
-          return forkJoin(users.map((userData) => {
-            return this.http.get<User>(`${this.apiUrl}/${userData._links.self.href}`)
-              .pipe(
-                map(user => new User(user))
-              )
-          }))
-        })
-      );
+  getUsers = (take: number = 10) => {
+    return this.apollo.query({
+      query: gql`
+        query GetUsers {
+          users(take: ${take}) {
+            id
+            email
+            username
+            firstName
+            lastName
+            assignments {
+              id
+              ticket {
+                id
+                name
+                description
+              }
+            }
+          }
+        }
+      `
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['users']
+        .map((user: User) => new User({...user})) as User[];
+    }));
   };
 
   create(user: User) {
-    return this.http
-      .post<User>(this.usersUrl,
-        JSON.stringify(user), this.options).pipe<User>(
-          catchError(this.handleError<User>('createUser'))
-        );
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddUser($newUserData: [NewUserInput!]!) {
+          addUser(newUserData: $newUserData) {
+            id
+            email
+            username
+            firstName
+            lastName
+          }
+        }
+      `,
+      variables: {
+        newUserData: [{
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.username,
+          password: user.password
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['addUser']
+      .map((user: User) => new User({...user})) as User[];
+    }),catchError(this.handleError<any>()));
   }
 
   update(user: User) {
@@ -58,30 +115,66 @@ export class UserService {
   }
 
   delete(user: User) {
-    const deleteUserUrl = `${this.apiUrl}${user._links.self.href}`;
-    return this.http.delete(deleteUserUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveUser($userIds: [Int!]!) {
+          removeUser(userIds: $userIds) {
+            id
+          }
+        }
+      `,
+      variables: {
+        userIds: [user.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeUser'] as User;
+    }),catchError(this.handleError<any>()));
   }
 
   getMyTickets = (): Observable<Ticket[]> => {
-    const submittedTicketsUrl = `${this.apiUrl}${this.authService.currentUserValue._links.submittedTickets.href}`;
-    return this.http.get<any>(submittedTicketsUrl)
-      .pipe(
-        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
-        mergeMap((tickets) => {
-          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
-        })
-      );
+    return this.apollo.query({
+      query: gql`
+        query MyTickets($id: Int!) {
+          user(id: $id) {
+            id
+            submittedTickets {
+              id
+              name
+              description
+              statusId
+            }
+          }
+        }
+      `,
+      variables: {
+        id: this.authService.currentUserValue.id,
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['user']['submittedTickets'] as Ticket[];
+    }));
   };
 
   getTicketFeed = (): Observable<Ticket[]> => {
-    const subscribedCategoriesUrl = `${this.apiUrl}${this.authService.currentUserValue._links.subscribedTickets.href}`;
-    return this.http.get<any>(subscribedCategoriesUrl)
-      .pipe(
-        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
-        mergeMap((tickets) => {
-          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
-        })
-      );
+    return this.apollo.query({
+      query: gql`
+        query MyFeed($id: Int!) {
+          user(id: $id) {
+            id
+            subscriptions {
+              id
+              userId
+              categoryId
+            }
+          }
+        }
+      `,
+      variables: {
+        id: this.authService.currentUserValue.id
+      }
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['user']['subscriptions'] as Ticket[];
+    }));
+    // TODO: Getting all errors, network level, graphql level, whatever...
   }
 
   getAssignments = (user: User) => {
@@ -104,7 +197,7 @@ export class UserService {
     });
     return this.http.put<Ticket[]>(assignedTicketsUrl, additionsAndRemovals, this.options)
       .pipe<Ticket[]>(
-        catchError(this.handleError<Ticket[]>('updateAssignments'))
+        catchError(this.handleError<Ticket[]>())
       );
   }
 
@@ -114,7 +207,7 @@ export class UserService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
       // Let the app keep running by returning an empty result.

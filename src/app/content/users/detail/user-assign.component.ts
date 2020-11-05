@@ -15,7 +15,7 @@ export class UserAssignComponent implements OnInit {
   @Input() user: User;
   public allTickets: Ticket[];
   public availableTickets: Ticket[];
-  public assignments: Assignment[];
+  public assignedTickets: Ticket[];
   public addAssignmentsForm: FormGroup;
   public removeAssignmentsForm: FormGroup;
 
@@ -35,14 +35,8 @@ export class UserAssignComponent implements OnInit {
   ngOnInit(): void {
     this.ticketService.getTickets().subscribe(allTickets => {
       this.allTickets = allTickets;
-      this.assignmentService.getAssignments({ user: this.user }).subscribe(assignments => {
-        assignments.map(a => {
-          a.user = this.user;
-          a.ticket = allTickets.find(t => t.id === a.ticketId);
-        });
-        this.assignments = assignments;
-        this.availableTickets = allTickets.filter(t => !assignments.some(a => a.ticketId === t.id));
-      });
+      this.assignedTickets = allTickets.filter(t => this.user.assignments.some(a => a.ticketId === t.id));
+      this.availableTickets = allTickets.filter(t => !this.assignedTickets.some(at => at.id === t.id));
     });
   }
 
@@ -50,14 +44,21 @@ export class UserAssignComponent implements OnInit {
     const ticketIdsToAdd: number[] = this.addAssignmentsForm.value.allTicketsSelector;
     const ticketsToAdd = this.allTickets.filter(t => ticketIdsToAdd.indexOf(t.id) >= 0);
     ticketsToAdd.forEach(ticketToAdd => {
-      this.assignmentService.create(this.user, ticketToAdd).subscribe(() => {
-        this.assignmentService.getAssignments({ user: this.user }).subscribe(assignments => {
-          assignments.map(a => {
-            a.user = this.user;
-            a.ticket = this.allTickets.find(t => t.id === a.ticketId);
-          });
-          this.assignments = assignments;
-        });
+      const userInput = new User({
+        ...this.user,
+        assignedTickets: [
+          ...this.user.assignments,
+          ticketToAdd
+        ]
+      });
+      this.assignmentService.create(userInput, ticketToAdd).subscribe(() => {
+        // this.assignmentService.getAssignments({ user: this.user }).subscribe(assignments => {
+        //   assignments.map(a => {
+        //     a.user = this.user;
+        //     a.ticket = this.allTickets.find(t => t.id === a.ticketId);
+        //   });
+        //   this.assignments = assignments;
+        // });
       });
     });
     this.availableTickets = this.availableTickets.filter(t => ticketIdsToAdd.indexOf(t.id) < 0);
@@ -66,11 +67,12 @@ export class UserAssignComponent implements OnInit {
 
   onRemoveAssignments() {
     const assignmentIdsToRemove: number[] = this.removeAssignmentsForm.value.assignmentsSelector;
-    const assignmentsToRemove = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) >= 0);
-    this.availableTickets = this.availableTickets.concat(assignmentsToRemove.map(a => a.ticket));
+    const assignmentsToRemove = assignmentIdsToRemove.map(id => new Assignment({id}));
+    // const assignmentsToRemove = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) >= 0);
+    // this.availableTickets = this.availableTickets.concat(assignmentsToRemove.map(a => a.ticket));
     assignmentsToRemove.forEach(assignmentToRemove => {
       this.assignmentService.delete(assignmentToRemove).subscribe(() => {
-        this.assignments = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) < 0);
+        // this.assignments = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) < 0);
       });
     });
     this.removeAssignmentsForm.reset();

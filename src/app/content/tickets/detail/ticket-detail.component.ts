@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Ticket } from '../ticket';
 import { UserService } from 'src/app/service/user.service';
+import { User } from '../../users/user';
 
 @Component({
   selector: 'my-ticket-detail',
@@ -19,10 +20,7 @@ export class TicketDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.data
       .subscribe((data: { ticket: Ticket }) => {
-        this.ticket = data.ticket;
-        this.userService.getUser(this.ticket.creatorId).subscribe(submitter => {
-          this.ticket.submittedBy = submitter;
-        });
+        this.ticket = new Ticket({...data.ticket, creator: new User({...data.ticket.creator})});
       });
   }
 }

@@ -19,9 +19,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.userService.getMyTickets().subscribe((response) => {
       this.myTickets = response.slice(1, 5);
-    });
+    },(error: Error) => { throw error; });
+
     this.userService.getTicketFeed().subscribe((response) => {
       this.feedTickets = response.slice(1, 5);
-    });        
+    },(error: Error) => { throw error; });
   }
 }

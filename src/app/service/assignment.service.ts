@@ -1,68 +1,124 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { catchError, mergeMap, map } from 'rxjs/operators';
-import { Observable, of, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Assignment } from '../content/assignment';
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
-import { Router, UrlTree } from '@angular/router';
+import { Apollo, gql } from 'apollo-angular';
+import { BaseService } from '../content/base/base.service';
 
 @Injectable()
-export class AssignmentService {
-  private apiUrl = 'api';
-  private assignmentsUrl = `${this.apiUrl}/users/assignments`;
-  private headers: HttpHeaders;
-  private options;
+export class AssignmentService extends BaseService {
 
   constructor(
-    private router: Router,
-    private http: HttpClient,
+    private apollo: Apollo,
   ) {
-    this.headers = new HttpHeaders({ 'Content-Type': 'application/json', });
-    this.options = { headers: this.headers };
+    super();
   }
 
-  getAssignments = (options?: { user?: User, ticket?: Ticket }) => {
-    const getAssignmentsUrl = this.router.parseUrl(this.assignmentsUrl);
-    if (options?.user) {
-      getAssignmentsUrl.queryParams['userId'] = options.user.id;
-    }
-    if (options?.ticket) {
-      getAssignmentsUrl.queryParams['ticketId'] = options.ticket.id;
-    }
-
-    return this.http.get<any>(getAssignmentsUrl.toString())
-      .pipe(
-        map((assignmentsData) => assignmentsData._embedded.assignments as Assignment[]));
+  getAssignments = (take: number = 10) => {
+    return this.apollo.query({
+      query: gql`
+        query GetAssignments {
+          assignments(take: ${take}) {
+            id
+            userId
+            ticketId
+          }
+        }
+      `
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['assignments']
+        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
+    }));
   };
 
   create = (user: User, ticket: Ticket) => {
-    const createAssignmentUrl = `${this.apiUrl}/users/${user.id}/assigned-tickets/${ticket.id}`;
-    return this.http.post<Assignment>(
-      createAssignmentUrl,
-      null,
-      this.options).pipe<Assignment>(
-        catchError(this.handleError<any>('createAssignment'))
-      );
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddAssignment($newAssignmentData: [NewAssignmentInput!]!) {
+          addAssignment(newAssignmentData: $newAssignmentData) {
+            id
+            firstName
+            lastName
+            email
+          }
+        }
+      `,
+      variables: {
+        newAssignmentData: [
+          {
+            userId: user.id,
+            ticketId: ticket.id
+          }
+        ],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['addAssignment']
+        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
+    }));
   };
 
   delete = (assignment: Assignment) => {
-    const deleteAssignmentUrl = `${this.apiUrl}${assignment._links.self.href}`;
-    return this.http.delete(deleteAssignmentUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveAssignment($assignmentIds: [Int!]!) {
+          removeAssignment(assignmentIds: $assignmentIds) {
+            id
+            firstName
+            lastName
+            email
+          }
+        }
+      `,
+      variables: {
+        assignmentIds: [assignment.id],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeAssignment']
+        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
+    }));
   };
 
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
+  assignTicketsToUser = (user: User, ticket: Ticket) => {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AssignTicketsToUser($userId: Int!, $assignedTicketIds: [Int!]!) {
+          assignTicketsToUser(userId: $userId,assignedTicketIds: $assignedTicketIds) {
+            id
+            firstName
+            lastName
+            email
+          }
+        }
+      `,
+      variables: {
+        userId: user.id,
+        assignedTicketIds: [ticket.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['assignTicketsToUser'] as User;
+    }));
+  };
+
+  unassignTicketsFromUser = (assignment: Assignment) => {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UnassignTicketsFromUser($assignmentIds: [Int!]!) {
+          unassignTicketsFromUser(assignmentIds: $assignmentIds) {
+            id
+            firstName
+            lastName
+            email
+          }
+        }
+      `,
+      variables: {
+        assignmentIds: [assignment.id],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['assignTicketsToUser'] as User;
+    }));
+  };
+
 }

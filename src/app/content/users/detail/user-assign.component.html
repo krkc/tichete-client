@@ -11,9 +11,9 @@
         multiple
       >
         <option
-          *ngFor="let assignment of assignments"
-          [value]="assignment.id"
-          >{{ assignment.ticket?.description | preview }}</option
+          *ngFor="let ticket of assignedTickets"
+          [value]="ticket.id"
+          >{{ ticket?.description | preview }}</option
         >
       </select>
     </form>

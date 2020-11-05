@@ -28,16 +28,13 @@ export class TicketsComponent implements OnInit {
     this.ticketService.getTickets().subscribe((tickets: Ticket[]) => {
       this.tickets = tickets;
     });
-    this.ticketService.getTicketStatuses().subscribe((statuses: TicketStatus[]) => {
-      this.statuses = statuses;
-    });
   }
 
   onSelect(ticket: Ticket): void {
     if (this.selectedTicket === ticket) {
       this.selectedTicket = null;
     } else {
-      this.selectedTicket = this.getPopulatedTicket(ticket, this.statuses);
+      this.selectedTicket = ticket;
     }
   }
 
@@ -68,39 +65,18 @@ export class TicketsComponent implements OnInit {
     this.ticketService
       .delete(ticket)
       .subscribe((err: any) => {
-        if (err) {
-          alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
-          return;
-        }
+        // TODO: I believe this was for warning of conflicts
+        // ex: 'Error: Cannot delete a ticket that is actively assigned.'
+        // Disable it for now, might reimplement.
+        // if (err) {
+        //   alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
+        //   return;
+        // }
 
         this.tickets = this.tickets.filter(t => t !== ticket);
         if (this.selectedTicket === ticket) {
           this.selectedTicket = null;
         }
       });
-  }
-
-  private getPopulatedTicket(ticket: Ticket, statuses: TicketStatus[]) {
-    if (!ticket.status) {
-      ticket.status = statuses.find((s) => s.id === ticket.statusId);
-    }
-
-    if (!ticket.taggedCategories) {
-      this.ticketService
-        .getTaggedCategories(ticket)
-        .subscribe((taggedCategories: TicketCategory[]) => {
-          ticket.taggedCategories = taggedCategories;
-        });
-    }
-
-    if (!ticket.assignedUsers) {
-      this.ticketService
-        .getAssignedUsers(ticket)
-        .subscribe((assignedUsers: User[]) => {
-          ticket.assignedUsers = assignedUsers;
-        });
-    }
-
-    return ticket;
   }
 }

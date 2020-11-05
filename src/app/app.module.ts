@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { GraphQLModule } from './graphql.module';
 
 import { LoginComponent } from './login/login.component';
 import { TicketSearchComponent } from './nav/ticket-search.component';
@@ -44,7 +45,9 @@ import { TicketCategoriesComponent } from './content/settings/app-settings/ticke
 import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
 
 export function tokenGetter() {
-  return (JSON.parse(localStorage.getItem("current_user")) as User)?.token;
+  return new User({
+    ...JSON.parse(localStorage.getItem("current_user"))
+  }).accessToken;
 }
 
 @NgModule({
@@ -84,6 +87,7 @@ export function tokenGetter() {
         blacklistedRoutes: ["example.com/examplebadroute/"]
       }
     }),
+    GraphQLModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatInputModule,

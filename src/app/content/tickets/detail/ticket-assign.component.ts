@@ -35,14 +35,18 @@ export class TicketAssignComponent implements OnInit {
   ngOnInit(): void {
     this.userService.getUsers().subscribe(allUsers => {
       this.allUsers = allUsers;
-      this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
-        assignments.map(a => {
-          a.ticket = this.ticket;
-          a.user = allUsers.find(u => u.id === a.userId);
-        });
-        this.assignments = assignments;
-        this.availableUsers = allUsers.filter(u => !assignments.some(a => a.userId === u.id));
-      });
+      // this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
+      //   assignments.map(a => {
+      //     a.ticket = this.ticket;
+      //     a.user = allUsers.find(u => u.id === a.userId);
+      //   });
+      //   this.assignments = assignments;
+      //   this.availableUsers = allUsers.filter(u => !assignments.some(a => a.userId === u.id));
+      // });
+    });
+
+    this.assignmentService.getAssignments().subscribe((assignments: Assignment[]) => {
+      this.assignments = assignments;
     });
   }
 
@@ -51,13 +55,13 @@ export class TicketAssignComponent implements OnInit {
     const usersToAdd = this.allUsers.filter(u => userIdsToAdd.indexOf(u.id) >= 0);
     usersToAdd.forEach(userToAdd => {
       this.assignmentService.create(userToAdd, this.ticket).subscribe(() => {
-        this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
-          assignments.map(a => {
-            a.ticket = this.ticket;
-            a.user = this.allUsers.find(u => u.id === a.userId);
-          });
-          this.assignments = assignments;
-        });
+        // this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
+        //   assignments.map(a => {
+        //     a.ticket = this.ticket;
+        //     a.user = this.allUsers.find(u => u.id === a.userId);
+        //   });
+        //   this.assignments = assignments;
+        // });
       });
     });
     this.availableUsers = this.availableUsers.filter(u => userIdsToAdd.indexOf(u.id) < 0);

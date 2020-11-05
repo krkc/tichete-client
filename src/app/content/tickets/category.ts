@@ -1,8 +1,8 @@
+import { Base } from '../base/base';
 import { User } from '../users/user';
 import { Ticket } from './ticket';
 
-export class TicketCategory {
-    id: number;
+export class TicketCategory extends Base {
     name: string;
     description: string;
     createdAt: Date;

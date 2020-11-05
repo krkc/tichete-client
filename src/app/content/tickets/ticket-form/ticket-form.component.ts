@@ -3,6 +3,7 @@ import { TicketCategory } from '../category';
 import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
+import { Tag } from '../tag';
 
 @Component({
   selector: 'ticket-form',
@@ -28,14 +29,10 @@ export class TicketFormComponent implements OnInit {
   ngOnInit(): void {
     this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
       this.categories = categories;
-    });
+      if (!this.ticket.id) return;
 
-    if (!this.ticket.id) return;
-
-    this.ticketService.getTaggedCategories(this.ticket).subscribe((taggedCategories) => {
-      this.ticket.taggedCategories = taggedCategories
       this.ticketForm.setValue({
-        taggedCategories: this.ticket.taggedCategories.map((tc) => tc.id),
+        taggedCategories: this.ticket.tags.map((t) => t.category.id),
         description: this.ticket.description
       });
     });
@@ -49,13 +46,19 @@ export class TicketFormComponent implements OnInit {
     const formVals = this.ticketForm.value;
     const taggedCategoryIds: number[] = formVals.taggedCategories;
     this.ticket.description = formVals.description;
-    this.ticket.taggedCategories = taggedCategoryIds.map((cid => ({ id: cid } as TicketCategory)));
+    this.ticket.tags = taggedCategoryIds.map((cid => ({ ticketId: this.ticket.id, categoryId: cid } as Tag)));
     if (this.ticket.id) {
       this.ticketService.update(this.ticket)
-      .subscribe(this.goBack);
+      .subscribe((updatedTicket) => {
+        if (updatedTicket.id) this.goBack();
+        else console.log('ticket-form.update', updatedTicket);
+      });
     } else {
       this.ticketService.create(this.ticket.description, formVals.taggedCategories)
-      .subscribe(this.goBack);
+      .subscribe((createdTicket) => {
+        if (createdTicket.id) this.goBack();
+        else console.log('ticket-form.create', createdTicket);
+      });
     }
   }
 }

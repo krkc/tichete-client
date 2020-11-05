@@ -1,11 +1,7 @@
-export class TicketStatus {
+export abstract class Base {
   id: number;
-  name: string;
-  description: string;
   createdAt: Date;
-
-  _links: any;
-  _embedded: any;
+  updatedAt: Date;
 
   constructor(data?: any) {
     if (!data) return;

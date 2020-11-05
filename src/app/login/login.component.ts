@@ -15,6 +15,7 @@ export class LoginComponent {
   public loginForm: FormGroup;
   public requestPending: boolean;
   public errorMessage: string;
+  public loginSuccess: boolean;
 
   constructor(
     private authService: AuthenticationService,
@@ -27,25 +28,29 @@ export class LoginComponent {
     });
   }
 
-  onLoginSubmit = () => {
+  onLoginSubmit = async () => {
     this.requestPending = true;
     const formVals = this.loginForm.value;
-    
+
     this.credsInvalid = false;
-    this.authService.login(formVals.email, formVals.password)
-      .then(this.onLoginSuccess)
-      .catch(this.onLoginError);
+
+    try {
+      await this.authService.login(formVals.email, formVals.password);
+
+      this.onLoginSuccess();
+    } catch (error) {
+      this.onLoginError(error);
+    }
   }
 
   onLoginSuccess = () => {
-    $('.login-card')
-      .css('transform', 'translateY(-30em)');
-
+    this.loginSuccess = true;
     setTimeout(() => { this.router.navigate(['']); }, 300);
   }
 
   onLoginError = (error: any) => {
     this.requestPending = false;
     this.credsInvalid = (error.status === 401);
+    throw new Error(error);
   }
 }
