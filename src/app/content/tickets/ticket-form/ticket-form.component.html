@@ -1,21 +1,21 @@
 <form [formGroup]="ticketForm" (ngSubmit)="onTicketSubmit()">
-    <mat-form-field class="ticket-categories">
-        <mat-label>Categories:</mat-label>
-        <mat-select formControlName="taggedCategories" multiple required>
-            <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <br />
-    <mat-form-field class="ticket-description">
-        <mat-label>Description:</mat-label>
-        <textarea formControlName="description" matInput rows="5"></textarea>
-    </mat-form-field>
-    <br />
-    <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>&nbsp;
-    <button class="btn btn-primary" type="submit" [disabled]="!ticketForm.valid || ticketForm.pristine">
-        {{ (ticket.id) ? "Update" : "Create" }} Ticket
-    </button>
-    <div [class.fade]="ticketForm.valid" [class.show]="!ticketForm.valid" class="alert alert-danger mt-3">
-        Category and Details fields required
-    </div>
+  <mat-form-field class="ticket-categories">
+    <mat-label>Categories:</mat-label>
+    <mat-select formControlName="taggedCategories" multiple>
+      <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br />
+  <mat-form-field class="ticket-description">
+    <mat-label>Description:</mat-label>
+    <textarea formControlName="description" matInput rows="5"></textarea>
+  </mat-form-field>
+  <br />
+  <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>&nbsp;
+  <button class="btn btn-primary" type="submit" [disabled]="!ticketForm.valid || ticketForm.pristine">
+    {{ (ticket.id) ? "Update" : "Create" }} Ticket
+  </button>
+  <div [class.fade]="ticketForm.valid" [class.show]="!ticketForm.valid" class="alert alert-danger mt-3">
+    Ticket Description field required
+  </div>
 </form>

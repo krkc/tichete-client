@@ -39,9 +39,8 @@ export class AssignmentService extends BaseService {
         mutation AddAssignment($newAssignmentData: [NewAssignmentInput!]!) {
           addAssignment(newAssignmentData: $newAssignmentData) {
             id
-            firstName
-            lastName
-            email
+            userId
+            ticketId
           }
         }
       `,
@@ -59,20 +58,18 @@ export class AssignmentService extends BaseService {
     }));
   };
 
-  delete = (assignment: Assignment) => {
+  delete = (assignments: Assignment[]) => {
     return this.apollo.mutate({
       mutation: gql`
         mutation RemoveAssignment($assignmentIds: [Int!]!) {
           removeAssignment(assignmentIds: $assignmentIds) {
-            id
-            firstName
-            lastName
-            email
+            userId
+            ticketId
           }
         }
       `,
       variables: {
-        assignmentIds: [assignment.id],
+        assignmentIds: assignments.map(a => a.id),
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['removeAssignment']

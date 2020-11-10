@@ -32,7 +32,7 @@ export class TicketFormComponent implements OnInit {
       if (!this.ticket.id) return;
 
       this.ticketForm.setValue({
-        taggedCategories: this.ticket.tags.map((t) => t.category.id),
+        taggedCategories: this.ticket.tags.map((tag) => tag.category.id),
         description: this.ticket.description
       });
     });
@@ -46,18 +46,32 @@ export class TicketFormComponent implements OnInit {
     const formVals = this.ticketForm.value;
     const taggedCategoryIds: number[] = formVals.taggedCategories;
     this.ticket.description = formVals.description;
-    this.ticket.tags = taggedCategoryIds.map((cid => ({ ticketId: this.ticket.id, categoryId: cid } as Tag)));
+    if (taggedCategoryIds) {
+      this.ticket.tags = taggedCategoryIds.map(cid => {
+        const tagFound = this.ticket.tags.find(tag => tag.category.id === cid);
+        return {
+          id: tagFound?.id || undefined,
+          ticketId: this.ticket.id,
+          categoryId: cid
+        } as Tag;
+      });
+    } else {
+      this.ticket.tags = [];
+    }
+
     if (this.ticket.id) {
       this.ticketService.update(this.ticket)
       .subscribe((updatedTicket) => {
-        if (updatedTicket.id) this.goBack();
-        else console.log('ticket-form.update', updatedTicket);
+        if (updatedTicket.length > 0) return this.goBack();
+
+        console.log('ticket-form.update', updatedTicket);
       });
     } else {
-      this.ticketService.create(this.ticket.description, formVals.taggedCategories)
+      this.ticketService.create(this.ticket)
       .subscribe((createdTicket) => {
-        if (createdTicket.id) this.goBack();
-        else console.log('ticket-form.create', createdTicket);
+        if (createdTicket.length > 0) return this.goBack();
+
+        console.log('ticket-form.create', createdTicket);
       });
     }
   }

@@ -57,7 +57,10 @@ const routes: Routes = [
           },
           {
             path: 'assign/:id',
-            component: TicketAssignComponent
+            component: TicketAssignComponent,
+            resolve: {
+              ticket: TicketDetailResolverService
+            }
           }
         ],
         canActivate: [AuthGuard]

@@ -12,9 +12,10 @@
       >
         <option
           *ngFor="let assignment of assignments"
-          [value]="assignment.id"
-          >{{ assignment.user?.firstName + " " + assignment.user?.lastName }}</option
+          [value]="assignment.user?.id"
         >
+          {{ assignment.user?.firstName + " " + assignment.user?.lastName }}
+        </option>
       </select>
     </form>
   </div>
@@ -38,7 +39,7 @@
     <form id="addAssignmentsForm" [formGroup]="addAssignmentsForm" (ngSubmit)="onAddAssignees()">
       <mat-form-field class="ticket-categories">
         <mat-label>Choose a user to assign:</mat-label>
-        <mat-select formControlName="allUsersSelector" multiple>
+        <mat-select formControlName="availableUsersSelector" multiple>
           <mat-option *ngFor="let user of availableUsers" [value]="user.id">{{
             user.firstName + " " + user.lastName
           }}</mat-option>

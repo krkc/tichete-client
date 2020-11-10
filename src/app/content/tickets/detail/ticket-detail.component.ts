@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Ticket } from '../ticket';
-import { UserService } from 'src/app/service/user.service';
 import { User } from '../../users/user';
 
 @Component({
@@ -14,7 +13,6 @@ export class TicketDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private userService: UserService,
   ) { }
 
   ngOnInit(): void {

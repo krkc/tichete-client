@@ -1,8 +1,8 @@
-import { TicketCategory } from './category';
 import { User } from '../users/user';
 import { TicketStatus } from './status';
 import { Base } from '../base/base';
 import { Tag } from './tag';
+import { Assignment } from '../assignment';
 
 export class Ticket extends Base {
   name: string;
@@ -19,5 +19,5 @@ export class Ticket extends Base {
   creator: User;
   status: TicketStatus;
   tags: Tag[];
-  assignments: User[];
+  assignments: Assignment[];
 }

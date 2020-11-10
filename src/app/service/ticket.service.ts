@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Ticket } from '../content/tickets/ticket';
 import { TicketCategory } from '../content/tickets/category';
@@ -12,6 +12,8 @@ import { Apollo, gql } from 'apollo-angular';
 import { QueryFragments } from './query-fragments';
 import { AuthenticationService } from './authentication.service';
 import { BaseService } from '../content/base/base.service';
+import { Assignment } from '../content/assignment';
+import { Tag } from '../content/tickets/tag';
 
 @Injectable()
 export class TicketService extends BaseService {
@@ -19,8 +21,6 @@ export class TicketService extends BaseService {
   private ticketsUrl = `${this.apiUrl}/tickets`;
   private ticketCategoriesUrl = `${this.ticketsUrl}/categories`;
   private ticketStatusesUrl = `${this.ticketsUrl}/statuses`;
-  private headers: HttpHeaders;
-  private options;
 
   constructor(
     private apollo: Apollo,
@@ -28,8 +28,6 @@ export class TicketService extends BaseService {
     private http: HttpClient,
   ) {
     super();
-    this.headers = new HttpHeaders({ 'Content-Type': 'application/json', });
-    this.options = { headers: this.headers };
   }
 
   getTicket = (ticketId: number) => {
@@ -61,16 +59,37 @@ export class TicketService extends BaseService {
         ${QueryFragments.TICKET}
       `
     }).pipe(map(fetchResult => {
-      return fetchResult.data['tickets']
-        .map((ticket: Ticket) => new Ticket({...ticket})) as Ticket[];
+      return fetchResult.data['tickets'].map(this.mapTickets);
     }));
   };
-  // TODO: Just got ticket update working.
-  // Still need to figure out how to update the tagged categories
+
+  create = (ticket: Ticket) => {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddTicket($newTicketData: [NewTicketInput!]!) {
+          addTicket(newTicketData: $newTicketData) {
+            id
+            name
+            description
+          }
+        }
+      `,
+      variables: {
+        newTicketData: [{
+          description: ticket.description,
+          creatorId: this.authService.currentUserValue.id,
+          ticketCategoryIds: ticket.tags.map(tag => new TicketCategory({id: tag.categoryId}))
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['addTicket'].map(this.mapTickets);
+    }),catchError(this.handleError<any>()));
+  };
+
   update = (ticket: Ticket) => {
     return this.apollo.mutate({
       mutation: gql`
-        mutation UpdateTicket($updateTicketData: UpdateTicketInput!) {
+        mutation UpdateTicket($updateTicketData: [UpdateTicketInput!]!) {
           updateTicket(updateTicketData: $updateTicketData) {
             id
             name
@@ -84,41 +103,19 @@ export class TicketService extends BaseService {
         }
       `,
       variables: {
-        updateTicketData: {
-          id: ticket.id,
-          creatorId: ticket.creatorId,
-          statusId: ticket.statusId,
-          description: ticket.description,
-          taggedCategories: ticket.tags.map(c => ({ ticketId: ticket.id, categoryId: c.id }))
-        },
+        updateTicketData: [
+          {
+            id: ticket.id,
+            creatorId: ticket.creatorId,
+            statusId: ticket.statusId,
+            description: ticket.description,
+            tags: ticket.tags.map(tag => ({ id: tag.id, ticketId: tag.ticketId, categoryId: tag.categoryId }))
+          },
+        ]
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['updateTicket'] as Ticket;
-    }),catchError(this.handleError<any>('updateTicket')));
-  };
-
-  create = (description: string, ticketCategoryIds: number[]) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation AddTicket($newTicketData: [NewTicketInput!]!) {
-          addTicket(newTicketData: $newTicketData) {
-            id
-            name
-            description
-          }
-        }
-      `,
-      variables: {
-        newTicketData: [{
-          description,
-          creatorId: this.authService.currentUserValue.id,
-          taggedCategories: ticketCategoryIds.map(id => new TicketCategory({id}))
-        }],
-      },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addTicket']
-      .map((ticket: Ticket) => new Ticket({...ticket})) as Ticket[];
-    }),catchError(this.handleError<any>('createTicket')));
+    }),catchError(this.handleError<any>()));
   };
 
   delete = (ticket: Ticket) => {
@@ -126,7 +123,8 @@ export class TicketService extends BaseService {
       mutation: gql`
         mutation RemoveTicket($ticketIds: [Int!]!) {
           removeTicket(ticketIds: $ticketIds) {
-            id
+            creatorId,
+            description
           }
         }
       `,
@@ -135,7 +133,7 @@ export class TicketService extends BaseService {
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['removeTicket'] as Ticket;
-    }),catchError(this.handleError<any>('deleteTicket')));
+    }));
   };
 
   getTicketCategories(take: number = 10) {
@@ -228,36 +226,27 @@ export class TicketService extends BaseService {
     return this.http.delete(ticketStatusDeleteUrl);
   }
 
-  getTaggedCategories = (ticket: Ticket) => {
-    const getTaggedCategoriesUrl = `${this.apiUrl}${ticket._links.taggedCategories.href}`;
-    return this.http.get<TicketCategory[]>(getTaggedCategoriesUrl);
-  };
-
-  getAssignedUsers = (ticket: Ticket) => {
-    const getAssignedUsersUrl = `${this.apiUrl}${ticket._links.assignedUsers.href}`;
-    return this.http.get<any>(getAssignedUsersUrl)
-      .pipe(
-        map((usersData) => usersData._embedded.users as User[]),
-        mergeMap((users) => {
-          return forkJoin(users.map((userData) => {
-            return this.http.get<User>(`${this.apiUrl}/${userData._links.self.href}`)
-              .pipe(map(user => new User(user)))
-          }))
-        })
-      );
-  };
-
   /**
    * Handle Http operation that failed.
    * Let the app continue.
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
+
+  private mapTickets(ticketData: Ticket): Ticket {
+    const ticket = new Ticket({...ticketData});
+    ticket.assignments = ticketData.assignments.map(a => new Assignment({...a}));
+    ticket.assignments.forEach(a => {
+      a.user = new User({...a.user});
+    });
+    ticket.tags = ticketData.tags.map(tag => new Tag({...tag}));
+    return ticket;
   }
 }

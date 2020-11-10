@@ -70,10 +70,8 @@ export class UserAssignComponent implements OnInit {
     const assignmentsToRemove = assignmentIdsToRemove.map(id => new Assignment({id}));
     // const assignmentsToRemove = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) >= 0);
     // this.availableTickets = this.availableTickets.concat(assignmentsToRemove.map(a => a.ticket));
-    assignmentsToRemove.forEach(assignmentToRemove => {
-      this.assignmentService.delete(assignmentToRemove).subscribe(() => {
-        // this.assignments = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) < 0);
-      });
+    this.assignmentService.delete(assignmentsToRemove).subscribe(() => {
+      // this.assignments = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) < 0);
     });
     this.removeAssignmentsForm.reset();
   }

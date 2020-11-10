@@ -5,6 +5,7 @@ import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { AssignmentService } from 'src/app/service/assignment.service';
 import { Assignment } from '../../assignment';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'ticket-assign',
@@ -20,12 +21,13 @@ export class TicketAssignComponent implements OnInit {
   public removeAssignmentsForm: FormGroup;
 
   constructor(
+    private route: ActivatedRoute,
     private assignmentService: AssignmentService,
     private userService: UserService,
     private fb: FormBuilder
   ) {
     this.addAssignmentsForm = this.fb.group({
-      allUsersSelector: [],
+      availableUsersSelector: [],
     });
     this.removeAssignmentsForm = this.fb.group({
       assigneesSelector: []
@@ -33,35 +35,37 @@ export class TicketAssignComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.ticket) {
+      this.route.data
+      .subscribe((data: { ticket: Ticket }) => {
+        this.ticket = new Ticket({...data.ticket, creator: new User({...data.ticket.creator})});
+      });
+    }
+
     this.userService.getUsers().subscribe(allUsers => {
       this.allUsers = allUsers;
-      // this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
-      //   assignments.map(a => {
-      //     a.ticket = this.ticket;
-      //     a.user = allUsers.find(u => u.id === a.userId);
-      //   });
-      //   this.assignments = assignments;
-      //   this.availableUsers = allUsers.filter(u => !assignments.some(a => a.userId === u.id));
-      // });
-    });
-
-    this.assignmentService.getAssignments().subscribe((assignments: Assignment[]) => {
-      this.assignments = assignments;
+      this.assignments = this.ticket.assignments.map(a => new Assignment({
+        id: a.id,
+        ticket: this.ticket,
+        user: this.allUsers.find(u => u.id === a.user.id)
+      }));
+      this.availableUsers = allUsers.filter(u => !this.ticket.assignments.some(a => a.user.id === u.id));
     });
   }
 
   onAddAssignees() {
-    const userIdsToAdd: number[] = this.addAssignmentsForm.value.allUsersSelector;
+    const userIdsToAdd: number[] = this.addAssignmentsForm.value.availableUsersSelector;
     const usersToAdd = this.allUsers.filter(u => userIdsToAdd.indexOf(u.id) >= 0);
+
     usersToAdd.forEach(userToAdd => {
-      this.assignmentService.create(userToAdd, this.ticket).subscribe(() => {
-        // this.assignmentService.getAssignments({ ticket: this.ticket }).subscribe(assignments => {
-        //   assignments.map(a => {
-        //     a.ticket = this.ticket;
-        //     a.user = this.allUsers.find(u => u.id === a.userId);
-        //   });
-        //   this.assignments = assignments;
-        // });
+      this.assignmentService.create(userToAdd, this.ticket).subscribe({
+        next: (assignments: Assignment[]) => {
+          this.assignments.push(...assignments.map(a => new Assignment({
+            id: a.id,
+            ticket: this.ticket,
+            user: this.allUsers.find(u => u.id === a.userId)
+          })));
+        }
       });
     });
     this.availableUsers = this.availableUsers.filter(u => userIdsToAdd.indexOf(u.id) < 0);
@@ -69,14 +73,16 @@ export class TicketAssignComponent implements OnInit {
   }
 
   onRemoveAssignees() {
-    const assignmentIdsToRemove: number[] = this.removeAssignmentsForm.value.assigneesSelector;
-    const assignmentsToRemove = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) >= 0);
-    this.availableUsers = this.availableUsers.concat(assignmentsToRemove.map(a => a.user));
-    assignmentsToRemove.forEach(assignmentToRemove => {
-      this.assignmentService.delete(assignmentToRemove).subscribe(() => {
-        this.assignments = this.assignments.filter(a => assignmentIdsToRemove.indexOf(a.id) < 0);
-      });
+    const userIdsToRemove: number[] = this.removeAssignmentsForm.value.assigneesSelector;
+    const assignmentsToRemove = this.assignments.filter(a => userIdsToRemove.indexOf(a.user.id) >= 0);
+
+    this.assignmentService.delete(assignmentsToRemove).subscribe({
+      next: () => {
+        this.assignments = this.assignments.filter(a => userIdsToRemove.indexOf(a.user.id) < 0);
+      }
     });
+
+    this.availableUsers = this.availableUsers.concat(assignmentsToRemove.map(a => a.user));
     this.removeAssignmentsForm.reset();
   }
 }
