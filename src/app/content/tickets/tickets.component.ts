@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { Ticket } from './ticket';
 import { TicketService } from '../../service/ticket.service';
@@ -17,6 +18,7 @@ import { ApolloError } from '@apollo/client/core';
 export class TicketsComponent implements OnInit {
   public statuses: TicketStatus[];
   public tickets: Ticket[];
+  public ticketsData: Observable<Ticket[]>;
   public selectedTicket: Ticket;
   public assignedUsers: User[];
 
@@ -25,14 +27,13 @@ export class TicketsComponent implements OnInit {
     private ticketService: TicketService) { }
 
   ngOnInit(): void {
-    this.ticketService.getTickets().subscribe((tickets: Ticket[]) => {
+    this.ticketsData = this.ticketService.getTickets();
+    this.ticketsData.subscribe((tickets: Ticket[]) => {
       if (!this.tickets) this.tickets = [];
       while(this.tickets.length > 0) {
         this.tickets.pop();
       }
       this.tickets.push(...tickets);
-      // TODO: angular apollo doesn't think this has changed after adding/removing an assignment,
-      // so it uses what it has in cache. no network activity at all.
     });
   }
 

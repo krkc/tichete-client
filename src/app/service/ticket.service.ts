@@ -49,7 +49,7 @@ export class TicketService extends BaseService {
   };
 
   getTickets = (take: number = 10) => {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query GetTickets {
           tickets(take: ${take}) {
@@ -57,8 +57,9 @@ export class TicketService extends BaseService {
           }
         }
         ${QueryFragments.TICKET}
-      `
-    }).pipe(map(fetchResult => {
+      `,
+      pollInterval: 500
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['tickets'].map(this.mapTickets);
     }));
   };
@@ -137,7 +138,7 @@ export class TicketService extends BaseService {
   };
 
   getTicketCategories(take: number = 10) {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query GetTicketCategories {
           ticketCategories(take: ${take}) {
@@ -145,8 +146,9 @@ export class TicketService extends BaseService {
             name
           }
         }
-      `
-    }).pipe(map(fetchResult => {
+      `,
+      pollInterval: 500,
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticketCategories'] as TicketCategory[];
     }));
   };
@@ -154,7 +156,7 @@ export class TicketService extends BaseService {
   createTicketCategory(ticketCategory: TicketCategory) {
     return this.apollo.mutate({
       mutation: gql`
-        mutation AddTicketCategory($newTicketCategoryData: NewCategoryInput!) {
+        mutation AddTicketCategory($newTicketCategoryData: [NewCategoryInput!]!) {
           addTicketCategory(newTicketCategoryData: $newTicketCategoryData) {
             id
             name
@@ -162,12 +164,12 @@ export class TicketService extends BaseService {
         }
       `,
       variables: {
-        newTicketCategoryData: {
+        newTicketCategoryData: [{
           name: ticketCategory.name
-        },
+        }],
       },
     }).pipe(map(fetchResult => {
-      return fetchResult.data['addTicketCategory'] as TicketCategory;
+      return fetchResult.data['addTicketCategory'] as TicketCategory[];
     }));
   }
 
@@ -177,8 +179,21 @@ export class TicketService extends BaseService {
   }
 
   deleteTicketCategory(ticketCategory: TicketCategory) {
-    const ticketCategoryDeleteUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
-    return this.http.delete(ticketCategoryDeleteUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveTicketCategory($ticketCategoryIds: [Int!]!) {
+          removeTicketCategory(ticketCategoryIds: $ticketCategoryIds) {
+            name
+          }
+        }
+      `,
+      variables: {
+        ticketCategoryIds: [ticketCategory.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeTicketCategory']
+        .map(tc => new TicketCategory({...tc})) as TicketCategory[];
+    }));
   }
 
   getTicketStatuses = (take: number = 10): Observable<TicketStatus[]> => {
@@ -222,8 +237,20 @@ export class TicketService extends BaseService {
   }
 
   deleteTicketStatus(ticketStatus: TicketStatus) {
-    const ticketStatusDeleteUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
-    return this.http.delete(ticketStatusDeleteUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveTicketStatus($ticketStatusIds: [Int!]!) {
+          removeTicketStatus(ticketStatusIds: $ticketStatusIds) {
+            name
+          }
+        }
+      `,
+      variables: {
+        ticketStatusIds: [ticketStatus.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeTicketStatus'] as TicketStatus;
+    }));
   }
 
   /**
