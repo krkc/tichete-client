@@ -3,27 +3,17 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@a
 import { Ticket } from '../ticket';
 import { Observable, of } from 'rxjs';
 import { TicketService } from 'src/app/service/ticket.service';
-import { mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TicketDetailResolverService implements Resolve<Ticket> {
+export class TicketDetailResolverService implements Resolve<Observable<Ticket>> {
 
   constructor(private ticketService: TicketService, private router: Router) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Ticket | Observable<Ticket> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<Ticket>> {
     let id = route.paramMap.get('id');
 
-    return this.ticketService.getTicket(+id).pipe<Ticket>(
-      mergeMap(ticket => {
-        if (ticket) {
-          return of(ticket);
-        } else {
-          this.router.navigate(['/tickets']);
-          return null;
-        }
-      })
-    );
+    return of(this.ticketService.getTicket(+id));
   }
 }

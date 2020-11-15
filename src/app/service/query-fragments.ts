@@ -40,10 +40,6 @@ const USER = gql`
     username
     firstName
     lastName
-    role {
-      id
-      name
-    }
     submittedTickets {
       id
       name

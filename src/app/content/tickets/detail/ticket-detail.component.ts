@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Ticket } from '../ticket';
 import { User } from '../../users/user';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'my-ticket-detail',
@@ -16,9 +17,9 @@ export class TicketDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.data
-      .subscribe((data: { ticket: Ticket }) => {
-        this.ticket = new Ticket({...data.ticket, creator: new User({...data.ticket.creator})});
+    this.route.data.pipe(switchMap((data) => data.ticket))
+      .subscribe((ticket: Ticket) => {
+        this.ticket = new Ticket({...ticket, creator: new User({...ticket.creator})});
       });
   }
 }

@@ -1,37 +1,39 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Apollo, gql } from 'apollo-angular';
+import { catchError, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 import { Ticket } from '../content/tickets/ticket';
 import { TicketCategory } from '../content/tickets/category';
-import { User } from '../content/users/user';
 import { TicketStatus } from '../content/tickets/status';
-import { catchError, mergeMap, map } from 'rxjs/operators';
-import { Observable, of, forkJoin } from 'rxjs';
-import { Apollo, gql } from 'apollo-angular';
+import { Tag } from '../content/tickets/tag';
+import { User } from '../content/users/user';
+import { Assignment } from '../content/assignment';
 
+import { BaseService } from '../content/base/base.service';
 import { QueryFragments } from './query-fragments';
 import { AuthenticationService } from './authentication.service';
-import { BaseService } from '../content/base/base.service';
-import { Assignment } from '../content/assignment';
-import { Tag } from '../content/tickets/tag';
 
 @Injectable()
 export class TicketService extends BaseService {
-  private apiUrl = 'api';
-  private ticketsUrl = `${this.apiUrl}/tickets`;
-  private ticketCategoriesUrl = `${this.ticketsUrl}/categories`;
-  private ticketStatusesUrl = `${this.ticketsUrl}/statuses`;
+  private getTicketsQuery = gql`
+    query GetTickets($take: Int) {
+      tickets(take: $take) {
+        ...ticket
+      }
+    }
+    ${QueryFragments.TICKET}
+  `;
 
   constructor(
     private apollo: Apollo,
     private authService: AuthenticationService,
-    private http: HttpClient,
   ) {
     super();
   }
 
   getTicket = (ticketId: number) => {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query GetTicket($id: Int!) {
           ticket(id: $id) {
@@ -43,21 +45,18 @@ export class TicketService extends BaseService {
       variables: {
         id: ticketId
       },
-    }).pipe(map(fetchResult => {
+      pollInterval: 500
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticket'] as Ticket;
     }));
   };
 
   getTickets = (take: number = 10) => {
     return this.apollo.watchQuery({
-      query: gql`
-        query GetTickets {
-          tickets(take: ${take}) {
-            ...ticket
-          }
-        }
-        ${QueryFragments.TICKET}
-      `,
+      query: this.getTicketsQuery,
+      variables: {
+        take
+      },
       pollInterval: 500
     }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['tickets'].map(this.mapTickets);
@@ -79,7 +78,7 @@ export class TicketService extends BaseService {
         newTicketData: [{
           description: ticket.description,
           creatorId: this.authService.currentUserValue.id,
-          ticketCategoryIds: ticket.tags.map(tag => new TicketCategory({id: tag.categoryId}))
+          ticketCategoryIds: ticket.tags.map(tag => tag.categoryId)
         }],
       },
     }).pipe(map(fetchResult => {
@@ -123,18 +122,13 @@ export class TicketService extends BaseService {
     return this.apollo.mutate({
       mutation: gql`
         mutation RemoveTicket($ticketIds: [Int!]!) {
-          removeTicket(ticketIds: $ticketIds) {
-            creatorId,
-            description
-          }
+          removeTicket(ticketIds: $ticketIds)
         }
       `,
       variables: {
         ticketIds: [ticket.id]
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['removeTicket'] as Ticket;
-    }));
+    });
   };
 
   getTicketCategories(take: number = 10) {
@@ -174,8 +168,24 @@ export class TicketService extends BaseService {
   }
 
   updateTicketCategory(ticketCategory: TicketCategory) {
-    const ticketCategoryUpdateUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
-    return this.http.patch<TicketCategory>(ticketCategoryUpdateUrl, ticketCategory);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateTicketCategory($updateTicketCategoryData: [UpdateCategoryInput!]!) {
+          updateTicketCategory(updateTicketCategoryData: $updateTicketCategoryData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        updateTicketCategoryData: [{
+          id: ticketCategory.id,
+          name: ticketCategory.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateTicketCategory'] as TicketCategory[];
+    }));
   }
 
   deleteTicketCategory(ticketCategory: TicketCategory) {
@@ -197,7 +207,7 @@ export class TicketService extends BaseService {
   }
 
   getTicketStatuses = (take: number = 10): Observable<TicketStatus[]> => {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query TicketStatuses {
           ticketStatuses(take: ${take}) {
@@ -205,8 +215,9 @@ export class TicketService extends BaseService {
             name
           }
         }
-      `
-    }).pipe(map(fetchResult => {
+      `,
+      pollInterval: 500
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticketStatuses'] as TicketStatus[];
     }));
   };
@@ -214,7 +225,7 @@ export class TicketService extends BaseService {
   createTicketStatus(ticketStatus: TicketStatus) {
     return this.apollo.mutate({
       mutation: gql`
-        mutation AddTicketStatus($newTicketStatusData: NewTicketStatusInput!) {
+        mutation AddTicketStatus($newTicketStatusData: [NewTicketStatusInput!]!) {
           addTicketStatus(newTicketStatusData: $newTicketStatusData) {
             id
             name
@@ -222,18 +233,34 @@ export class TicketService extends BaseService {
         }
       `,
       variables: {
-        newTicketStatusData: {
+        newTicketStatusData: [{
           name: ticketStatus.name
-        },
+        }],
       },
     }).pipe(map(fetchResult => {
-      return fetchResult.data['assignTicketsToUser'] as TicketStatus;
+      return fetchResult.data['assignTicketsToUser'] as TicketStatus[];
     }));
   }
 
   updateTicketStatus(ticketStatus: TicketStatus) {
-    const ticketStatusUpdateUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
-    return this.http.patch<TicketStatus>(ticketStatusUpdateUrl, ticketStatus);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateTicketStatus($updateTicketStatusData: [UpdateTicketStatusInput!]!) {
+          updateTicketStatus(updateTicketStatusData: $updateTicketStatusData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        updateTicketStatusData: [{
+          id: ticketStatus.id,
+          name: ticketStatus.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateTicketStatus'] as TicketStatus[];
+    }));
   }
 
   deleteTicketStatus(ticketStatus: TicketStatus) {
@@ -269,11 +296,12 @@ export class TicketService extends BaseService {
 
   private mapTickets(ticketData: Ticket): Ticket {
     const ticket = new Ticket({...ticketData});
-    ticket.assignments = ticketData.assignments.map(a => new Assignment({...a}));
+    ticket.assignments = ticketData.assignments?.map(a => new Assignment({...a})) || [];
     ticket.assignments.forEach(a => {
       a.user = new User({...a.user});
     });
-    ticket.tags = ticketData.tags.map(tag => new Tag({...tag}));
+    ticket.tags = ticketData.tags?.map(tag => new Tag({...tag})) || [];
+
     return ticket;
   }
 }

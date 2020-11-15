@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { User } from '../user';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { UserService } from 'src/app/service/user.service';
+import { User } from '../user';
 
 @Component({
   selector: 'user-form',
@@ -10,9 +13,12 @@ import { UserService } from 'src/app/service/user.service';
 })
 export class UserFormComponent implements OnInit {
   @Input() user: User;
+  public user$: Observable<User>;
   public userForm: FormGroup;
+  public isResetPassword: boolean = false;
 
   constructor(
+    private route: ActivatedRoute,
     private userService: UserService,
     private fb: FormBuilder
   ) {
@@ -21,19 +27,32 @@ export class UserFormComponent implements OnInit {
       username: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      password: ['', Validators.required],
+      password: [{
+        value: null,
+        disabled: !this.isResetPassword
+      }],
     });
   }
 
   ngOnInit(): void {
-    if (!this.user.id) return;
+    if (this.user?.id) {
+      // User passed in by parent component, no need to fetch
+      this.populateFormFields();
+      return;
+    }
 
-    this.userForm.setValue({
-      email: this.user.email,
-      username: this.user.username,
-      firstName: this.user.firstName,
-      lastName: this.user.lastName,
-      password: this.user.password || '',
+    this.user$ = this.route.data.pipe(switchMap((data) => data.user)) as Observable<User>;
+    this.user$.subscribe({
+      next: (user: User) => {
+        this.user = new User({ ...user });
+        this.populateFormFields();
+      },
+      error: () => {
+        // 'Create' form
+        this.isResetPassword = true;
+        this.userForm.controls.password[this.isResetPassword ? 'enable' : 'disable']();
+        return
+      }
     });
   }
 
@@ -43,17 +62,35 @@ export class UserFormComponent implements OnInit {
 
   onUserSubmit() {
     const formVals = this.userForm.value;
-    this.user.email = formVals.email;
-    this.user.username = formVals.username;
-    this.user.firstName = formVals.firstName;
-    this.user.lastName = formVals.lastName;
-    this.user.password = formVals.password;
+    const userData = new User({
+      ...formVals
+    });
+
     if (this.user.id) {
-      this.userService.update(this.user)
-        .subscribe(this.goBack);
+      userData.id = this.user.id;
+      this.userService.update(userData)
+      .subscribe((updatedUser) => {
+        if (updatedUser.length > 0) return this.goBack();
+
+        console.log('user-form.update', updatedUser);
+      });
     } else {
-      this.userService.create(this.user)
-        .subscribe(this.goBack);
+      this.userService.create(userData)
+      .subscribe((createdUser) => {
+        if (createdUser.length > 0) return this.goBack();
+
+        console.log('user-form.create', createdUser);
+      });
     }
+  }
+
+  private populateFormFields() {
+    this.userForm.setValue({
+      email: this.user.email,
+      username: this.user.username,
+      firstName: this.user.firstName,
+      lastName: this.user.lastName,
+      password: this.user.password || '',
+    });
   }
 }

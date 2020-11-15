@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { User } from './user';
 import { UserService } from '../../service/user.service';
 import { Ticket } from "../tickets/ticket";
 import * as alertify from "alertifyjs";
+import { ApolloError } from '@apollo/client/core';
 
 @Component({
     selector: 'my-users',
@@ -13,6 +15,7 @@ import * as alertify from "alertifyjs";
 })
 export class UsersComponent implements OnInit {
     public users: User[];
+    public users$: Observable<User[]>;
     public selectedUser: User;
     public assignments: Ticket[];
 
@@ -22,8 +25,8 @@ export class UsersComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-      this.userService.getUsers()
-        .subscribe(users => this.users = users);
+      this.users$ = this.userService.getUsers();
+      this.users$.subscribe(users => this.users = users);
     }
 
     onSelect(user: User): void {
@@ -39,10 +42,10 @@ export class UsersComponent implements OnInit {
     }
 
     onDelete(user: User): void {
-        if (this.assignments && this.assignments.length > 0) {
+        if (user.assignments.length && user.assignments.length > 0) {
             alertify.confirm('Warning',
-                'This user is assigned to one or more active tickets.' +
-                'Assignments must be removed before this user can be deleted.' +
+                'This user is assigned to one or more active tickets. ' +
+                'Assignments must be removed before this user can be deleted. ' +
                 'Would you like to remove assignments?',
                 () => { this.router.navigate(['/users/assign', user.id]); },
                 null
@@ -60,14 +63,22 @@ export class UsersComponent implements OnInit {
     private deleteUser(user: User): void {
         this.userService
             .delete(user)
-            .subscribe((err: any) => {
-                if (err) {
-                    alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
-                    return;
-                }
-
+            .subscribe({
+              next: () => {
                 this.users = this.users.filter(u => u !== user);
-                if (this.selectedUser === user) { this.selectedUser = null; }
-            });
+                if (this.selectedUser === user) {
+                  this.selectedUser = null;
+                }
+              },
+              error: (err: ApolloError) => {
+                if (err.graphQLErrors[0]?.extensions?.exception?.code === 'ER_ROW_IS_REFERENCED_2') {
+                  alertify.alert(
+                    'Can Not Delete',
+                    'There are relationships associated with this user.\n ' +
+                    'Remove the relationships first and try again.');
+                  return;
+                }
+              }
+          });
     }
 }

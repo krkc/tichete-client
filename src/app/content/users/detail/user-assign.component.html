@@ -2,18 +2,18 @@
 <div class="row form-group align-items-center">
   <div class="col form-group">
     <form id="removeAssignmentsForm" [formGroup]="removeAssignmentsForm" (ngSubmit)="onRemoveAssignments()">
-      <label for="assignmentsSelector">Currently assigned tickets:</label>
+      <label for="assignedTicketsSelector">Currently assigned tickets:</label>
       <select
-        formControlName="assignmentsSelector"
-        id="assignmentsSelector"
-        name="assignmentsSelector"
+        formControlName="assignedTicketsSelector"
+        id="assignedTicketsSelector"
+        name="assignedTicketsSelector"
         class="form-control"
         multiple
       >
         <option
-          *ngFor="let ticket of assignedTickets"
-          [value]="ticket.id"
-          >{{ ticket?.description | preview }}</option
+          *ngFor="let assignment of assignments"
+          [value]="assignment.ticket?.id"
+          >{{ assignment.ticket?.description | preview }}</option
         >
       </select>
     </form>
@@ -40,7 +40,7 @@
     <form id="addAssignmentsForm" [formGroup]="addAssignmentsForm" (ngSubmit)="onAddAssignments()">
       <mat-form-field>
         <mat-label>Choose a ticket to assign:</mat-label>
-        <mat-select formControlName="allTicketsSelector" multiple>
+        <mat-select formControlName="availableTicketsSelector" multiple>
           <mat-option *ngFor="let ticket of availableTickets" [value]="ticket.id">{{
             ticket.description | preview
           }}</mat-option>

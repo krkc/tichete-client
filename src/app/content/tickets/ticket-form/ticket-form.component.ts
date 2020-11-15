@@ -4,6 +4,9 @@ import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
 import { Tag } from '../tag';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'ticket-form',
@@ -12,10 +15,12 @@ import { Tag } from '../tag';
 })
 export class TicketFormComponent implements OnInit {
   @Input() ticket: Ticket;
+  public ticket$: Observable<Ticket>;
   public categories: TicketCategory[];
   public ticketForm: FormGroup;
 
   constructor(
+    private route: ActivatedRoute,
     private ticketService: TicketService,
     private fb: FormBuilder
   ) {
@@ -27,14 +32,26 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.ticket?.id) {
+      // Ticket passed in by parent component, no need to fetch
+      this.populateFormFields();
+      return;
+    }
+
+    this.ticket$ = this.route.data.pipe(switchMap((data) => data.ticket)) as Observable<Ticket>;
+    this.ticket$.subscribe({
+      next: (ticket: Ticket) => {
+        this.ticket = new Ticket({ ...ticket });
+        this.populateFormFields();
+      },
+      error: () => {
+        // 'Create' form
+        return
+      }
+    });
+
     this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
       this.categories = categories;
-      if (!this.ticket.id) return;
-
-      this.ticketForm.setValue({
-        taggedCategories: this.ticket.tags.map((tag) => tag.category.id),
-        description: this.ticket.description
-      });
     });
   }
 
@@ -44,35 +61,42 @@ export class TicketFormComponent implements OnInit {
 
   onTicketSubmit() {
     const formVals = this.ticketForm.value;
+    const ticketData = new Ticket({
+      ...formVals
+    });
+
     const taggedCategoryIds: number[] = formVals.taggedCategories;
-    this.ticket.description = formVals.description;
-    if (taggedCategoryIds) {
-      this.ticket.tags = taggedCategoryIds.map(cid => {
-        const tagFound = this.ticket.tags.find(tag => tag.category.id === cid);
-        return {
-          id: tagFound?.id || undefined,
-          ticketId: this.ticket.id,
-          categoryId: cid
-        } as Tag;
-      });
-    } else {
-      this.ticket.tags = [];
-    }
+    ticketData.tags = taggedCategoryIds?.map(cid => {
+      const tagFound = this.ticket?.tags?.find(tag => tag.category.id === cid);
+      return {
+        id: tagFound?.id || undefined,
+        ticketId: this.ticket.id,
+        categoryId: cid
+      } as Tag;
+    }) || [];
 
     if (this.ticket.id) {
-      this.ticketService.update(this.ticket)
+      ticketData.id = this.ticket.id;
+      this.ticketService.update(ticketData)
       .subscribe((updatedTicket) => {
         if (updatedTicket.length > 0) return this.goBack();
 
         console.log('ticket-form.update', updatedTicket);
       });
     } else {
-      this.ticketService.create(this.ticket)
+      this.ticketService.create(ticketData)
       .subscribe((createdTicket) => {
         if (createdTicket.length > 0) return this.goBack();
 
         console.log('ticket-form.create', createdTicket);
       });
     }
+  }
+
+  private populateFormFields() {
+    this.ticketForm.setValue({
+      taggedCategories: this.ticket.tags.map((tag) => tag.category.id),
+      description: this.ticket.description
+    });
   }
 }

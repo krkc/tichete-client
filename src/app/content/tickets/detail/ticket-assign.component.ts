@@ -6,6 +6,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { AssignmentService } from 'src/app/service/assignment.service';
 import { Assignment } from '../../assignment';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'ticket-assign',
@@ -14,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class TicketAssignComponent implements OnInit {
   @Input() ticket: Ticket;
+  public ticket$: Observable<Ticket>;
   public allUsers: User[];
   public availableUsers: User[];
   public assignments: Assignment[];
@@ -36,21 +39,14 @@ export class TicketAssignComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.ticket) {
-      this.route.data
-      .subscribe((data: { ticket: Ticket }) => {
-        this.ticket = new Ticket({...data.ticket, creator: new User({...data.ticket.creator})});
+      this.ticket$ = this.route.data.pipe(switchMap((data) => data.ticket)) as Observable<Ticket>;
+      this.ticket$.subscribe((ticket: Ticket) => {
+        this.ticket = new Ticket({...ticket, creator: new User({...ticket.creator})});
+        this.populateAssignments();
       });
+    } else {
+      this.populateAssignments();
     }
-
-    this.userService.getUsers().subscribe(allUsers => {
-      this.allUsers = allUsers;
-      this.assignments = this.ticket.assignments.map(a => new Assignment({
-        id: a.id,
-        ticket: this.ticket,
-        user: this.allUsers.find(u => u.id === a.user.id)
-      }));
-      this.availableUsers = allUsers.filter(u => !this.ticket.assignments.some(a => a.user.id === u.id));
-    });
   }
 
   onAddAssignees() {
@@ -84,5 +80,17 @@ export class TicketAssignComponent implements OnInit {
 
     this.availableUsers = this.availableUsers.concat(assignmentsToRemove.map(a => a.user));
     this.removeAssignmentsForm.reset();
+  }
+
+  private populateAssignments() {
+    this.userService.getUsers().subscribe(allUsers => {
+      this.allUsers = allUsers;
+      this.assignments = this.ticket.assignments.map(a => new Assignment({
+        id: a.id,
+        ticket: this.ticket,
+        user: this.allUsers.find(u => u.id === a.user.id)
+      }));
+      this.availableUsers = allUsers.filter(u => !this.ticket.assignments.some(a => a.user.id === u.id));
+    });
   }
 }

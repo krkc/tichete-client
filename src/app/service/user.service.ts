@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-
-import { User } from '../content/users/user';
-import { Ticket } from '../content/tickets/ticket';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { Apollo, gql } from 'apollo-angular';
+
+import { QueryFragments } from './query-fragments';
 import { BaseService } from '../content/base/base.service';
+import { User } from '../content/users/user';
+import { Ticket } from '../content/tickets/ticket';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -25,56 +26,36 @@ export class UserService extends BaseService {
   }
 
   getUser = (userId: number) => {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query GetUser($id: Int!) {
           user(id: $id) {
-            id
-            email
-            username
-            firstName
-            lastName
-            assignedTickets {
-              id
-              ticket {
-                id
-                name
-                description
-              }
-            }
+            ...user
           }
         }
+        ${QueryFragments.USER}
       `,
       variables: {
         id: userId
       },
-    }).pipe(map(fetchResult => {
+      pollInterval: 500
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['user'] as User;
     }));
   };
 
   getUsers = (take: number = 10) => {
-    return this.apollo.query({
+    return this.apollo.watchQuery({
       query: gql`
         query GetUsers {
           users(take: ${take}) {
-            id
-            email
-            username
-            firstName
-            lastName
-            assignments {
-              id
-              ticket {
-                id
-                name
-                description
-              }
-            }
+            ...user
           }
         }
-      `
-    }).pipe(map(fetchResult => {
+        ${QueryFragments.USER}
+      `,
+      pollInterval: 500
+    }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['users']
         .map((user: User) => new User({...user})) as User[];
     }));
@@ -96,8 +77,9 @@ export class UserService extends BaseService {
       variables: {
         newUserData: [{
           email: user.email,
+          username: user.username,
           firstName: user.firstName,
-          lastName: user.username,
+          lastName: user.lastName,
           password: user.password
         }],
       },
@@ -108,27 +90,45 @@ export class UserService extends BaseService {
   }
 
   update(user: User) {
-    const updateUsersUrl = `${this.apiUrl}${user._links.self.href}`;
-    return this.http
-      .put<User>(updateUsersUrl, JSON.stringify(user), this.options)
-      .pipe(map(user => new User(user)));
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateUser($updateUserData: [UpdateUserInput!]!) {
+          updateUser(updateUserData: $updateUserData) {
+            id
+            email
+            username
+            firstName
+            lastName
+          }
+        }
+      `,
+      variables: {
+        updateUserData: [{
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          password: user.password
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateUser']
+      .map((user: User) => new User({...user})) as User[];
+    }),catchError(this.handleError<any>()));
   }
 
   delete(user: User) {
     return this.apollo.mutate({
       mutation: gql`
         mutation RemoveUser($userIds: [Int!]!) {
-          removeUser(userIds: $userIds) {
-            id
-          }
+          removeUser(userIds: $userIds)
         }
       `,
       variables: {
         userIds: [user.id]
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['removeUser'] as User;
-    }),catchError(this.handleError<any>()));
+    });
   }
 
   getMyTickets = (): Observable<Ticket[]> => {
@@ -174,31 +174,6 @@ export class UserService extends BaseService {
     }).pipe(map(fetchResult => {
       return fetchResult.data['user']['subscriptions'] as Ticket[];
     }));
-    // TODO: Getting all errors, network level, graphql level, whatever...
-  }
-
-  getAssignments = (user: User) => {
-    const getAssignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
-
-    return this.http.get<any>(getAssignedTicketsUrl)
-      .pipe(
-        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
-        mergeMap((tickets) => {
-          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
-        })
-      );
-  }
-
-  updateAssignments = (user: User, toAssignTicketIds: number[], toUnassignTicketIds: number[]) => {
-    const assignedTicketsUrl = `${this.apiUrl}${user._links.assignedTickets.href}`;
-    const additionsAndRemovals = JSON.stringify({
-      added: toAssignTicketIds,
-      removed: toUnassignTicketIds
-    });
-    return this.http.put<Ticket[]>(assignedTicketsUrl, additionsAndRemovals, this.options)
-      .pipe<Ticket[]>(
-        catchError(this.handleError<Ticket[]>())
-      );
   }
 
   /**

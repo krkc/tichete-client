@@ -18,7 +18,7 @@ import { ApolloError } from '@apollo/client/core';
 export class TicketsComponent implements OnInit {
   public statuses: TicketStatus[];
   public tickets: Ticket[];
-  public ticketsData: Observable<Ticket[]>;
+  public tickets$: Observable<Ticket[]>;
   public selectedTicket: Ticket;
   public assignedUsers: User[];
 
@@ -27,14 +27,7 @@ export class TicketsComponent implements OnInit {
     private ticketService: TicketService) { }
 
   ngOnInit(): void {
-    this.ticketsData = this.ticketService.getTickets();
-    this.ticketsData.subscribe((tickets: Ticket[]) => {
-      if (!this.tickets) this.tickets = [];
-      while(this.tickets.length > 0) {
-        this.tickets.pop();
-      }
-      this.tickets.push(...tickets);
-    });
+    this.tickets$ = this.ticketService.getTickets();
   }
 
   onSelect(ticket: Ticket): void {
@@ -73,7 +66,6 @@ export class TicketsComponent implements OnInit {
       .delete(ticket)
       .subscribe({
         next: () => {
-          this.tickets = this.tickets.filter(t => t !== ticket);
           if (this.selectedTicket === ticket) {
             this.selectedTicket = null;
           }

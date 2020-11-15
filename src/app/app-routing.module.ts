@@ -86,7 +86,10 @@ const routes: Routes = [
           },
           {
             path: 'assign/:id',
-            component: UserAssignComponent
+            component: UserAssignComponent,
+            resolve: {
+              user: UserDetailResolverService
+            }
           }
         ],
         canActivate: [AuthGuard]

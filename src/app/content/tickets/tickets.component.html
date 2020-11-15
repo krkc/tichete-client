@@ -1,7 +1,7 @@
 <div id="ticketsList">
   <h1 class="h1">Help Desk Tickets</h1>
   <ul class="tickets list-group">
-    <li *ngFor="let ticket of ticketsData | async"
+    <li *ngFor="let ticket of tickets$ | async"
         class="list-group-item ticket"
         (click)="onSelect(ticket)"
         [class.selected]="ticket === selectedTicket"

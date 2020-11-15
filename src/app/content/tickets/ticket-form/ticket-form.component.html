@@ -13,7 +13,7 @@
   <br />
   <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>&nbsp;
   <button class="btn btn-primary" type="submit" [disabled]="!ticketForm.valid || ticketForm.pristine">
-    {{ (ticket.id) ? "Update" : "Create" }} Ticket
+    {{ (ticket?.id) ? "Update" : "Create" }} Ticket
   </button>
   <div [class.fade]="ticketForm.valid" [class.show]="!ticketForm.valid" class="alert alert-danger mt-3">
     Ticket Description field required

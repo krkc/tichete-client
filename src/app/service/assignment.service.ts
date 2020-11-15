@@ -62,60 +62,13 @@ export class AssignmentService extends BaseService {
     return this.apollo.mutate({
       mutation: gql`
         mutation RemoveAssignment($assignmentIds: [Int!]!) {
-          removeAssignment(assignmentIds: $assignmentIds) {
-            userId
-            ticketId
-          }
+          removeAssignment(assignmentIds: $assignmentIds)
         }
       `,
       variables: {
         assignmentIds: assignments.map(a => a.id),
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['removeAssignment']
-        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
-    }));
-  };
-
-  assignTicketsToUser = (user: User, ticket: Ticket) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation AssignTicketsToUser($userId: Int!, $assignedTicketIds: [Int!]!) {
-          assignTicketsToUser(userId: $userId,assignedTicketIds: $assignedTicketIds) {
-            id
-            firstName
-            lastName
-            email
-          }
-        }
-      `,
-      variables: {
-        userId: user.id,
-        assignedTicketIds: [ticket.id]
-      },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['assignTicketsToUser'] as User;
-    }));
-  };
-
-  unassignTicketsFromUser = (assignment: Assignment) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation UnassignTicketsFromUser($assignmentIds: [Int!]!) {
-          unassignTicketsFromUser(assignmentIds: $assignmentIds) {
-            id
-            firstName
-            lastName
-            email
-          }
-        }
-      `,
-      variables: {
-        assignmentIds: [assignment.id],
-      },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['assignTicketsToUser'] as User;
-    }));
+    });
   };
 
 }
