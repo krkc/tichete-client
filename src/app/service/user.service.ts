@@ -78,6 +78,21 @@ export class UserService extends BaseService<User> {
     }));
   };
 
+  getUsersNoRels = (take: number = 10) => {
+    const query = { query: gql`
+      query GetUsers($take: Int) {
+        users(take: $take) {
+          ...userMin
+        }
+      }
+      ${QueryFragments.USERMIN}
+      `,
+      variables: { take }
+    };
+    return this.apollo.watchQuery<{ users: User[] }>(query)
+      .valueChanges.pipe(map(fetchResult => fetchResult.data.users));
+  };
+
   create(user: User) {
     return this.apollo.mutate({
       mutation: gql`
@@ -126,7 +141,7 @@ export class UserService extends BaseService<User> {
           lastName: user.lastName,
           password: user.password,
           subscriptions: user.subscriptions?.map(sub => ({ id: sub.id, userId: user.id, categoryId: sub.categoryId || sub.category.id })) || undefined,
-          assignments: user.assignments.map(a => ({ id: a.id, userId: user.id, ticketId: a.ticketId || a.ticket.id })) || undefined,
+          assignments: user.assignments?.map(a => ({ id: a.id, userId: user.id, ticketId: a.ticketId || a.ticket.id })) || undefined,
         }],
       },
       update: this.updateCache,

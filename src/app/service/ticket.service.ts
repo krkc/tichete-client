@@ -118,7 +118,8 @@ export class TicketService extends BaseService<Ticket> {
             creatorId: ticket.creatorId,
             statusId: ticket.statusId,
             description: ticket.description,
-            tags: ticket.tags?.map(tag => ({ id: tag.id, ticketId: tag.ticketId, categoryId: tag.categoryId })) || undefined,
+            tags: ticket.tags?.map(tag => ({ id: tag.id, ticketId: ticket.id, categoryId: tag.categoryId || tag.category.id })) || undefined,
+            assignments: ticket.assignments?.map(a => ({ id: a.id, ticketId: ticket.id, userId: a.userId || a.user.id })) || undefined,
           },
         ]
       },

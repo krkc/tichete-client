@@ -10,6 +10,18 @@ const TICKETMIN = gql`
   }
 `;
 
+const USERMIN = gql`
+  fragment userMin on User {
+    __typename
+    id
+    email
+    username
+    firstName
+    lastName
+    displayName @client
+  }
+`;
+
 const TICKET = gql`
   fragment ticket on Ticket {
     ...ticketMin
@@ -75,5 +87,5 @@ const USER = gql`
 `;
 
 export const QueryFragments = {
-  TICKET, USER, TICKETMIN
+  TICKET, USER, TICKETMIN, USERMIN
 }

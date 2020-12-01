@@ -14,19 +14,31 @@ export abstract class BaseService<T extends Base> {
       let queryOut = { query: undefined, variables: undefined, data: {} };
 
       if (mutationAction === `update${this.className.singular}`) {
-        queryOut.data[this.className.singular.toLowerCase()] = mutatedResource;
         queryOut.query = this.getResourceQuery.query;
         queryOut.variables = { id: mutatedResource.id }
+        queryOut.data[this.className.singular.toLowerCase()] = mutatedResource;
       } else {
         queryOut.query = this.getResourcesQuery.query;
         queryOut.variables = { take: 10 };
 
-        const cachedResources = cacheStore.readQuery<T[]>({
-          query: queryOut.query,
-          variables: queryOut.variables,
-        });
+        let resources: T[];
+        try {
+          const cachedResources = cacheStore.readQuery<T[]>({
+            query: queryOut.query,
+            variables: queryOut.variables,
+          });
 
-        const resources: T[] = cachedResources[this.className.plural.toLowerCase()];
+          resources = cachedResources ? cachedResources[this.className.plural.toLowerCase()] : [];
+        } catch (error) {
+          // If you visit the ticket create page without first coming from the index page,
+          // the cache will be empty and (annoyingly) it throws an error. This doesn't seem to occur
+          // on the user create page. In that case, readQuery just returns null. Not sure yet why
+          // the inconsistency.
+          if (error.message !== `Can't find field '${this.className.plural.toLowerCase()}' on ROOT_QUERY object`) throw error;
+
+          resources = [];
+        }
+
         if (mutationAction === `remove${this.className.singular}`) {
           queryOut.data[this.className.plural.toLowerCase()] = resources.filter(resource => resource.id !== mutatedResource.id);
         } else if (mutationAction === `add${this.className.singular}`) {

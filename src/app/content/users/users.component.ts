@@ -40,7 +40,7 @@ export class UsersComponent implements OnInit {
     }
 
     onDelete(user: User): void {
-        if (user.assignments.length && user.assignments.length > 0) {
+        if (user.assignments?.length && user.assignments.length > 0) {
             alertify.confirm('Warning',
                 'This user is assigned to one or more active tickets. ' +
                 'Assignments must be removed before this user can be deleted. ' +

@@ -19,7 +19,7 @@ export class UserDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.user$ = this.route.data.pipe(switchMap((data) => data.user)) as Observable<User>;
+    this.user$ = this.route.data.pipe(switchMap(data => data.user)) as Observable<User>;
     this.user$.subscribe(user => this.user = user);
   }
 }

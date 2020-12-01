@@ -35,14 +35,14 @@ export class UserFormComponent implements OnInit {
     this.user$.subscribe({
       next: (user: User) => {
         this.user = new User({ ...user });
-        this.populateFormFields();
+
+        if (this.user?.id) {
+          this.populateFormFields();
+        } else {
+          this.isResetPassword = true;
+          this.userForm.controls.password[this.isResetPassword ? 'enable' : 'disable']();
+        }
       },
-      error: () => {
-        // 'Create' form
-        this.isResetPassword = true;
-        this.userForm.controls.password[this.isResetPassword ? 'enable' : 'disable']();
-        return
-      }
     });
   }
 
@@ -56,22 +56,21 @@ export class UserFormComponent implements OnInit {
       ...formVals
     });
 
+    let submitResult: Observable<any>;
     if (this.user.id) {
+      // Update
       userData.id = this.user.id;
-      this.userService.update(userData)
-      .subscribe((updatedUser) => {
-        if (updatedUser.length > 0) return this.goBack();
-
-        console.log('user-form.update', updatedUser);
-      });
+      submitResult = this.userService.update(userData);
     } else {
-      this.userService.create(userData)
-      .subscribe((createdUser) => {
-        if (createdUser.length > 0) return this.goBack();
-
-        console.log('user-form.create', createdUser);
-      });
+      // Create
+      submitResult = this.userService.create(userData);
     }
+
+    submitResult.subscribe((updatedResource) => {
+      if (updatedResource.length > 0) return this.goBack();
+
+      throw new Error(`User ${this.user.id ? 'Create': 'Update'} failed`);
+    });
   }
 
   private populateFormFields() {

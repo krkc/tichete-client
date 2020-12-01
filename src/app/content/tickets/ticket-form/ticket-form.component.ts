@@ -4,9 +4,7 @@ import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
 import { Tag } from '../tag';
-import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 
 @Component({
@@ -15,13 +13,12 @@ import { AuthenticationService } from 'src/app/service/authentication.service';
   styleUrls: ['./ticket-form.component.scss']
 })
 export class TicketFormComponent implements OnInit {
-  @Input() ticket: Ticket;
-  public ticket$: Observable<Ticket>;
+  @Input() ticket$: Observable<Ticket>;
+  public ticket: Ticket;
   public categories: TicketCategory[];
   public ticketForm: FormGroup;
 
   constructor(
-    private route: ActivatedRoute,
     private authService: AuthenticationService,
     private ticketService: TicketService,
     private fb: FormBuilder
@@ -40,16 +37,14 @@ export class TicketFormComponent implements OnInit {
       return;
     }
 
-    this.ticket$ = this.route.data.pipe(switchMap((data) => data.ticket)) as Observable<Ticket>;
     this.ticket$.subscribe({
       next: (ticket: Ticket) => {
         this.ticket = new Ticket({ ...ticket });
-        this.populateFormFields();
+
+        if (this.ticket?.id) {
+          this.populateFormFields();
+        }
       },
-      error: () => {
-        // 'Create' form
-        return
-      }
     });
 
     this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
@@ -79,25 +74,22 @@ export class TicketFormComponent implements OnInit {
       });
     }
 
+    let submitResult: Observable<any>;
     if (this.ticket.id) {
       // Update
       ticketData.id = this.ticket.id;
-      this.ticketService.update(ticketData)
-      .subscribe((updatedTicket) => {
-        if (updatedTicket?.length > 0) return this.goBack();
-
-        console.log('ticket-form.update', updatedTicket);
-      });
+      submitResult = this.ticketService.update(ticketData);
     } else {
       // Create
       ticketData.creatorId = this.authService.currentUserValue.id;
-      this.ticketService.create(ticketData)
-      .subscribe((createdTicket) => {
-        if (createdTicket?.length > 0) return this.goBack();
-
-        console.log('ticket-form.create', createdTicket);
-      });
+      submitResult = this.ticketService.create(ticketData);
     }
+
+    submitResult.subscribe((updatedResource) => {
+      if (updatedResource?.length > 0) return this.goBack();
+
+      throw new Error(`Ticket ${this.ticket.id ? 'Create': 'Update'} failed`);
+    });
   }
 
   private populateFormFields() {

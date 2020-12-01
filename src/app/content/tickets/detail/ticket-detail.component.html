@@ -3,9 +3,9 @@
   <div *ngIf="ticket" class="mb-3">
     Ticket ID#: {{ ticket.id }}<br />
     Submitted By:
-    <a routerLink="/user/detail/{{ ticket?.creator?.id }}">{{ ticket?.creator?.getDisplayName() }}</a><br />
+    <a routerLink="/user/detail/{{ ticket?.creator?.id }}">{{ ticket?.creator?.displayName }}</a><br />
     Submitted On: {{ ticket?.createdAt | date }}<br />
   </div>
-  <ticket-form [ticket]="ticket"></ticket-form>
-  <ticket-assign [ticket]="ticket"></ticket-assign>
+  <ticket-form [ticket$]="ticket$"></ticket-form>
+  <ticket-assign [ticket$]="ticket$"></ticket-assign>
 </div>

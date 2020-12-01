@@ -51,9 +51,10 @@ export class UserAssignComponent implements OnInit {
     const ticketIdsToAdd: number[] = this.addAssignmentsForm.value.availableTicketsSelector;
     const ticketsToAdd = this.allTickets.filter(t => ticketIdsToAdd.indexOf(t.id) >= 0);
 
+    const assignmentsToAdd = this.user.assignments || [];
     const userInput = new User({
       ...this.user,
-      assignments: this.user.assignments.concat(ticketsToAdd.map(t => new Assignment({ userId: this.user.id, ticketId: t.id }))),
+      assignments: assignmentsToAdd.concat(ticketsToAdd.map(t => new Assignment({ userId: this.user.id, ticketId: t.id }))),
     });
     this.userService.update(userInput).subscribe();
 
@@ -80,7 +81,7 @@ export class UserAssignComponent implements OnInit {
   private populateAssignments() {
     this.ticketService.getTicketsNoRels().subscribe(allTickets => {
       this.allTickets = allTickets;
-      this.availableTickets = allTickets.filter(t => !this.user.assignments.some(a => a.ticket.id === t.id));
+      this.availableTickets = allTickets.filter(t => !this.user.assignments?.some(a => a.ticket.id === t.id));
     });
   }
 }

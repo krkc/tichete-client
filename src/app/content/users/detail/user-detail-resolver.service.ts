@@ -13,7 +13,6 @@ export class UserDetailResolverService implements Resolve<Observable<User>> {
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<User>> {
     let id = route.paramMap.get('id');
-    // TODO: Handle 'create' better than just handling an undefined observable.
     return of(this.userService.getUser(+id));
   }
 }
