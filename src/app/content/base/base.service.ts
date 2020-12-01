@@ -1,5 +1,4 @@
 import { ApolloCache, DataProxy, FetchResult } from '@apollo/client/core';
-import { QueryFragments } from 'src/app/service/query-fragments';
 import { Base } from './base';
 
 export abstract class BaseService<T extends Base> {
@@ -19,11 +18,14 @@ export abstract class BaseService<T extends Base> {
         queryOut.query = this.getResourceQuery.query;
         queryOut.variables = { id: mutatedResource.id }
       } else {
-        const variables = { take: 10 };
+        queryOut.query = this.getResourcesQuery.query;
+        queryOut.variables = { take: 10 };
+
         const cachedResources = cacheStore.readQuery<T[]>({
-          query: this.getResourcesQuery.query,
-          variables,
+          query: queryOut.query,
+          variables: queryOut.variables,
         });
+
         const resources: T[] = cachedResources[this.className.plural.toLowerCase()];
         if (mutationAction === `remove${this.className.singular}`) {
           queryOut.data[this.className.plural.toLowerCase()] = resources.filter(resource => resource.id !== mutatedResource.id);

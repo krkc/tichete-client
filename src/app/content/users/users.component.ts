@@ -14,7 +14,6 @@ import { ApolloError } from '@apollo/client/core';
     styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-    public users: User[];
     public users$: Observable<User[]>;
     public selectedUser: User;
     public assignments: Ticket[];
@@ -26,7 +25,6 @@ export class UsersComponent implements OnInit {
 
     ngOnInit(): void {
       this.users$ = this.userService.getUsers();
-      this.users$.subscribe(users => this.users = users);
     }
 
     onSelect(user: User): void {
@@ -65,7 +63,6 @@ export class UsersComponent implements OnInit {
             .delete(user)
             .subscribe({
               next: () => {
-                this.users = this.users.filter(u => u !== user);
                 if (this.selectedUser === user) {
                   this.selectedUser = null;
                 }

@@ -17,7 +17,6 @@ import { ApolloError } from '@apollo/client/core';
 })
 export class TicketsComponent implements OnInit {
   public statuses: TicketStatus[];
-  public tickets: Ticket[];
   public tickets$: Observable<Ticket[]>;
   public selectedTicket: Ticket;
   public assignedUsers: User[];
@@ -43,7 +42,7 @@ export class TicketsComponent implements OnInit {
   }
 
   onDelete(ticket: Ticket): void {
-    if (ticket.assignments.length && ticket.assignments.length > 0) {
+    if (ticket.assignments?.length && ticket.assignments.length > 0) {
       // TODO: Currently only looking for assignments, but there are also tags now
       alertify.confirm('Warning',
         'This ticket is active and has users assigned. ' +

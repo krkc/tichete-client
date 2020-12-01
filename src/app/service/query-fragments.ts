@@ -33,6 +33,9 @@ const TICKET = gql`
       user {
         id
         email
+        displayName @client
+        firstName
+        lastName
       }
     }
   }
