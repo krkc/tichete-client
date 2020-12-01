@@ -1,4 +1,4 @@
-import { TicketCategory } from '../tickets/category';
+import { TicketCategory } from '../tickets/ticket-category';
 import { Base } from '../base/base';
 import { User } from './user';
 

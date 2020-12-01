@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { User } from '../user';
@@ -10,6 +11,7 @@ import { User } from '../user';
   styleUrls: ['./user-detail.component.scss']
 })
 export class UserDetailComponent implements OnInit {
+  public user$: Observable<User>;
   public user: User;
 
   constructor(
@@ -17,9 +19,7 @@ export class UserDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.data.pipe(switchMap((data) => data.user))
-      .subscribe((user: User) => {
-        this.user = user;
-      });
+    this.user$ = this.route.data.pipe(switchMap((data) => data.user)) as Observable<User>;
+    this.user$.subscribe(user => this.user = user);
   }
 }

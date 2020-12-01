@@ -1,12 +1,18 @@
 import { gql } from 'apollo-angular';
 
-const TICKET = gql`
-  fragment ticket on Ticket {
+const TICKETMIN = gql`
+  fragment ticketMin on Ticket {
     __typename
     id
     name
     description
     createdAt
+  }
+`;
+
+const TICKET = gql`
+  fragment ticket on Ticket {
+    ...ticketMin
     creator {
       id
       email
@@ -30,6 +36,7 @@ const TICKET = gql`
       }
     }
   }
+  ${TICKETMIN}
 `;
 
 const USER = gql`
@@ -40,6 +47,7 @@ const USER = gql`
     username
     firstName
     lastName
+    displayName @client
     submittedTickets {
       id
       name
@@ -64,5 +72,5 @@ const USER = gql`
 `;
 
 export const QueryFragments = {
-  TICKET, USER
+  TICKET, USER, TICKETMIN
 }

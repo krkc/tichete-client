@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TicketService } from 'src/app/service/ticket.service';
-import { TicketCategory } from '../../../tickets/category';
+import { TicketCategory } from '../../../tickets/ticket-category';
 
 import * as alertify from 'alertifyjs';
 

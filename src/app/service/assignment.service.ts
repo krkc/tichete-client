@@ -8,7 +8,8 @@ import { Apollo, gql } from 'apollo-angular';
 import { BaseService } from '../content/base/base.service';
 
 @Injectable()
-export class AssignmentService extends BaseService {
+export class AssignmentService extends BaseService<Assignment> {
+  protected className = { singular: Assignment.name, plural: `${Assignment.name}s` };
 
   constructor(
     private apollo: Apollo,

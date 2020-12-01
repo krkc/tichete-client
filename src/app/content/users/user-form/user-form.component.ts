@@ -1,8 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import { UserService } from 'src/app/service/user.service';
 import { User } from '../user';
 
@@ -12,13 +10,12 @@ import { User } from '../user';
   styleUrls: ['./user-form.component.scss']
 })
 export class UserFormComponent implements OnInit {
-  @Input() user: User;
-  public user$: Observable<User>;
+  @Input() user$: Observable<User>;
+  public user: User;
   public userForm: FormGroup;
   public isResetPassword: boolean = false;
 
   constructor(
-    private route: ActivatedRoute,
     private userService: UserService,
     private fb: FormBuilder
   ) {
@@ -35,13 +32,6 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.user?.id) {
-      // User passed in by parent component, no need to fetch
-      this.populateFormFields();
-      return;
-    }
-
-    this.user$ = this.route.data.pipe(switchMap((data) => data.user)) as Observable<User>;
     this.user$.subscribe({
       next: (user: User) => {
         this.user = new User({ ...user });

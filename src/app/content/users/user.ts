@@ -1,6 +1,6 @@
 import { Base } from '../base/base';
 import { Ticket } from '../tickets/ticket';
-import { TicketCategory } from '../tickets/category';
+import { TicketCategory } from '../tickets/ticket-category';
 import { Assignment } from '../assignment';
 import { Subscription } from './subscription';
 

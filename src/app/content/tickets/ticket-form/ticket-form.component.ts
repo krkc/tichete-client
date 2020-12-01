@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TicketCategory } from '../category';
+import { TicketCategory } from '../ticket-category';
 import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
@@ -7,6 +7,7 @@ import { Tag } from '../tag';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { AuthenticationService } from 'src/app/service/authentication.service';
 
 @Component({
   selector: 'ticket-form',
@@ -21,6 +22,7 @@ export class TicketFormComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private authService: AuthenticationService,
     private ticketService: TicketService,
     private fb: FormBuilder
   ) {
@@ -65,28 +67,33 @@ export class TicketFormComponent implements OnInit {
       ...formVals
     });
 
-    const taggedCategoryIds: number[] = formVals.taggedCategories;
-    ticketData.tags = taggedCategoryIds?.map(cid => {
-      const tagFound = this.ticket?.tags?.find(tag => tag.category.id === cid);
-      return {
-        id: tagFound?.id || undefined,
-        ticketId: this.ticket.id,
-        categoryId: cid
-      } as Tag;
-    }) || [];
+    if (this.ticketForm.controls['taggedCategories'].dirty) {
+      const taggedCategoryIds: number[] = formVals.taggedCategories;
+      ticketData.tags = taggedCategoryIds.map(cid => {
+        const tagFound = this.ticket?.tags?.find(tag => tag.category.id === cid);
+        return {
+          id: tagFound?.id || undefined,
+          ticketId: this.ticket.id,
+          categoryId: cid
+        } as Tag;
+      });
+    }
 
     if (this.ticket.id) {
+      // Update
       ticketData.id = this.ticket.id;
       this.ticketService.update(ticketData)
       .subscribe((updatedTicket) => {
-        if (updatedTicket.length > 0) return this.goBack();
+        if (updatedTicket?.length > 0) return this.goBack();
 
         console.log('ticket-form.update', updatedTicket);
       });
     } else {
+      // Create
+      ticketData.creatorId = this.authService.currentUserValue.id;
       this.ticketService.create(ticketData)
       .subscribe((createdTicket) => {
-        if (createdTicket.length > 0) return this.goBack();
+        if (createdTicket?.length > 0) return this.goBack();
 
         console.log('ticket-form.create', createdTicket);
       });
@@ -95,7 +102,7 @@ export class TicketFormComponent implements OnInit {
 
   private populateFormFields() {
     this.ticketForm.setValue({
-      taggedCategories: this.ticket.tags.map((tag) => tag.category.id),
+      taggedCategories: this.ticket.tags?.map((tag) => tag.category.id) || [],
       description: this.ticket.description
     });
   }

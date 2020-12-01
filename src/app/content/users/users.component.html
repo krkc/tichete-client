@@ -10,7 +10,7 @@
         {{ user.username }}
       </span>
       <div *ngIf="selectedUser === user">
-        <span><strong>Name: </strong>{{ user.getDisplayName() }}</span><br />
+        <span><strong>Name: </strong>{{ user.displayName }}</span><br />
         <div class="assigned">
           <span><strong>Assigned Tickets: </strong></span><br />
           <ul>

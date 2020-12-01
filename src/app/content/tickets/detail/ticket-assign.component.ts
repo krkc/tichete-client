@@ -85,12 +85,12 @@ export class TicketAssignComponent implements OnInit {
   private populateAssignments() {
     this.userService.getUsers().subscribe(allUsers => {
       this.allUsers = allUsers;
-      this.assignments = this.ticket.assignments.map(a => new Assignment({
+      this.assignments = this.ticket.assignments?.map(a => new Assignment({
         id: a.id,
         ticket: this.ticket,
         user: this.allUsers.find(u => u.id === a.user.id)
-      }));
-      this.availableUsers = allUsers.filter(u => !this.ticket.assignments.some(a => a.user.id === u.id));
+      })) || [];
+      this.availableUsers = allUsers.filter(u => !this.ticket.assignments?.some(a => a.user.id === u.id));
     });
   }
 }

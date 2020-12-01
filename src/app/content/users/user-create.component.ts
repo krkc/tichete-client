@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { of, Observable } from 'rxjs';
 import { User } from './user';
 
 @Component({
@@ -7,10 +8,10 @@ import { User } from './user';
   styleUrls: ['./user-create.component.scss']
 })
 export class UserCreateComponent {
-  public user: User;
+  public user$: Observable<User>;
 
   constructor(
   ) {
-    this.user = new User();
+    this.user$ = of(new User());
   }
 }

@@ -11,7 +11,7 @@
         multiple
       >
         <option
-          *ngFor="let assignment of assignments"
+          *ngFor="let assignment of user?.assignments"
           [value]="assignment.ticket?.id"
           >{{ assignment.ticket?.description | preview }}</option
         >

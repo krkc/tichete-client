@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, of } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { Apollo, gql } from 'apollo-angular';
 
@@ -9,20 +8,38 @@ import { QueryFragments } from './query-fragments';
 import { BaseService } from '../content/base/base.service';
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
+import { Assignment } from '../content/assignment';
 
 @Injectable()
-export class UserService extends BaseService {
-  private apiUrl: string = '/api';
-  private headers: HttpHeaders;
-  private options: { headers: HttpHeaders };
+export class UserService extends BaseService<User> {
+  protected className = { singular: User.name, plural: `${User.name}s` };
+  protected getResourceQuery = {
+    query: gql`
+      query GetUser($id: Int!) {
+        user(id: $id) {
+          ...user
+        }
+      }
+      ${QueryFragments.USER}
+    `,
+  }
+
+  protected getResourcesQuery = {
+    query: gql`
+      query GetUsers($take: Int) {
+        users(take: $take) {
+          ...user
+        }
+      }
+      ${QueryFragments.USER}
+    `,
+  }
+
   constructor(
     private apollo: Apollo,
-    private http: HttpClient,
     private authService: AuthenticationService,
   ) {
     super();
-    this.headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.options = { headers: this.headers };
   }
 
   getUser = (userId: number) => {
@@ -38,26 +55,26 @@ export class UserService extends BaseService {
       variables: {
         id: userId
       },
-      pollInterval: 500
     }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['user'] as User;
     }));
   };
 
   getUsers = (take: number = 10) => {
-    return this.apollo.watchQuery({
+    const query = {
       query: gql`
-        query GetUsers {
-          users(take: ${take}) {
-            ...user
-          }
+        query GetUsers($take: Int) {
+        users(take: $take) {
+          ...user
         }
-        ${QueryFragments.USER}
+      }
+      ${QueryFragments.USER}
       `,
-      pollInterval: 500
-    }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data['users']
-        .map((user: User) => new User({...user})) as User[];
+      variables: { take }
+    }
+    return this.apollo.watchQuery<{ users: User[] }>(query)
+      .valueChanges.pipe(map(fetchResult => {
+        return fetchResult.data['users'] as User[];
     }));
   };
 
@@ -83,6 +100,7 @@ export class UserService extends BaseService {
           password: user.password
         }],
       },
+      update: this.updateCache,
     }).pipe(map(fetchResult => {
       return fetchResult.data['addUser']
       .map((user: User) => new User({...user})) as User[];
@@ -94,13 +112,10 @@ export class UserService extends BaseService {
       mutation: gql`
         mutation UpdateUser($updateUserData: [UpdateUserInput!]!) {
           updateUser(updateUserData: $updateUserData) {
-            id
-            email
-            username
-            firstName
-            lastName
+            ...user
           }
         }
+        ${QueryFragments.USER}
       `,
       variables: {
         updateUserData: [{
@@ -109,9 +124,12 @@ export class UserService extends BaseService {
           username: user.username,
           firstName: user.firstName,
           lastName: user.lastName,
-          password: user.password
+          password: user.password,
+          subscriptions: user.subscriptions?.map(sub => ({ id: sub.id, userId: user.id, categoryId: sub.categoryId || sub.category.id })) || undefined,
+          assignments: user.assignments.map(a => ({ id: a.id, userId: user.id, ticketId: a.ticketId || a.ticket.id })) || undefined,
         }],
       },
+      update: this.updateCache,
     }).pipe(map(fetchResult => {
       return fetchResult.data['updateUser']
       .map((user: User) => new User({...user})) as User[];
@@ -128,6 +146,7 @@ export class UserService extends BaseService {
       variables: {
         userIds: [user.id]
       },
+      update: (cacheStore, fetchResult) => this.updateCache(cacheStore, { data: { removeUser: [user] } }),
     });
   }
 
@@ -162,8 +181,20 @@ export class UserService extends BaseService {
             id
             subscriptions {
               id
-              userId
-              categoryId
+              category {
+                tags {
+                  ticket {
+                    id
+                    name
+                  }
+                }
+              }
+            }
+            assignments {
+              ticket {
+                id
+                name
+              }
             }
           }
         }
@@ -172,7 +203,13 @@ export class UserService extends BaseService {
         id: this.authService.currentUserValue.id
       }
     }).pipe(map(fetchResult => {
-      return fetchResult.data['user']['subscriptions'] as Ticket[];
+      const user: User = fetchResult.data['user'];
+      const tickets : Ticket[] = user.subscriptions?.reduce((acc, subscription) => {
+        acc.push(...subscription.category.tags.map(tag => tag.ticket));
+        return acc;
+      }, [] as Ticket[]);
+      tickets.push(...user.assignments.map(a => a.ticket));
+      return tickets;
     }));
   }
 

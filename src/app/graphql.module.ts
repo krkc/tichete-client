@@ -33,7 +33,15 @@ export function createApollo(
   });
 
   const link = ApolloLink.from([basic, auth, httpLink.create({ uri })]);
-  const cache = new InMemoryCache();
+  const cache = new InMemoryCache({
+    typePolicies: {
+      User: {
+        fields: {
+          displayName: (_, { readField }) => `${readField('firstName')} ${readField('lastName')}`,
+        },
+      }
+    },
+  });
 
   return {
     link,

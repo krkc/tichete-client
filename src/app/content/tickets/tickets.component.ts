@@ -44,6 +44,7 @@ export class TicketsComponent implements OnInit {
 
   onDelete(ticket: Ticket): void {
     if (ticket.assignments.length && ticket.assignments.length > 0) {
+      // TODO: Currently only looking for assignments, but there are also tags now
       alertify.confirm('Warning',
         'This ticket is active and has users assigned. ' +
         'Assignments must be removed before this ticket can be deleted. ' +

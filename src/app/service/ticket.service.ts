@@ -4,7 +4,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
 import { Ticket } from '../content/tickets/ticket';
-import { TicketCategory } from '../content/tickets/category';
+import { TicketCategory } from '../content/tickets/ticket-category';
 import { TicketStatus } from '../content/tickets/status';
 import { Tag } from '../content/tickets/tag';
 import { User } from '../content/users/user';
@@ -12,54 +12,73 @@ import { Assignment } from '../content/assignment';
 
 import { BaseService } from '../content/base/base.service';
 import { QueryFragments } from './query-fragments';
-import { AuthenticationService } from './authentication.service';
+import { ApolloCache, FetchResult } from '@apollo/client/core';
 
+// TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
 @Injectable()
-export class TicketService extends BaseService {
-  private getTicketsQuery = gql`
-    query GetTickets($take: Int) {
-      tickets(take: $take) {
-        ...ticket
+export class TicketService extends BaseService<Ticket> {
+  protected className = { singular: Ticket.name, plural: `${Ticket.name}s` };
+  protected getResourceQuery = {
+    query: gql`
+      query GetTicket($id: Int!) {
+        ticket(id: $id) {
+          ...ticket
+        }
       }
-    }
-    ${QueryFragments.TICKET}
-  `;
+      ${QueryFragments.TICKET}
+    `,
+    variables: { take: 10 }
+  }
+
+  protected getResourcesQuery = {
+    query: gql`
+      query GetTickets($take: Int) {
+        tickets(take: $take) {
+          ...ticket
+        }
+      }
+      ${QueryFragments.TICKET}
+    `,
+  }
 
   constructor(
     private apollo: Apollo,
-    private authService: AuthenticationService,
   ) {
     super();
   }
 
   getTicket = (ticketId: number) => {
     return this.apollo.watchQuery({
-      query: gql`
-        query GetTicket($id: Int!) {
-          ticket(id: $id) {
-            ...ticket
-          }
-        }
-        ${QueryFragments.TICKET}
-      `,
+      query: this.getResourceQuery.query,
       variables: {
         id: ticketId
       },
-      pollInterval: 500
     }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticket'] as Ticket;
     }));
   };
 
   getTickets = (take: number = 10) => {
-    return this.apollo.watchQuery({
-      query: this.getTicketsQuery,
-      variables: {
-        take
-      },
-      pollInterval: 500
-    }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data['tickets'].map(this.mapTickets);
+    const query = { query: this.getResourcesQuery.query, variables: { take } };
+    return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
+      .valueChanges.pipe(map(fetchResult => {
+        return fetchResult.data.tickets.map(this.mapTickets);
+    }));
+  };
+
+  getTicketsNoRels = (take: number = 10) => {
+    const query = { query: gql`
+      query GetTickets($take: Int) {
+        tickets(take: $take) {
+          ...ticketMin
+        }
+      }
+      ${QueryFragments.TICKETMIN}
+      `, variables: { take }
+    };
+    return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
+      .valueChanges.pipe(map(fetchResult => {
+        return fetchResult.data.tickets.map(this.mapTickets);
     }));
   };
 
@@ -68,19 +87,19 @@ export class TicketService extends BaseService {
       mutation: gql`
         mutation AddTicket($newTicketData: [NewTicketInput!]!) {
           addTicket(newTicketData: $newTicketData) {
-            id
-            name
-            description
+            ...ticket
           }
         }
+        ${QueryFragments.TICKET}
       `,
       variables: {
         newTicketData: [{
           description: ticket.description,
-          creatorId: this.authService.currentUserValue.id,
-          ticketCategoryIds: ticket.tags.map(tag => tag.categoryId)
+          creatorId: ticket.creatorId,
+          ticketCategoryIds: ticket.tags?.map(tag => tag.categoryId) || []
         }],
       },
+      update: this.updateCache,
     }).pipe(map(fetchResult => {
       return fetchResult.data['addTicket'].map(this.mapTickets);
     }),catchError(this.handleError<any>()));
@@ -91,16 +110,10 @@ export class TicketService extends BaseService {
       mutation: gql`
         mutation UpdateTicket($updateTicketData: [UpdateTicketInput!]!) {
           updateTicket(updateTicketData: $updateTicketData) {
-            id
-            name
-            description
-            tags {
-              id
-              ticketId
-              categoryId
-            }
+            ...ticket
           }
         }
+        ${QueryFragments.TICKET}
       `,
       variables: {
         updateTicketData: [
@@ -109,12 +122,13 @@ export class TicketService extends BaseService {
             creatorId: ticket.creatorId,
             statusId: ticket.statusId,
             description: ticket.description,
-            tags: ticket.tags.map(tag => ({ id: tag.id, ticketId: tag.ticketId, categoryId: tag.categoryId }))
+            tags: ticket.tags?.map(tag => ({ id: tag.id, ticketId: tag.ticketId, categoryId: tag.categoryId })) || undefined,
           },
         ]
       },
+      update: this.updateCache,
     }).pipe(map(fetchResult => {
-      return fetchResult.data['updateTicket'] as Ticket;
+      return fetchResult.data['updateTicket'].map(this.mapTickets);
     }),catchError(this.handleError<any>()));
   };
 
@@ -128,6 +142,7 @@ export class TicketService extends BaseService {
       variables: {
         ticketIds: [ticket.id]
       },
+      update: (cacheStore) => this.updateCache(cacheStore, { data: { removeTicket: [ticket] } }),
     });
   };
 
@@ -141,7 +156,6 @@ export class TicketService extends BaseService {
           }
         }
       `,
-      pollInterval: 500,
     }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticketCategories'] as TicketCategory[];
     }));
@@ -216,7 +230,6 @@ export class TicketService extends BaseService {
           }
         }
       `,
-      pollInterval: 500
     }).valueChanges.pipe(map(fetchResult => {
       return fetchResult.data['ticketStatuses'] as TicketStatus[];
     }));
@@ -280,21 +293,38 @@ export class TicketService extends BaseService {
     }));
   }
 
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
+  // protected updateCache = (cacheStore: ApolloCache<any>, { data }: FetchResult<any>) => {
+  //   let tickets: Ticket[] = [];
+  //   try {
+  //     const prevData = cacheStore.readQuery({
+  //       query: this.getResourceQuery.query,
+  //       variables: this.getResourceQuery.variables,
+  //     });
+  //     tickets.push(...prevData['tickets']);
+  //   } catch (error) {
+  //     if (error.message !== 'Can\'t find field \'tickets\' on ROOT_QUERY object') {
+  //       throw error;
+  //     }
+  //   }
 
-  private mapTickets(ticketData: Ticket): Ticket {
+  //   const mutationAction = Object.keys(data)[0];
+  //   data[mutationAction].forEach(fetchedTicket => {
+  //     if (mutationAction === 'removeTicket') {
+  //       tickets.splice(tickets.findIndex(t => t.id === fetchedTicket.id),1);
+  //     } else if (mutationAction === 'addTicket') {
+  //       tickets.push(fetchedTicket);
+  //     } else if (mutationAction === 'updateTicket') {
+  //       tickets = tickets.map(t => t.id === fetchedTicket.id ? fetchedTicket: t);
+  //     }
+  //   });
+
+  //   cacheStore.writeQuery({
+  //     ...this.getResourceQuery,
+  //     data: { tickets }
+  //   });
+  // }
+
+  private mapTickets = (ticketData: Ticket): Ticket => {
     const ticket = new Ticket({...ticketData});
     ticket.assignments = ticketData.assignments?.map(a => new Assignment({...a})) || [];
     ticket.assignments.forEach(a => {
@@ -303,5 +333,19 @@ export class TicketService extends BaseService {
     ticket.tags = ticketData.tags?.map(tag => new Tag({...tag})) || [];
 
     return ticket;
+  }
+
+  /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
+  private handleError = <T>(result?: T) => {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }
