@@ -31,7 +31,7 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let category of ticketCategories"
+            *ngFor="let category of ticketCategoriesData | async"
             routerLink="/settings/app/ticket-categories/{{ category.id }}"
             routerLinkActive="active"
           >

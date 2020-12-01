@@ -1,31 +1,29 @@
+import { Base } from '../base/base';
 import { Ticket } from '../tickets/ticket';
-import { TicketCategory } from '../tickets/category';
+import { TicketCategory } from '../tickets/ticket-category';
+import { Assignment } from '../assignment';
+import { Subscription } from './subscription';
 
-export class User {
-    id: number;
+export class User extends Base {
     username: string;
     email: string;
     firstName: string;
     lastName: string;
     password?: string;
-    token?: string;
+    accessToken?: string;
 
     _links: any;
     _embedded: any;
 
-    assignedTickets?: Ticket[];
+    assignments?: Assignment[];
     submittedTickets?: Ticket[];
-    subscribedCategories?: TicketCategory[];
-
-    constructor(data?: any) {
-        if (!data) return;
-        
-        for (let key in data) {
-            this[key] = data[key];
-        }
-    }
+    subscriptions?: Subscription[];
 
     getDisplayName = () => {
-        return `${this.firstName} ${this.lastName}`;
+      if (!this.firstName && !this.lastName) {
+        return `${this.email}`;
+      }
+
+      return `${this.firstName} ${this.lastName}`;
     }
 }

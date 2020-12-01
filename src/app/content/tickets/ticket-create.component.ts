@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-
+import { Component } from '@angular/core';
+import { of, Observable } from 'rxjs';
 import { Ticket } from './ticket';
 
 @Component({
@@ -8,19 +7,12 @@ import { Ticket } from './ticket';
   templateUrl: './ticket-create.component.html',
   styleUrls: ['./ticket-create.component.scss']
 })
-export class TicketCreateComponent implements OnInit {
+export class TicketCreateComponent {
+  public ticket$: Observable<Ticket>;
   public ticket: Ticket;
 
-  constructor(
-    private route: ActivatedRoute,
-  ) {
-    this.ticket = new Ticket();
-  }
-
-  ngOnInit(): void {
-    // this.route.data
-    //   .subscribe((data: { ticket: Ticket }) => {
-    //     this.ticket = data.ticket;
-    //   });
+  constructor() {
+    this.ticket$ = of(new Ticket());
+    this.ticket$.subscribe(ticket => this.ticket = ticket);
   }
 }

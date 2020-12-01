@@ -1,13 +1,10 @@
+import { Base } from './base/base';
 import { User } from './users/user';
 import { Ticket } from './tickets/ticket';
 
-export class Assignment {
-  id: number;
+export class Assignment extends Base {
   userId: number;
   ticketId: number;
-
-  _links: any;
-  _embedded: any;
 
   user: User;
   ticket: Ticket;

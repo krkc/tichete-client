@@ -1,13 +1,13 @@
-import { TicketCategory } from './category';
 import { User } from '../users/user';
 import { TicketStatus } from './status';
+import { Base } from '../base/base';
+import { Tag } from './tag';
+import { Assignment } from '../assignment';
 
-export class Ticket {
-  id: number;
+export class Ticket extends Base {
   name: string;
   description: string;
   creatorId: number;
-  createdAt: Date;
   assignedToId: number;
   categoryId: number;
   statusId: number;
@@ -16,8 +16,8 @@ export class Ticket {
   _links: any;
   _embedded: any;
 
-  submittedBy: User;
+  creator: User;
   status: TicketStatus;
-  taggedCategories: TicketCategory[];
-  assignedUsers: User[];
+  tags: Tag[];
+  assignments: Assignment[];
 }

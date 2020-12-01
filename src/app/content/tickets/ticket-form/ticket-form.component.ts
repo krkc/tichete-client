@@ -1,8 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TicketCategory } from '../category';
+import { TicketCategory } from '../ticket-category';
 import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
+import { Tag } from '../tag';
+import { Observable } from 'rxjs';
+import { AuthenticationService } from 'src/app/service/authentication.service';
 
 @Component({
   selector: 'ticket-form',
@@ -10,11 +13,13 @@ import { TicketService } from 'src/app/service/ticket.service';
   styleUrls: ['./ticket-form.component.scss']
 })
 export class TicketFormComponent implements OnInit {
-  @Input() ticket: Ticket;
+  @Input() ticket$: Observable<Ticket>;
+  public ticket: Ticket;
   public categories: TicketCategory[];
   public ticketForm: FormGroup;
 
   constructor(
+    private authService: AuthenticationService,
     private ticketService: TicketService,
     private fb: FormBuilder
   ) {
@@ -26,18 +31,24 @@ export class TicketFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
-      this.categories = categories;
+    if (this.ticket?.id) {
+      // Ticket passed in by parent component, no need to fetch
+      this.populateFormFields();
+      return;
+    }
+
+    this.ticket$.subscribe({
+      next: (ticket: Ticket) => {
+        this.ticket = new Ticket({ ...ticket });
+
+        if (this.ticket?.id) {
+          this.populateFormFields();
+        }
+      },
     });
 
-    if (!this.ticket.id) return;
-
-    this.ticketService.getTaggedCategories(this.ticket).subscribe((taggedCategories) => {
-      this.ticket.taggedCategories = taggedCategories
-      this.ticketForm.setValue({
-        taggedCategories: this.ticket.taggedCategories.map((tc) => tc.id),
-        description: this.ticket.description
-      });
+    this.ticketService.getTicketCategories().subscribe((categories: TicketCategory[]) => {
+      this.categories = categories;
     });
   }
 
@@ -47,15 +58,44 @@ export class TicketFormComponent implements OnInit {
 
   onTicketSubmit() {
     const formVals = this.ticketForm.value;
-    const taggedCategoryIds: number[] = formVals.taggedCategories;
-    this.ticket.description = formVals.description;
-    this.ticket.taggedCategories = taggedCategoryIds.map((cid => ({ id: cid } as TicketCategory)));
-    if (this.ticket.id) {
-      this.ticketService.update(this.ticket)
-      .subscribe(this.goBack);
-    } else {
-      this.ticketService.create(this.ticket.description, formVals.taggedCategories)
-      .subscribe(this.goBack);
+    const ticketData = new Ticket({
+      ...formVals
+    });
+
+    if (this.ticketForm.controls['taggedCategories'].dirty) {
+      const taggedCategoryIds: number[] = formVals.taggedCategories;
+      ticketData.tags = taggedCategoryIds.map(cid => {
+        const tagFound = this.ticket?.tags?.find(tag => tag.category.id === cid);
+        return {
+          id: tagFound?.id || undefined,
+          ticketId: this.ticket.id,
+          categoryId: cid
+        } as Tag;
+      });
     }
+
+    let submitResult: Observable<any>;
+    if (this.ticket.id) {
+      // Update
+      ticketData.id = this.ticket.id;
+      submitResult = this.ticketService.update(ticketData);
+    } else {
+      // Create
+      ticketData.creatorId = this.authService.currentUserValue.id;
+      submitResult = this.ticketService.create(ticketData);
+    }
+
+    submitResult.subscribe((updatedResource) => {
+      if (updatedResource?.length > 0) return this.goBack();
+
+      throw new Error(`Ticket ${this.ticket.id ? 'Create': 'Update'} failed`);
+    });
+  }
+
+  private populateFormFields() {
+    this.ticketForm.setValue({
+      taggedCategories: this.ticket.tags?.map((tag) => tag.category.id) || [],
+      description: this.ticket.description
+    });
   }
 }

@@ -1,135 +1,294 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { Apollo, gql } from 'apollo-angular';
+import { catchError, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 import { Ticket } from '../content/tickets/ticket';
-import { TicketCategory } from '../content/tickets/category';
-import { User } from '../content/users/user';
+import { TicketCategory } from '../content/tickets/ticket-category';
 import { TicketStatus } from '../content/tickets/status';
-import { catchError, mergeMap, map } from 'rxjs/operators';
-import { Observable, of, forkJoin } from 'rxjs';
 
+import { BaseService } from '../content/base/base.service';
+import { QueryFragments } from './query-fragments';
+
+// TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
 @Injectable()
-export class TicketService {
-  private apiUrl = 'api';
-  private ticketsUrl = `${this.apiUrl}/tickets`;
-  private ticketCategoriesUrl = `${this.ticketsUrl}/categories`;
-  private ticketStatusesUrl = `${this.ticketsUrl}/statuses`;
-  private headers: HttpHeaders;
-  private options;
+export class TicketService extends BaseService<Ticket> {
+  protected className = { singular: Ticket.name, plural: `${Ticket.name}s` };
+  protected getResourceQuery = {
+    query: gql`
+      query GetTicket($id: Int!) {
+        ticket(id: $id) {
+          ...ticket
+        }
+      }
+      ${QueryFragments.TICKET}
+    `,
+    variables: { take: 10 }
+  };
+
+  protected getResourcesQuery = {
+    query: gql`
+      query GetTickets($take: Int) {
+        tickets(take: $take) {
+          ...ticket
+        }
+      }
+      ${QueryFragments.TICKET}
+    `,
+  };
 
   constructor(
-    private http: HttpClient,
+    private apollo: Apollo,
   ) {
-    this.headers = new HttpHeaders({ 'Content-Type': 'application/json', });
-    this.options = { headers: this.headers };
+    super();
   }
 
   getTicket = (ticketId: number) => {
-    const url = `${this.ticketsUrl}/${ticketId}`;
-    return this.http.get<Ticket>(url);
+    return this.apollo.watchQuery({
+      query: this.getResourceQuery.query,
+      variables: {
+        id: ticketId
+      },
+    }).valueChanges.pipe(map(fetchResult => {
+      return fetchResult.data['ticket'] as Ticket;
+    }));
   };
 
-  getTickets = () => {
-    return this.http.get<any>(this.ticketsUrl)
-      .pipe(
-        map((ticketsData) => ticketsData._embedded.tickets as Ticket[]),
-        mergeMap((tickets) => {
-          return forkJoin(tickets.map((ticket) => this.http.get<Ticket>(`${this.apiUrl}/${ticket._links.self.href}`)))
-        })
-      );
+  getTickets = (take: number = 10) => {
+    const query = { query: this.getResourcesQuery.query, variables: { take } };
+    return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
+      .valueChanges.pipe(map(fetchResult => {
+        return fetchResult.data.tickets;
+    }));
+  };
+
+  getTicketsNoRels = (take: number = 10) => {
+    const query = { query: gql`
+      query GetTickets($take: Int) {
+        tickets(take: $take) {
+          ...ticketMin
+        }
+      }
+      ${QueryFragments.TICKETMIN}
+      `, variables: { take }
+    };
+    return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
+      .valueChanges.pipe(map(fetchResult => {
+        return fetchResult.data.tickets;
+    }));
+  };
+
+  create = (ticket: Ticket) => {
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddTicket($newTicketData: [NewTicketInput!]!) {
+          addTicket(newTicketData: $newTicketData) {
+            ...ticket
+          }
+        }
+        ${QueryFragments.TICKET}
+      `,
+      variables: {
+        newTicketData: [{
+          description: ticket.description,
+          creatorId: ticket.creatorId,
+          ticketCategoryIds: ticket.tags?.map(tag => tag.categoryId) || []
+        }],
+      },
+      update: this.updateCache,
+    }).pipe(map(fetchResult => fetchResult.data['addTicket']),
+      catchError(this.handleError<any>())
+    );
   };
 
   update = (ticket: Ticket) => {
-    const url = `${this.ticketsUrl}/${ticket.id}`;    
-    return this.http.patch<Ticket>(
-      url,
-      ticket,
-      this.options);
-  };
-
-  create = (description: string, ticketCategoryIds: number[]) => {
-    return this.http.post<Ticket>(
-      this.ticketsUrl,
-      JSON.stringify({
-        description,
-        ticketCategoryIds
-      }),
-      this.options).pipe<Ticket>(
-        catchError(this.handleError<any>('createTicket'))
-      );
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateTicket($updateTicketData: [UpdateTicketInput!]!) {
+          updateTicket(updateTicketData: $updateTicketData) {
+            ...ticket
+          }
+        }
+        ${QueryFragments.TICKET}
+      `,
+      variables: {
+        updateTicketData: [
+          {
+            id: ticket.id,
+            creatorId: ticket.creatorId,
+            statusId: ticket.statusId,
+            description: ticket.description,
+            tags: ticket.tags?.map(tag => ({ id: tag.id, ticketId: ticket.id, categoryId: tag.categoryId || tag.category.id })) || undefined,
+            assignments: ticket.assignments?.map(a => ({ id: a.id, ticketId: ticket.id, userId: a.userId || a.user.id })) || undefined,
+          },
+        ]
+      },
+      update: this.updateCache,
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateTicket'];
+    }),catchError(this.handleError<any>()));
   };
 
   delete = (ticket: Ticket) => {
-    const deleteTicketUrl = `${this.apiUrl}${ticket._links.self.href}`;
-    return this.http.delete(deleteTicketUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveTicket($ticketIds: [Int!]!) {
+          removeTicket(ticketIds: $ticketIds)
+        }
+      `,
+      variables: {
+        ticketIds: [ticket.id]
+      },
+      update: (cacheStore) => this.updateCache(cacheStore, { data: { removeTicket: [ticket] } }),
+    });
   };
 
-  getTicketCategories() {
-    return this.http.get<any>(this.ticketCategoriesUrl)
-      .pipe(
-        map((ticketCategoriesData) => ticketCategoriesData._embedded.ticketCategorys as TicketCategory[]),
-        mergeMap((ticketCategories) => {
-          return forkJoin(ticketCategories.map((ticketCategory) => this.http.get<TicketCategory>(`${this.apiUrl}/${ticketCategory._links.self.href}`)));
-        })
-      );
+  getTicketCategories(take: number = 10) {
+    return this.apollo.watchQuery({
+      query: gql`
+        query GetTicketCategories {
+          ticketCategories(take: ${take}) {
+            id
+            name
+          }
+        }
+      `,
+    }).valueChanges.pipe(map(fetchResult => {
+      return fetchResult.data['ticketCategories'] as TicketCategory[];
+    }));
   };
 
   createTicketCategory(ticketCategory: TicketCategory) {
-    return this.http.post<TicketCategory>(this.ticketCategoriesUrl, ticketCategory);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddTicketCategory($newTicketCategoryData: [NewCategoryInput!]!) {
+          addTicketCategory(newTicketCategoryData: $newTicketCategoryData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        newTicketCategoryData: [{
+          name: ticketCategory.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['addTicketCategory'] as TicketCategory[];
+    }));
   }
 
   updateTicketCategory(ticketCategory: TicketCategory) {
-    const ticketCategoryUpdateUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
-    return this.http.patch<TicketCategory>(ticketCategoryUpdateUrl, ticketCategory);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateTicketCategory($updateTicketCategoryData: [UpdateCategoryInput!]!) {
+          updateTicketCategory(updateTicketCategoryData: $updateTicketCategoryData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        updateTicketCategoryData: [{
+          id: ticketCategory.id,
+          name: ticketCategory.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateTicketCategory'] as TicketCategory[];
+    }));
   }
 
   deleteTicketCategory(ticketCategory: TicketCategory) {
-    const ticketCategoryDeleteUrl = `${this.ticketCategoriesUrl}/${ticketCategory.id}`;
-    return this.http.delete(ticketCategoryDeleteUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveTicketCategory($ticketCategoryIds: [Int!]!) {
+          removeTicketCategory(ticketCategoryIds: $ticketCategoryIds) {
+            name
+          }
+        }
+      `,
+      variables: {
+        ticketCategoryIds: [ticketCategory.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeTicketCategory']
+        .map(tc => new TicketCategory({...tc})) as TicketCategory[];
+    }));
   }
 
-  getTicketStatuses = () => {
-    return this.http.get<any>(this.ticketStatusesUrl)
-      .pipe(
-        map((statusesData) => statusesData._embedded.ticketStatus as TicketStatus[]),
-        mergeMap((statuses) => {
-          return forkJoin(statuses.map((status) => this.http.get<TicketStatus>(`${this.apiUrl}/${status._links.self.href}`)))
-        })
-      );
+  getTicketStatuses = (take: number = 10): Observable<TicketStatus[]> => {
+    return this.apollo.watchQuery({
+      query: gql`
+        query TicketStatuses {
+          ticketStatuses(take: ${take}) {
+            id
+            name
+          }
+        }
+      `,
+    }).valueChanges.pipe(map(fetchResult => {
+      return fetchResult.data['ticketStatuses'] as TicketStatus[];
+    }));
   };
 
   createTicketStatus(ticketStatus: TicketStatus) {
-    return this.http.post<TicketStatus>(this.ticketStatusesUrl, ticketStatus);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation AddTicketStatus($newTicketStatusData: [NewTicketStatusInput!]!) {
+          addTicketStatus(newTicketStatusData: $newTicketStatusData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        newTicketStatusData: [{
+          name: ticketStatus.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['assignTicketsToUser'] as TicketStatus[];
+    }));
   }
 
   updateTicketStatus(ticketStatus: TicketStatus) {
-    const ticketStatusUpdateUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
-    return this.http.patch<TicketStatus>(ticketStatusUpdateUrl, ticketStatus);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation UpdateTicketStatus($updateTicketStatusData: [UpdateTicketStatusInput!]!) {
+          updateTicketStatus(updateTicketStatusData: $updateTicketStatusData) {
+            id
+            name
+          }
+        }
+      `,
+      variables: {
+        updateTicketStatusData: [{
+          id: ticketStatus.id,
+          name: ticketStatus.name
+        }],
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['updateTicketStatus'] as TicketStatus[];
+    }));
   }
 
   deleteTicketStatus(ticketStatus: TicketStatus) {
-    const ticketStatusDeleteUrl = `${this.ticketStatusesUrl}/${ticketStatus.id}`;
-    return this.http.delete(ticketStatusDeleteUrl);
+    return this.apollo.mutate({
+      mutation: gql`
+        mutation RemoveTicketStatus($ticketStatusIds: [Int!]!) {
+          removeTicketStatus(ticketStatusIds: $ticketStatusIds) {
+            name
+          }
+        }
+      `,
+      variables: {
+        ticketStatusIds: [ticketStatus.id]
+      },
+    }).pipe(map(fetchResult => {
+      return fetchResult.data['removeTicketStatus'] as TicketStatus;
+    }));
   }
-
-  getTaggedCategories = (ticket: Ticket) => {
-    const getTaggedCategoriesUrl = `${this.apiUrl}${ticket._links.taggedCategories.href}`;
-    return this.http.get<TicketCategory[]>(getTaggedCategoriesUrl);
-  };
-
-  getAssignedUsers = (ticket: Ticket) => {
-    const getAssignedUsersUrl = `${this.apiUrl}${ticket._links.assignedUsers.href}`;
-    return this.http.get<any>(getAssignedUsersUrl)
-      .pipe(
-        map((usersData) => usersData._embedded.users as User[]),
-        mergeMap((users) => {
-          return forkJoin(users.map((userData) => {
-            return this.http.get<User>(`${this.apiUrl}/${userData._links.self.href}`)
-              .pipe(map(user => new User(user)))
-          }))
-        })
-      );
-  };
 
   /**
    * Handle Http operation that failed.
@@ -137,7 +296,7 @@ export class TicketService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError = <T>(result?: T) => {
     return (error: any): Observable<T> => {
       console.error(error);
       // Let the app keep running by returning an empty result.

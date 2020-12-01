@@ -1,8 +1,8 @@
 <h2>Manage Subscriptions</h2>
-<form [formGroup]="subscriptionsForm" (ngSubmit)="onTicketSubmit()">
+<form [formGroup]="subscriptionsForm">
     <mat-form-field class="ticket-categories">
         <mat-label>Categories:</mat-label>
-        <mat-select formControlName="subscribedCategories" multiple required>
+        <mat-select formControlName="subscribedCategories" multiple required (blur)="onTicketSubmit()">
             <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
         </mat-select>
     </mat-form-field>

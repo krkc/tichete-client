@@ -1,7 +1,7 @@
 <div id="usersList">
   <h1 class="h1">Tichete Users</h1>
   <ul class="users list-group">
-    <li *ngFor="let user of users" class="list-group-item user" (click)="onSelect(user)"
+    <li *ngFor="let user of users$ | async" class="list-group-item user" (click)="onSelect(user)"
       [class.selected]="user === selectedUser">
       <span [hidden]="selectedUser === user">
         <div class="badge">
@@ -10,12 +10,12 @@
         {{ user.username }}
       </span>
       <div *ngIf="selectedUser === user">
-        <span><strong>Name: </strong>{{ user.getDisplayName() }}</span><br />
+        <span><strong>Name: </strong>{{ user.displayName }}</span><br />
         <div class="assigned">
           <span><strong>Assigned Tickets: </strong></span><br />
           <ul>
-            <li *ngFor="let ticket of assignments">
-              {{ ticket.description | preview }}
+            <li *ngFor="let assignment of user.assignments">
+              {{ assignment.ticket.description | preview }}
             </li>
           </ul>
         </div>

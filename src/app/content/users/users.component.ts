@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { User } from './user';
 import { UserService } from '../../service/user.service';
 import { Ticket } from "../tickets/ticket";
 import * as alertify from "alertifyjs";
+import { ApolloError } from '@apollo/client/core';
 
 @Component({
     selector: 'my-users',
@@ -12,36 +14,36 @@ import * as alertify from "alertifyjs";
     styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-    public users: User[];
+    public users$: Observable<User[]>;
     public selectedUser: User;
     public assignments: Ticket[];
 
     constructor(
-        private router: Router,
-        private userService: UserService) { }
+      private router: Router,
+      private userService: UserService
+    ) { }
 
     ngOnInit(): void {
-        this.userService.getUsers()
-            .subscribe(users => this.users = users);
+      this.users$ = this.userService.getUsers();
     }
 
     onSelect(user: User): void {
-        if (this.selectedUser === user) {
-            this.selectedUser = null;
-        } else {
-            this.selectedUser = this.getPopulatedUser(user);
-        }
+      if (this.selectedUser === user) {
+        this.selectedUser = null;
+      } else {
+        this.selectedUser = user;
+      }
     }
 
     onDetail(): void {
-        this.router.navigate(['/users/detail', this.selectedUser.id]);
+      this.router.navigate(['/users/detail', this.selectedUser.id]);
     }
 
     onDelete(user: User): void {
-        if (this.assignments && this.assignments.length > 0) {
+        if (user.assignments?.length && user.assignments.length > 0) {
             alertify.confirm('Warning',
-                'This user is assigned to one or more active tickets.' +
-                'Assignments must be removed before this user can be deleted.' +
+                'This user is assigned to one or more active tickets. ' +
+                'Assignments must be removed before this user can be deleted. ' +
                 'Would you like to remove assignments?',
                 () => { this.router.navigate(['/users/assign', user.id]); },
                 null
@@ -59,26 +61,21 @@ export class UsersComponent implements OnInit {
     private deleteUser(user: User): void {
         this.userService
             .delete(user)
-            .subscribe((err: any) => {
-                if (err) {
-                    alertify.alert('Error', `Error ${err.errno}: ${err.code}`);
-                    return;
+            .subscribe({
+              next: () => {
+                if (this.selectedUser === user) {
+                  this.selectedUser = null;
                 }
-
-                this.users = this.users.filter(u => u !== user);
-                if (this.selectedUser === user) { this.selectedUser = null; }
-            });
-    }
-
-    private getPopulatedUser(user: User) {
-        if (!user.assignedTickets) {
-            this.userService
-                .getAssignments(user)
-                .subscribe((assignedTickets: Ticket[]) => {
-                    user.assignedTickets = assignedTickets;
-                });
-        }
-
-        return user;
+              },
+              error: (err: ApolloError) => {
+                if (err.graphQLErrors[0]?.extensions?.exception?.code === 'ER_ROW_IS_REFERENCED_2') {
+                  alertify.alert(
+                    'Can Not Delete',
+                    'There are relationships associated with this user.\n ' +
+                    'Remove the relationships first and try again.');
+                  return;
+                }
+              }
+          });
     }
 }

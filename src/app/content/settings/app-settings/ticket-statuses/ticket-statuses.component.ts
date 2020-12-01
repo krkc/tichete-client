@@ -3,6 +3,7 @@ import { TicketStatus } from '../../../tickets/status';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import * as alertify from 'alertifyjs';
 
@@ -12,6 +13,7 @@ import * as alertify from 'alertifyjs';
   styleUrls: ['./ticket-statuses.component.scss']
 })
 export class TicketStatusesComponent implements OnInit {
+  public ticketStatusesData: Observable<TicketStatus[]>;
   public ticketStatuses: TicketStatus[];
   public selectedTicketStatus: TicketStatus;
   public ticketStatusForm: FormGroup;
@@ -30,8 +32,9 @@ export class TicketStatusesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ticketService.getTicketStatuses().subscribe(statuses => {
-      this.ticketStatuses = statuses;
+    this.ticketStatusesData = this.ticketService.getTicketStatuses();
+    this.ticketStatusesData.subscribe(statuses => {
+      this.ticketStatuses.push(...statuses);
 
       this.route.params.forEach((params: Params) => {
         const ticketStatusId = +params['id'];
@@ -56,7 +59,6 @@ export class TicketStatusesComponent implements OnInit {
     } else {
       this.ticketService.createTicketStatus(formVals)
       .subscribe(() => {
-        this.ticketService.getTicketStatuses().subscribe(statuses => this.ticketStatuses = statuses);
         this.ticketStatusForm.reset();
       });
     }

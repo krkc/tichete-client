@@ -3,6 +3,6 @@
     <div *ngIf="user" class="mb-3">
         User ID#: {{ user.id }}<br />
     </div>
-    <user-form [user]="user"></user-form>
-    <user-assign [user]="user"></user-assign>
+    <user-form [user$]="user$"></user-form>
+    <user-assign [user$]="user$"></user-assign>
 </div>

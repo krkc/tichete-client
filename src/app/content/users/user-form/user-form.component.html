@@ -21,7 +21,7 @@
     </mat-form-field>
     <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>&nbsp;
     <button class="btn btn-primary" type="submit" [disabled]="!userForm.valid || userForm.pristine">
-        {{ (user.id) ? "Update" : "Create" }} User
+        {{ (user?.id) ? "Update" : "Create" }} User
     </button>
     <div [class.fade]="userForm.valid" [class.show]="!userForm.valid" class="alert alert-danger mt-3">
         Fields required

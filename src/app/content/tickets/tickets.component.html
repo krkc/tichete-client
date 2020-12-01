@@ -1,7 +1,7 @@
 <div id="ticketsList">
   <h1 class="h1">Help Desk Tickets</h1>
   <ul class="tickets list-group">
-    <li *ngFor="let ticket of tickets"
+    <li *ngFor="let ticket of tickets$ | async"
         class="list-group-item ticket"
         (click)="onSelect(ticket)"
         [class.selected]="ticket === selectedTicket"
@@ -15,12 +15,12 @@
       <div id="selected-ticket" *ngIf="selectedTicket === ticket">
         <span><strong>Status: </strong>{{ ticket.status?.name }}</span><br />
         <span><strong>Tagged Categories: </strong></span><br />
-        <div class="tagged-category" *ngFor="let category of ticket.taggedCategories">
-          {{ category.name }}
+        <div class="tagged-category" *ngFor="let tag of ticket.tags">
+          {{ tag.category.name }}
         </div>
         <span><strong>Assigned Users: </strong></span><br />
-        <div class="assigned-user" *ngFor="let user of ticket.assignedUsers">
-          {{ user.getDisplayName() }}
+        <div class="assigned-user" *ngFor="let assignment of ticket.assignments">
+          {{ assignment.user.displayName }}
         </div>
         <span><strong>Description: </strong>{{ ticket.description }}</span>
         <div class="btn-group-sm pull-right">

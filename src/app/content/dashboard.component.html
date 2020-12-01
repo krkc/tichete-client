@@ -1,7 +1,7 @@
 <div class="row tickets">
   <h3>My Tickets</h3>
-  <div *ngIf="!myTickets?.length || myTickets.length < 1">You have no active tickets right now.</div>
-  <div *ngFor="let myTicket of myTickets" class="col-5 card ticket">
+  <div *ngIf="!hasTickets">You have no active tickets right now.</div>
+  <div *ngFor="let myTicket of myTickets | async" class="col-5 card ticket">
     <div class="card-body">
       <h5 class="card-title">{{ myTicket.name || myTicket.id }}</h5>
       <p class="card-text">{{ myTicket.description | preview }}</p>
@@ -11,8 +11,8 @@
 </div>
 <div class="row tickets">
   <h3>My Feed</h3>
-  <div *ngIf="!feedTickets?.length || feedTickets.length < 1">Subscribe to more ticket categories in My Settings.</div>
-  <div *ngFor="let feedTicket of feedTickets" class="col-5 card ticket">
+  <div *ngIf="!hasFeed">Subscribe to more ticket categories in My Settings.</div>
+  <div *ngFor="let feedTicket of feedTickets | async" class="col-5 card ticket">
     <div class="card-body">
       <h5 class="card-title">{{ feedTicket.name || feedTicket.id }}</h5>
       <p class="card-text">{{ feedTicket.description | preview }}</p>

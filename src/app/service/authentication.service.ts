@@ -1,31 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { JwtHelperService } from "@auth0/angular-jwt";
 
 import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
 import { User } from '../content/users/user';
+import { Apollo, gql } from 'apollo-angular';
 
 @Injectable()
 export class AuthenticationService {
-  private apiUrl = 'api';
-  private loginUrl = 'api/auth/login';
-  private registerUrl = 'api/auth/register';
-  private headers: HttpHeaders;
   private loggedIn = new BehaviorSubject<boolean>(false);
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
-  private options;
 
   constructor(
-    private http: HttpClient,
+    private apollo: Apollo,
     public jwtHelper: JwtHelperService
   ) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('current_user')));
     this.currentUser = this.currentUserSubject.asObservable();
-
-    this.headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.options = { 'headers': this.headers };
   }
 
   isLoggedIn(): Observable<boolean> {
@@ -38,23 +30,36 @@ export class AuthenticationService {
   }
 
   login = async (emailOrUsername: string, password: string): Promise<User> => {
-    const authenticationInfo: any = await this.http.post<User>(
-      this.loginUrl,
-      { username: emailOrUsername, password },
-      { headers: this.headers }
-    ).toPromise();
-    const user = await this.http.get<User>(`${this.apiUrl}${authenticationInfo._links.authenticatedUser.href}`)
-      .toPromise();
-    if (user) {
-      user.token = authenticationInfo.token;
-      localStorage.setItem('current_user', JSON.stringify(user));
-      this.currentUserSubject.next(user);
-      return user;
+    const fetchResult = await this.apollo.mutate({
+      mutation: gql`
+        mutation Login($email: String!, $password: String!) {
+          login(email: $email,password: $password) {
+            id
+            firstName
+            lastName
+            email
+            accessToken
+          }
+        }
+      `,
+      variables: {
+        email: emailOrUsername,
+        password
+      },
+    }).toPromise();
+
+    const user: User = fetchResult.data['login'] as User;
+
+    if (!user) {
+      throw new Error(fetchResult.errors.toString());
     }
+
+    localStorage.setItem('current_user', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+    return user;
   }
 
   logout() {
     localStorage.removeItem('current_user');
   }
-
 }

@@ -12,7 +12,7 @@ import { Pipe, PipeTransform } from "@angular/core";
 @Pipe({ name: 'preview' })
 export class DescriptionPreview implements PipeTransform {
     transform(value: string): string {
-        if (value.length > 70)
+        if (value?.length > 70)
             return `${value.substr(0,70)}...`;
         else
             return value;

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { TicketCategory } from '../../../tickets/category';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TicketService } from 'src/app/service/ticket.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { TicketService } from 'src/app/service/ticket.service';
+import { TicketCategory } from '../../../tickets/ticket-category';
 
 import * as alertify from 'alertifyjs';
 
@@ -12,6 +13,7 @@ import * as alertify from 'alertifyjs';
   styleUrls: ['./ticket-categories.component.scss']
 })
 export class TicketCategoriesComponent implements OnInit {
+  public ticketCategoriesData: Observable<TicketCategory[]>;
   public ticketCategories: TicketCategory[];
   public selectedTicketCategory: TicketCategory;
   public ticketCategoryForm: FormGroup;
@@ -30,8 +32,9 @@ export class TicketCategoriesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ticketService.getTicketCategories().subscribe(categories => {
-      this.ticketCategories = categories;
+    this.ticketCategoriesData = this.ticketService.getTicketCategories();
+    this.ticketCategoriesData.subscribe(categories => {
+      this.ticketCategories.push(...categories);
 
       this.route.params.forEach((params: Params) => {
         const ticketCategoryId = +params['id'];
@@ -56,7 +59,6 @@ export class TicketCategoriesComponent implements OnInit {
     } else {
       this.ticketService.createTicketCategory(formVals)
       .subscribe(() => {
-        this.ticketService.getTicketCategories().subscribe(categories => this.ticketCategories = categories);
         this.ticketCategoryForm.reset();
       });
     }

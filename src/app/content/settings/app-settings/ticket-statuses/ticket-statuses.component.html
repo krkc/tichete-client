@@ -31,7 +31,7 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let status of ticketStatuses"
+            *ngFor="let status of ticketStatusesData | async"
             routerLink="/settings/app/ticket-statuses/{{ status.id }}"
             routerLinkActive="active"
           >

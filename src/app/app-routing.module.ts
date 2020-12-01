@@ -57,7 +57,10 @@ const routes: Routes = [
           },
           {
             path: 'assign/:id',
-            component: TicketAssignComponent
+            component: TicketAssignComponent,
+            resolve: {
+              ticket: TicketDetailResolverService
+            }
           }
         ],
         canActivate: [AuthGuard]
@@ -83,7 +86,10 @@ const routes: Routes = [
           },
           {
             path: 'assign/:id',
-            component: UserAssignComponent
+            component: UserAssignComponent,
+            resolve: {
+              user: UserDetailResolverService
+            }
           }
         ],
         canActivate: [AuthGuard]
@@ -132,13 +138,13 @@ const routes: Routes = [
             canActivate: [AuthGuard]
           }
         ]
-        
+
       }
     ]
   }
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes);
 
 @NgModule({
   imports: [routing],
