@@ -1,4 +1,4 @@
-import { ApolloCache, DataProxy, FetchResult } from '@apollo/client/core';
+import { ApolloCache, Cache, DataProxy, FetchResult } from '@apollo/client/core';
 import { Base } from './base';
 
 export abstract class BaseService<T extends Base> {
@@ -11,13 +11,8 @@ export abstract class BaseService<T extends Base> {
     const mutatedResources: T[] = data[mutationAction];
 
     mutatedResources.forEach(mutatedResource => {
-      let queryOut = { query: undefined, variables: undefined, data: {} };
-
-      if (mutationAction === `update${this.className.singular}`) {
-        queryOut.query = this.getResourceQuery.query;
-        queryOut.variables = { id: mutatedResource.id }
-        queryOut.data[this.className.singular.toLowerCase()] = mutatedResource;
-      } else {
+      if (mutationAction === `add${this.className.singular}`) {
+        let queryOut = { query: undefined, variables: undefined, data: {} };
         queryOut.query = this.getResourcesQuery.query;
         queryOut.variables = { take: 10 };
 
@@ -39,14 +34,22 @@ export abstract class BaseService<T extends Base> {
           resources = [];
         }
 
-        if (mutationAction === `remove${this.className.singular}`) {
-          queryOut.data[this.className.plural.toLowerCase()] = resources.filter(resource => resource.id !== mutatedResource.id);
-        } else if (mutationAction === `add${this.className.singular}`) {
-          queryOut.data[this.className.plural.toLowerCase()] = resources.concat(mutatedResource);
-        }
+        queryOut.data[this.className.plural.toLowerCase()] = resources.concat(mutatedResource);
+        cacheStore.writeQuery(queryOut);
+        return;
       }
 
-      cacheStore.writeQuery(queryOut);
+      const cacheId = cacheStore.identify(mutatedResource as any);
+
+      if (mutationAction === `update${this.className.singular}`) {
+        const modifyOptions: Cache.ModifyOptions = { id: cacheId, fields: {} };
+        // modifyOptions.fields[this.className.singular.toLowerCase()] = (existingFieldCacheId: T, { toReference }) => {
+        //   return toReference(cacheId);
+        // };
+        cacheStore.modify(modifyOptions);
+      } else if (mutationAction === `remove${this.className.singular}`) {
+        cacheStore.evict({ id: cacheId });
+      }
     });
   }
 }

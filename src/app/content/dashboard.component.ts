@@ -13,11 +13,11 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  me: Observable<User>;
+  me$: Observable<User>;
   hasTickets: boolean = false;
   hasFeed: boolean = false;
-  myTickets: Observable<Ticket[]>;
-  feedTickets: Observable<Ticket[]>;
+  myTickets$: Observable<Ticket[]>;
+  feedTickets$: Observable<Ticket[]>;
 
   constructor(
     private authService: AuthenticationService,
@@ -25,18 +25,18 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.me = this.userService.getUser(this.authService.currentUserValue.id);
-    this.myTickets = this.me.pipe(map((user: User) => {
+    this.me$ = this.userService.getUser(this.authService.currentUserValue.id);
+    this.myTickets$ = this.me$.pipe(map((user: User) => {
       return user.submittedTickets.slice(1,5) as Ticket[];
     }));
 
-    this.me.subscribe({
+    this.me$.subscribe({
       next: (user) => {
         this.hasTickets = (user.submittedTickets.length && user.submittedTickets.length > 0) ? true : false;
       }
     });
 
-    this.feedTickets = this.userService.getTicketFeed().pipe(map(tickets => {
+    this.feedTickets$ = this.userService.getTicketFeed().pipe(map(tickets => {
       if (tickets.length > 0) {
         this.hasFeed = true;
       }
