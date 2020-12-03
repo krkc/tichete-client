@@ -1,16 +1,23 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
-
 import { TicketsComponent } from './tickets.component';
+import { ApolloTestingModule } from 'apollo-angular/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TicketService } from 'src/app/service/ticket.service';
 
-describe('TestComponent', () => {
+describe('TicketsComponent', () => {
   let component: TicketsComponent;
   let fixture: ComponentFixture<TicketsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        ApolloTestingModule,
+        RouterTestingModule,
+      ],
+      providers: [
+        TicketService,
+      ],
       declarations: [ TicketsComponent ]
     })
       .compileComponents();

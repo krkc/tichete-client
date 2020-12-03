@@ -64,7 +64,7 @@ export class TicketService extends BaseService<Ticket> {
 
   getTicketsNoRels = (take: number = 10) => {
     const query = { query: gql`
-      query GetTickets($take: Int) {
+      query GetTicketsMin($take: Int) {
         tickets(take: $take) {
           ...ticketMin
         }

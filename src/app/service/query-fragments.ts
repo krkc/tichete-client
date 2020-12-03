@@ -42,27 +42,16 @@ const TICKET = gql`
     }
     assignments {
       id
-      user {
-        id
-        email
-        displayName @client
-        firstName
-        lastName
-      }
+      user { ...userMin }
     }
   }
   ${TICKETMIN}
+  ${USERMIN}
 `;
 
 const USER = gql`
   fragment user on User {
-    __typename
-    id
-    email
-    username
-    firstName
-    lastName
-    displayName @client
+    ...userMin
     submittedTickets {
       id
       name
@@ -70,11 +59,7 @@ const USER = gql`
     }
     assignments {
       id
-      ticket {
-        id
-        name
-        description
-      }
+      ticket { ...ticketMin }
     }
     subscriptions {
       id
@@ -84,6 +69,8 @@ const USER = gql`
       }
     }
   }
+  ${USERMIN}
+  ${TICKETMIN}
 `;
 
 export const QueryFragments = {
