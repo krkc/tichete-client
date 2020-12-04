@@ -36,7 +36,7 @@ export class SubscriptionsComponent implements OnInit {
       this.categories = categories;
     });
 
-    this.me$ = this.userService.getUser(this.authService.currentUserValue.id);
+    this.me$ = this.userService.getOne(this.authService.currentUserValue.id);
     this.me$.subscribe({
       next: (me: User) => {
         this.me = me;

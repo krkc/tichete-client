@@ -29,7 +29,7 @@ describe('TicketService', () => {
 
     const take = 2;
     const tickets = [new Ticket({ id: 1, name: 'Test Ticket' })];
-    ticketService.getTicketsNoRels(take).subscribe(tickets => {
+    ticketService.getManyNoRels(take).subscribe(tickets => {
       expect(tickets.length).toBeDefined();
       expect(tickets).toContain(tickets[0]);
     });

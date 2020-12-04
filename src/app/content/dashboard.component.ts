@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.me$ = this.userService.getUser(this.authService.currentUserValue.id);
+    this.me$ = this.userService.getOne(this.authService.currentUserValue.id);
     this.myTickets$ = this.me$.pipe(map((user: User) => {
       return user.submittedTickets.slice(1,5) as Ticket[];
     }));

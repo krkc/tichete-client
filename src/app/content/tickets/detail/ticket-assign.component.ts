@@ -79,7 +79,7 @@ export class TicketAssignComponent implements OnInit {
   }
 
   private populateAssignments() {
-    this.userService.getUsersNoRels().subscribe(allUsers => {
+    this.userService.getManyNoRels().subscribe(allUsers => {
       this.allUsers = allUsers;
       this.availableUsers = allUsers.filter(u => !this.ticket.assignments?.some(a => a.user.id === u.id));
     });

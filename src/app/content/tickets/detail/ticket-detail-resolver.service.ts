@@ -14,6 +14,6 @@ export class TicketDetailResolverService implements Resolve<Observable<Ticket>> 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<Ticket>> {
     let id = route.paramMap.get('id');
 
-    return of(this.ticketService.getTicket(+id));
+    return of(this.ticketService.getOne(+id));
   }
 }

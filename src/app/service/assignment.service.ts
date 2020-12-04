@@ -5,34 +5,42 @@ import { Assignment } from '../content/assignment';
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
 import { Apollo, gql } from 'apollo-angular';
-import { BaseService } from '../content/base/base.service';
+import { BaseService, BaseServiceConfig } from '../content/base/base.service';
+
+const config: BaseServiceConfig = {
+  className: { singular: Assignment.name, plural: `${Assignment.name}s` },
+  getResourceQuery: {
+    query: gql`
+      query GetAssignment($id: Int!) {
+        assignment(id: $id) {
+          id
+          userId
+          ticketId
+        }
+      }
+    `,
+    variables: { take: 10 }
+  },
+  getResourcesQuery: {
+    query: gql`
+      query GetAssignments($take: Int) {
+        assignments(take: $take) {
+          id
+          userId
+          ticketId
+        }
+      }
+    `,
+  }
+};
 
 @Injectable()
 export class AssignmentService extends BaseService<Assignment> {
-  protected className = { singular: Assignment.name, plural: `${Assignment.name}s` };
-
   constructor(
-    private apollo: Apollo,
+    apollo: Apollo,
   ) {
-    super();
+    super(apollo, config);
   }
-
-  getAssignments = (take: number = 10) => {
-    return this.apollo.query({
-      query: gql`
-        query GetAssignments {
-          assignments(take: ${take}) {
-            id
-            userId
-            ticketId
-          }
-        }
-      `
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['assignments']
-        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
-    }));
-  };
 
   create = (user: User, ticket: Ticket) => {
     return this.apollo.mutate({

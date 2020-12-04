@@ -5,15 +5,13 @@ import { AuthenticationService } from './authentication.service';
 import { Apollo, gql } from 'apollo-angular';
 
 import { QueryFragments } from './query-fragments';
-import { BaseService } from '../content/base/base.service';
+import { BaseService, BaseServiceConfig } from '../content/base/base.service';
 import { User } from '../content/users/user';
 import { Ticket } from '../content/tickets/ticket';
-import { Assignment } from '../content/assignment';
 
-@Injectable()
-export class UserService extends BaseService<User> {
-  protected className = { singular: User.name, plural: `${User.name}s` };
-  protected getResourceQuery = {
+const config: BaseServiceConfig = {
+  className: { singular: User.name, plural: `${User.name}s` },
+  getResourceQuery: {
     query: gql`
       query GetUser($id: Int!) {
         user(id: $id) {
@@ -22,9 +20,8 @@ export class UserService extends BaseService<User> {
       }
       ${QueryFragments.USER}
     `,
-  }
-
-  protected getResourcesQuery = {
+  },
+  getResourcesQuery: {
     query: gql`
       query GetUsers($take: Int) {
         users(take: $take) {
@@ -34,51 +31,18 @@ export class UserService extends BaseService<User> {
       ${QueryFragments.USER}
     `,
   }
+};
 
+@Injectable()
+export class UserService extends BaseService<User> {
   constructor(
-    private apollo: Apollo,
+    apollo: Apollo,
     private authService: AuthenticationService,
   ) {
-    super();
+    super(apollo, config);
   }
 
-  getUser = (userId: number) => {
-    return this.apollo.watchQuery({
-      query: gql`
-        query GetUser($id: Int!) {
-          user(id: $id) {
-            ...user
-          }
-        }
-        ${QueryFragments.USER}
-      `,
-      variables: {
-        id: userId
-      },
-    }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data['user'] as User;
-    }));
-  };
-
-  getUsers = (take: number = 10) => {
-    const query = {
-      query: gql`
-        query GetUsers($take: Int) {
-        users(take: $take) {
-          ...user
-        }
-      }
-      ${QueryFragments.USER}
-      `,
-      variables: { take }
-    }
-    return this.apollo.watchQuery<{ users: User[] }>(query)
-      .valueChanges.pipe(map(fetchResult => {
-        return fetchResult.data['users'] as User[];
-    }));
-  };
-
-  getUsersNoRels = (take: number = 10) => {
+  getManyNoRels = (take: number = 10) => {
     const query = { query: gql`
       query GetUsers($take: Int) {
         users(take: $take) {

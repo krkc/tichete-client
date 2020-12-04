@@ -79,7 +79,7 @@ export class UserAssignComponent implements OnInit {
   }
 
   private populateAssignments() {
-    this.ticketService.getTicketsNoRels().subscribe(allTickets => {
+    this.ticketService.getManyNoRels().subscribe(allTickets => {
       this.allTickets = allTickets;
       this.availableTickets = allTickets.filter(t => !this.user.assignments?.some(a => a.ticket.id === t.id));
     });

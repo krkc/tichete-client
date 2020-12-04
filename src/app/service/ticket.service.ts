@@ -7,14 +7,12 @@ import { Ticket } from '../content/tickets/ticket';
 import { TicketCategory } from '../content/tickets/ticket-category';
 import { TicketStatus } from '../content/tickets/status';
 
-import { BaseService } from '../content/base/base.service';
+import { BaseService, BaseServiceConfig } from '../content/base/base.service';
 import { QueryFragments } from './query-fragments';
 
-// TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
-@Injectable()
-export class TicketService extends BaseService<Ticket> {
-  protected className = { singular: Ticket.name, plural: `${Ticket.name}s` };
-  protected getResourceQuery = {
+const config: BaseServiceConfig = {
+  className: { singular: Ticket.name, plural: `${Ticket.name}s` },
+  getResourceQuery: {
     query: gql`
       query GetTicket($id: Int!) {
         ticket(id: $id) {
@@ -24,9 +22,8 @@ export class TicketService extends BaseService<Ticket> {
       ${QueryFragments.TICKET}
     `,
     variables: { take: 10 }
-  };
-
-  protected getResourcesQuery = {
+  },
+  getResourcesQuery: {
     query: gql`
       query GetTickets($take: Int) {
         tickets(take: $take) {
@@ -35,34 +32,19 @@ export class TicketService extends BaseService<Ticket> {
       }
       ${QueryFragments.TICKET}
     `,
-  };
+  }
+};
 
+// TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
+@Injectable()
+export class TicketService extends BaseService<Ticket> {
   constructor(
-    private apollo: Apollo,
+    apollo: Apollo,
   ) {
-    super();
+    super(apollo, config);
   }
 
-  getTicket = (ticketId: number) => {
-    return this.apollo.watchQuery({
-      query: this.getResourceQuery.query,
-      variables: {
-        id: ticketId
-      },
-    }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data['ticket'] as Ticket;
-    }));
-  };
-
-  getTickets = (take: number = 10) => {
-    const query = { query: this.getResourcesQuery.query, variables: { take } };
-    return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
-      .valueChanges.pipe(map(fetchResult => {
-        return fetchResult.data.tickets;
-    }));
-  };
-
-  getTicketsNoRels = (take: number = 10) => {
+  getManyNoRels = (take: number = 10) => {
     const query = { query: gql`
       query GetTicketsMin($take: Int) {
         tickets(take: $take) {

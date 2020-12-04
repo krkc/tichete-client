@@ -26,7 +26,7 @@ export class TicketsComponent implements OnInit {
     private ticketService: TicketService) { }
 
   ngOnInit(): void {
-    this.tickets$ = this.ticketService.getTickets();
+    this.tickets$ = this.ticketService.getMany();
   }
 
   onSelect(ticket: Ticket): void {

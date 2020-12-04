@@ -24,7 +24,7 @@ export class UsersComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-      this.users$ = this.userService.getUsers();
+      this.users$ = this.userService.getMany();
     }
 
     onSelect(user: User): void {
