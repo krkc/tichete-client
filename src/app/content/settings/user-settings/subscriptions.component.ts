@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication.service';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { UserService } from 'src/app/service/user.service';
 import { TicketCategory } from '../../tickets/ticket-category';
 import { Subscription } from '../../users/subscription';

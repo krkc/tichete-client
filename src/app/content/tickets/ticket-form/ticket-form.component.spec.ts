@@ -8,7 +8,9 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication.service';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
+import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { Ticket } from '../ticket';
 
 import { TicketFormComponent } from './ticket-form.component';
@@ -33,6 +35,8 @@ describe('TicketFormComponent', () => {
       providers: [
         AuthenticationService,
         TicketService,
+        TicketCategoryService,
+        TicketStatusService,
       ],
       declarations: [ TicketFormComponent ]
     })

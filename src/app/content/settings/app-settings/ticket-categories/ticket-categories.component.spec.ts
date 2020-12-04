@@ -2,7 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ApolloTestingModule } from 'apollo-angular/testing';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
+import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 
 import { TicketCategoriesComponent } from './ticket-categories.component';
 
@@ -19,6 +21,8 @@ describe('TicketCategoriesComponent', () => {
       ],
       providers: [
         TicketService,
+        TicketCategoryService,
+        TicketStatusService,
       ],
       declarations: [ TicketCategoriesComponent ]
     })

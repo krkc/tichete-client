@@ -1,5 +1,6 @@
-import { ApolloCache, Cache, DataProxy, FetchResult, MutationOptions, WatchQueryOptions } from '@apollo/client/core';
+import { ApolloCache, Cache, FetchResult, MutationOptions, WatchQueryOptions } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Base } from './base';
 
@@ -23,7 +24,7 @@ export abstract class BaseService<T extends Base> {
         id: id
       },
     }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data[this.config.className.singular.toLowerCase()] as T;
+      return fetchResult.data[this.singularClassNameToCamelCase()] as T;
     }));
   };
 
@@ -33,7 +34,7 @@ export abstract class BaseService<T extends Base> {
       variables: { take }
     })
       .valueChanges.pipe(map(fetchResult => {
-        return fetchResult.data[this.config.className.plural.toLowerCase()] as T[];
+        return fetchResult.data[this.pluralClassNameToCamelCase()] as T[];
     }));
   };
 
@@ -64,18 +65,18 @@ export abstract class BaseService<T extends Base> {
             variables: queryOut.variables,
           });
 
-          resources = cachedResources ? cachedResources[this.config.className.plural.toLowerCase()] : [];
+          resources = cachedResources ? cachedResources[this.pluralClassNameToCamelCase()] : [];
         } catch (error) {
           // If you visit the ticket create page without first coming from the index page,
           // the cache will be empty and (annoyingly) it throws an error. This doesn't seem to occur
           // on the user create page. In that case, readQuery just returns null. Not sure yet why
           // the inconsistency.
-          if (error.message !== `Can't find field '${this.config.className.plural.toLowerCase()}' on ROOT_QUERY object`) throw error;
+          if (error.message !== `Can't find field '${this.pluralClassNameToCamelCase()}' on ROOT_QUERY object`) throw error;
 
           resources = [];
         }
 
-        queryOut.data[this.config.className.plural.toLowerCase()] = resources.concat(mutatedResource);
+        queryOut.data[this.pluralClassNameToCamelCase()] = resources.concat(mutatedResource);
         cacheStore.writeQuery(queryOut);
         return;
       }
@@ -92,5 +93,27 @@ export abstract class BaseService<T extends Base> {
         cacheStore.evict({ id: cacheId });
       }
     });
+  }
+
+  /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
+  protected handleError = <T>(result?: T) => {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+  }
+
+  private singularClassNameToCamelCase() {
+    return this.config.className.singular.replace(/^(.)/, function($1) { return $1.toLowerCase(); });
+  }
+
+  private pluralClassNameToCamelCase() {
+    return this.config.className.plural.replace(/^(.)/, function($1) { return $1.toLowerCase(); });
   }
 }

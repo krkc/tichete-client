@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TicketStatus } from '../../../tickets/status';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -68,7 +68,7 @@ export class TicketStatusesComponent implements OnInit {
     alertify.confirm('Caution',
       'Are you sure you wish to delete this ticket status?',
       () => {
-        this.ticketService.deleteTicketStatus(this.selectedTicketStatus)
+        this.ticketService.deleteTicketStatus([this.selectedTicketStatus])
           .subscribe(() => this.router.navigate(['/settings/app/ticket-statuses']));
       },
       null

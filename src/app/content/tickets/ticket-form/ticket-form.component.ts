@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TicketCategory } from '../ticket-category';
 import { Ticket } from '../ticket';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { Tag } from '../tag';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication.service';

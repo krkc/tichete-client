@@ -7,7 +7,7 @@ import { Assignment } from '../../assignment';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 
 @Component({
   selector: 'ticket-assign',

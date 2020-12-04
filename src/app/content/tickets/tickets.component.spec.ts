@@ -3,7 +3,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { TicketsComponent } from './tickets.component';
 import { ApolloTestingModule } from 'apollo-angular/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
+import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
+import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 
 describe('TicketsComponent', () => {
   let component: TicketsComponent;
@@ -17,6 +19,8 @@ describe('TicketsComponent', () => {
       ],
       providers: [
         TicketService,
+        TicketCategoryService,
+        TicketStatusService,
       ],
       declarations: [ TicketsComponent ]
     })

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { Apollo, gql } from 'apollo-angular';
@@ -122,29 +122,6 @@ export class UserService extends BaseService<User> {
     }),catchError(this.handleError<any>()));
   }
 
-  getMyTickets = (): Observable<Ticket[]> => {
-    return this.apollo.query({
-      query: gql`
-        query MyTickets($id: Int!) {
-          user(id: $id) {
-            id
-            submittedTickets {
-              id
-              name
-              description
-              statusId
-            }
-          }
-        }
-      `,
-      variables: {
-        id: this.authService.currentUserValue.id,
-      },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['user']['submittedTickets'] as Ticket[];
-    }));
-  };
-
   getTicketFeed = (): Observable<Ticket[]> => {
     return this.apollo.query({
       query: gql`
@@ -183,19 +160,5 @@ export class UserService extends BaseService<User> {
       tickets.push(...user.assignments.map(a => a.ticket));
       return tickets;
     }));
-  }
-
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
   }
 }

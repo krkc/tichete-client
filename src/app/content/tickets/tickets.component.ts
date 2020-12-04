@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { Ticket } from './ticket';
-import { TicketService } from '../../service/ticket.service';
+import { TicketService } from '../../service/ticket/ticket.service';
 import { TicketStatus } from './status';
 import { User } from '../users/user';
 

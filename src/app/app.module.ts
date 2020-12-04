@@ -27,9 +27,11 @@ import { NavComponent } from './nav/nav.component';
 
 import { UserService } from './service/user.service';
 import { TicketSearchService } from './service/ticket-search.service';
-import { TicketService } from './service/ticket.service';
+import { TicketService } from './service/ticket/ticket.service';
 import { AuthenticationService } from './service/authentication.service';
 import { AssignmentService } from './service/assignment.service';
+import { TicketCategoryService } from './service/ticket/ticket-category.service';
+import { TicketStatusService } from './service/ticket/ticket-status.service';
 import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
@@ -101,6 +103,8 @@ export function tokenGetter() {
     UserService,
     AuthenticationService,
     AssignmentService,
+    TicketCategoryService,
+    TicketStatusService,
     AuthGuard,
   ],
   bootstrap: [AppComponent]

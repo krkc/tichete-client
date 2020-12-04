@@ -3,7 +3,9 @@ import {
   ApolloTestingModule,
   ApolloTestingController,
 } from 'apollo-angular/testing';
-import { Ticket } from '../content/tickets/ticket';
+import { Ticket } from 'src/app/content/tickets/ticket';
+import { TicketCategoryService } from './ticket-category.service';
+import { TicketStatusService } from './ticket-status.service';
 import { TicketService } from './ticket.service';
 
 describe('TicketService', () => {
@@ -16,7 +18,9 @@ describe('TicketService', () => {
     TestBed.configureTestingModule({
       imports: [ApolloTestingModule],
       providers: [
-        TicketService
+        TicketService,
+        TicketStatusService,
+        TicketCategoryService,
       ]
     });
 

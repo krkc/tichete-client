@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { TicketService } from "../../../service/ticket.service";
+import { TicketService } from "../../../service/ticket/ticket.service";
 import { Ticket } from "../../tickets/ticket";
 import { User } from '../user';
 import { Assignment } from '../../assignment';

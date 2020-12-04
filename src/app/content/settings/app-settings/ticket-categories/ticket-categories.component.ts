@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { TicketCategory } from '../../../tickets/ticket-category';
 
 import * as alertify from 'alertifyjs';
@@ -68,7 +68,7 @@ export class TicketCategoriesComponent implements OnInit {
     alertify.confirm('Caution',
       'Are you sure you wish to delete this ticket category?',
       () => {
-        this.ticketService.deleteTicketCategory(this.selectedTicketCategory)
+        this.ticketService.deleteTicketCategory([this.selectedTicketCategory])
           .subscribe(() => this.router.navigate(['/settings/app/ticket-categories']));
       },
       null
