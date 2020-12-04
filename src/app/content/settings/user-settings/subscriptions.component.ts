@@ -41,7 +41,7 @@ export class SubscriptionsComponent implements OnInit {
       next: (me: User) => {
         this.me = me;
         this.subscriptionsForm.setValue({
-          subscribedCategories: this.me.subscriptions.map(s => s.category.id)
+          subscribedCategories: this.me.subscriptions?.map(s => s.categoryId || s.category.id) || []
         });
       }
     });
@@ -57,7 +57,7 @@ export class SubscriptionsComponent implements OnInit {
     });
 
     userData.subscriptions = subscribedCategoryIds.map(cid => {
-      const subscriptionFound = this.me?.subscriptions?.find(subscription => subscription.category.id === cid);
+      const subscriptionFound = this.me.subscriptions?.find(subscription => subscription.category.id === cid);
       return {
         id: subscriptionFound?.id || undefined,
         userId: this.me.id,

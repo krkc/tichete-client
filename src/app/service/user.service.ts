@@ -134,7 +134,7 @@ export class UserService extends BaseService<User> {
                 tags {
                   ticket {
                     id
-                    name
+                    description
                   }
                 }
               }
@@ -142,7 +142,7 @@ export class UserService extends BaseService<User> {
             assignments {
               ticket {
                 id
-                name
+                description
               }
             }
           }

@@ -2,7 +2,7 @@
 <form [formGroup]="subscriptionsForm">
     <mat-form-field class="ticket-categories">
         <mat-label>Categories:</mat-label>
-        <mat-select formControlName="subscribedCategories" multiple required (blur)="onTicketSubmit()">
+        <mat-select formControlName="subscribedCategories" multiple (blur)="onTicketSubmit()">
             <mat-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</mat-option>
         </mat-select>
     </mat-form-field>
