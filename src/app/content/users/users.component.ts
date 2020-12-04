@@ -60,7 +60,7 @@ export class UsersComponent implements OnInit {
 
     private deleteUser(user: User): void {
         this.userService
-            .delete(user)
+            .delete([user])
             .subscribe({
               next: () => {
                 if (this.selectedUser === user) {

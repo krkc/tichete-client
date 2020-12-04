@@ -63,7 +63,7 @@ export class TicketsComponent implements OnInit {
 
   private deleteTicket(ticket: Ticket): void {
     this.ticketService
-      .delete(ticket)
+      .delete([ticket])
       .subscribe({
         next: () => {
           if (this.selectedTicket === ticket) {

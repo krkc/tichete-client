@@ -1,12 +1,13 @@
-import { ApolloCache, Cache, DataProxy, FetchResult } from '@apollo/client/core';
+import { ApolloCache, Cache, DataProxy, FetchResult, MutationOptions, WatchQueryOptions } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 import { Base } from './base';
 
 export interface BaseServiceConfig {
   className: { singular: string, plural: string };
-  getResourceQuery: DataProxy.Query<any, unknown>;
-  getResourcesQuery: DataProxy.Query<any, unknown>;
+  getResourceQuery: WatchQueryOptions;
+  getResourcesQuery: WatchQueryOptions;
+  deleteResourceQuery: MutationOptions;
 }
 
 export abstract class BaseService<T extends Base> {
@@ -34,6 +35,16 @@ export abstract class BaseService<T extends Base> {
       .valueChanges.pipe(map(fetchResult => {
         return fetchResult.data[this.config.className.plural.toLowerCase()] as T[];
     }));
+  };
+
+  public delete = (resources: T[]) => {
+    return this.apollo.mutate({
+      mutation: this.config.deleteResourceQuery.mutation,
+      variables: {
+        ids: resources.map(r => r.id),
+      },
+      update: (cacheStore) => this.updateCache(cacheStore, { data: { removeTicket: resources } }),
+    });
   };
 
   protected updateCache = (cacheStore: ApolloCache<any>, { data }: FetchResult<any>) => {

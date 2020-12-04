@@ -31,7 +31,14 @@ const config: BaseServiceConfig = {
         }
       }
     `,
-  }
+  },
+  deleteResourceQuery: {
+    mutation: gql`
+      mutation RemoveAssignment($ids: [Int!]!) {
+        removeAssignment(ids: $ids)
+      }
+    `,
+  },
 };
 
 @Injectable()
@@ -65,19 +72,6 @@ export class AssignmentService extends BaseService<Assignment> {
       return fetchResult.data['addAssignment']
         .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
     }));
-  };
-
-  delete = (assignments: Assignment[]) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation RemoveAssignment($assignmentIds: [Int!]!) {
-          removeAssignment(assignmentIds: $assignmentIds)
-        }
-      `,
-      variables: {
-        assignmentIds: assignments.map(a => a.id),
-      },
-    });
   };
 
 }

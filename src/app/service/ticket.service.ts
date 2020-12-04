@@ -32,7 +32,14 @@ const config: BaseServiceConfig = {
       }
       ${QueryFragments.TICKET}
     `,
-  }
+  },
+  deleteResourceQuery: {
+    mutation: gql`
+      mutation RemoveTicket($ids: [Int!]!) {
+        removeTicket(ids: $ids)
+      }
+    `,
+  },
 };
 
 // TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
@@ -111,20 +118,6 @@ export class TicketService extends BaseService<Ticket> {
     }),catchError(this.handleError<any>()));
   };
 
-  delete = (ticket: Ticket) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation RemoveTicket($ticketIds: [Int!]!) {
-          removeTicket(ticketIds: $ticketIds)
-        }
-      `,
-      variables: {
-        ticketIds: [ticket.id]
-      },
-      update: (cacheStore) => this.updateCache(cacheStore, { data: { removeTicket: [ticket] } }),
-    });
-  };
-
   getTicketCategories(take: number = 10) {
     return this.apollo.watchQuery({
       query: gql`
@@ -184,14 +177,12 @@ export class TicketService extends BaseService<Ticket> {
   deleteTicketCategory(ticketCategory: TicketCategory) {
     return this.apollo.mutate({
       mutation: gql`
-        mutation RemoveTicketCategory($ticketCategoryIds: [Int!]!) {
-          removeTicketCategory(ticketCategoryIds: $ticketCategoryIds) {
-            name
-          }
+        mutation RemoveTicketCategory($ids: [Int!]!) {
+          removeTicketCategory(ids: $ids)
         }
       `,
       variables: {
-        ticketCategoryIds: [ticketCategory.id]
+        ids: [ticketCategory.id]
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['removeTicketCategory']
@@ -258,14 +249,12 @@ export class TicketService extends BaseService<Ticket> {
   deleteTicketStatus(ticketStatus: TicketStatus) {
     return this.apollo.mutate({
       mutation: gql`
-        mutation RemoveTicketStatus($ticketStatusIds: [Int!]!) {
-          removeTicketStatus(ticketStatusIds: $ticketStatusIds) {
-            name
-          }
+        mutation RemoveTicketStatus($ids: [Int!]!) {
+          removeTicketStatus(ids: $ids)
         }
       `,
       variables: {
-        ticketStatusIds: [ticketStatus.id]
+        ids: [ticketStatus.id]
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['removeTicketStatus'] as TicketStatus;

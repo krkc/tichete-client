@@ -30,7 +30,14 @@ const config: BaseServiceConfig = {
       }
       ${QueryFragments.USER}
     `,
-  }
+  },
+  deleteResourceQuery: {
+    mutation: gql`
+      mutation RemoveUser($ids: [Int!]!) {
+        removeUser(ids: $ids)
+      }
+    `,
+  },
 };
 
 @Injectable()
@@ -113,20 +120,6 @@ export class UserService extends BaseService<User> {
       return fetchResult.data['updateUser']
       .map((user: User) => new User({...user})) as User[];
     }),catchError(this.handleError<any>()));
-  }
-
-  delete(user: User) {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation RemoveUser($userIds: [Int!]!) {
-          removeUser(userIds: $userIds)
-        }
-      `,
-      variables: {
-        userIds: [user.id]
-      },
-      update: (cacheStore, fetchResult) => this.updateCache(cacheStore, { data: { removeUser: [user] } }),
-    });
   }
 
   getMyTickets = (): Observable<Ticket[]> => {
