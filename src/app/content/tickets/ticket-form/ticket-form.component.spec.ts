@@ -7,11 +7,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
+import { Ticket } from 'src/app/models/ticket';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
-import { Ticket } from '../ticket';
 
 import { TicketFormComponent } from './ticket-form.component';
 
@@ -19,7 +19,6 @@ describe('TicketFormComponent', () => {
   let component: TicketFormComponent;
   let fixture: ComponentFixture<TicketFormComponent>;
   let controller: ApolloTestingController;
-  let ticketService: TicketService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

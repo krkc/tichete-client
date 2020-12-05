@@ -2,10 +2,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { ApolloTestingModule } from 'apollo-angular/testing';
-import { AuthenticationService } from '../service/authentication.service';
 import { JwtModule } from '@auth0/angular-jwt';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AuthenticationService } from 'src/app/service/authentication.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

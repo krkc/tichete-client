@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import { Ticket } from './ticket';
-import { TicketService } from '../../service/ticket/ticket.service';
-import { TicketStatus } from './status';
-import { User } from '../users/user';
-
 import * as alertify from 'alertifyjs';
 import { ApolloError } from '@apollo/client/core';
+
+import { TicketStatus } from 'src/app/models/status';
+import { Ticket } from 'src/app/models/ticket';
+import { User } from 'src/app/models/user';
+import { TicketService } from 'src/app/service/ticket/ticket.service';
 
 @Component({
   selector: 'my-tickets',

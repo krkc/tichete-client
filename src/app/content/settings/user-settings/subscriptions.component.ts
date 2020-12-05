@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { UserService } from 'src/app/service/user.service';
-import { TicketCategory } from '../../tickets/ticket-category';
-import { Subscription } from '../../users/subscription';
-import { User } from '../../users/user';
+import { User } from 'src/app/models/user';
+import { Subscription } from 'src/app/models/subscription';
+import { TicketCategory } from 'src/app/models/ticket-category';
 
 @Component({
   selector: 'manage-subscriptions',

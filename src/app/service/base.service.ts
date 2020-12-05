@@ -2,7 +2,7 @@ import { ApolloCache, Cache, FetchResult, MutationOptions, WatchQueryOptions } f
 import { Apollo } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Base } from './base';
+import { BaseModel } from '../models/base-model';
 
 export interface BaseServiceConfig {
   className: { singular: string, plural: string };
@@ -11,7 +11,7 @@ export interface BaseServiceConfig {
   deleteResourceQuery: MutationOptions;
 }
 
-export abstract class BaseService<T extends Base> {
+export abstract class BaseService<T extends BaseModel> {
   constructor(
     protected apollo: Apollo,
     protected config: BaseServiceConfig,

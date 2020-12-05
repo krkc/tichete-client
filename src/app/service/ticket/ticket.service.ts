@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { catchError, map } from 'rxjs/operators';
-import { Ticket } from '../../content/tickets/ticket';
-import { BaseService, BaseServiceConfig } from '../../content/base/base.service';
+import { Ticket } from 'src/app/models/ticket';
+import { BaseService, BaseServiceConfig } from '../base.service';
 import { QueryFragments } from '../query-fragments';
 import { TicketCategoryService } from './ticket-category.service';
 import { TicketStatusService } from './ticket-status.service';

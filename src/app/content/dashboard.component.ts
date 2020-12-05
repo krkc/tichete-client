@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Ticket } from './tickets/ticket';
 import { AuthenticationService } from '../service/authentication.service';
-import { User } from './users/user';
 import { map } from 'rxjs/operators';
 import { UserService } from '../service/user.service';
+import { Ticket } from '../models/ticket';
+import { User } from '../models/user';
 
 @Component({
   selector: 'dashboard',

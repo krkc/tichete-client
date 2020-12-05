@@ -1,10 +1,10 @@
-import { User } from '../users/user';
+import { BaseModel } from './base-model';
 import { TicketStatus } from './status';
-import { Base } from '../base/base';
 import { Tag } from './tag';
-import { Assignment } from '../assignment';
+import { User } from './user';
+import { Assignment } from './assignment';
 
-export class Ticket extends Base {
+export class Ticket extends BaseModel {
   name: string;
   description: string;
   creatorId: number;

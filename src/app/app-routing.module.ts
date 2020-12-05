@@ -1,7 +1,6 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { LoginComponent } from './login/login.component';
 import { TicketsComponent } from './content/tickets/tickets.component';
 import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
 import { TicketCreateComponent } from './content/tickets/ticket-create.component';
@@ -12,13 +11,14 @@ import { UserDetailComponent } from './content/users/detail/user-detail.componen
 import { UserCreateComponent } from './content/users/user-create.component';
 import { UserAssignComponent } from './content/users/detail/user-assign.component';
 import { AuthGuard } from './guards/auth.guard';
-import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 import { UserDetailResolverService } from './content/users/detail/user-detail-resolver.service';
 import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
 import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
 import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories/ticket-categories.component';
 import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
+import { HomeLayoutComponent } from './shared-content/layouts/home-layout/home-layout.component';
+import { LoginComponent } from './shared-content/login/login.component';
 
 const routes: Routes = [
   {

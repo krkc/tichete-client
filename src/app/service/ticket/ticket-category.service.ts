@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { map } from 'rxjs/operators';
-import { BaseServiceConfig, BaseService } from 'src/app/content/base/base.service';
-import { TicketCategory } from 'src/app/content/tickets/ticket-category';
+import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
+import { TicketCategory } from 'src/app/models/ticket-category';
 import { QueryFragments } from '../query-fragments';
 
 const config: BaseServiceConfig = {

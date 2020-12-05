@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { TicketStatus } from '../../../tickets/status';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import * as alertify from 'alertifyjs';
+import { TicketStatus } from 'src/app/models/status';
 
 @Component({
   selector: 'app-ticket-statuses',

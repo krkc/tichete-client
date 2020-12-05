@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { User } from './user';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'user-create',

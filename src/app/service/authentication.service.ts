@@ -3,8 +3,8 @@ import { JwtHelperService } from "@auth0/angular-jwt";
 
 import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
-import { User } from '../content/users/user';
 import { Apollo, gql } from 'apollo-angular';
+import { User } from '../models/user';
 
 @Injectable()
 export class AuthenticationService {

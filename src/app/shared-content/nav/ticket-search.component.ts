@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router }            from '@angular/router';
-
-import { Observable }        from 'rxjs';
-import { Subject }           from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-
-import { TicketSearchService } from '../service/ticket-search.service';
-import { Ticket } from '../content/tickets/ticket';
+import { Ticket } from 'src/app/models/ticket';
+import { TicketSearchService } from 'src/app/service/ticket-search.service';
 
 @Component({
   selector: 'ticket-search',

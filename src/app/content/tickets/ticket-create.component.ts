@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { Ticket } from './ticket';
+import { Ticket } from 'src/app/models/ticket';
 
 @Component({
   selector: 'ticket-create',

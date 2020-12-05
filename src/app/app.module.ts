@@ -11,9 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GraphQLModule } from './graphql.module';
 
-import { LoginComponent } from './login/login.component';
-import { TicketSearchComponent } from './nav/ticket-search.component';
-import { DescriptionPreview } from './content/tickets/tickets-description-preview.pipe';
+import { TextPreview } from './pipes/text-preview.pipe';
 import { UserAssignComponent } from './content/users/detail/user-assign.component';
 import { UserCreateComponent } from './content/users/user-create.component';
 import { UserDetailComponent } from './content/users/detail/user-detail.component';
@@ -23,7 +21,6 @@ import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.co
 import { TicketCreateComponent } from './content/tickets/ticket-create.component';
 import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
 import { DashboardComponent } from './content/dashboard.component';
-import { NavComponent } from './nav/nav.component';
 
 import { UserService } from './service/user.service';
 import { TicketSearchService } from './service/ticket-search.service';
@@ -34,10 +31,8 @@ import { TicketCategoryService } from './service/ticket/ticket-category.service'
 import { TicketStatusService } from './service/ticket/ticket-status.service';
 import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
-import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { User } from './content/users/user';
 import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.component';
 import { UserFormComponent } from './content/users/user-form/user-form.component';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
@@ -45,6 +40,11 @@ import { AppSettingsComponent } from './content/settings/app-settings/app-settin
 import { SubscriptionsComponent } from './content/settings/user-settings/subscriptions.component';
 import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories/ticket-categories.component';
 import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
+import { HomeLayoutComponent } from './shared-content/layouts/home-layout/home-layout.component';
+import { LoginComponent } from './shared-content/login/login.component';
+import { NavComponent } from './shared-content/nav/nav.component';
+import { TicketSearchComponent } from './shared-content/nav/ticket-search.component';
+import { User } from './models/user';
 
 export function tokenGetter() {
   return new User({
@@ -66,7 +66,7 @@ export function tokenGetter() {
     UserDetailComponent,
     UserCreateComponent,
     UserAssignComponent,
-    DescriptionPreview,
+    TextPreview,
     TicketSearchComponent,
     HomeLayoutComponent,
     TicketFormComponent,

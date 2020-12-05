@@ -3,9 +3,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
+import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 import { UserService } from 'src/app/service/user.service';
-import { User } from '../user';
 
 import { UserFormComponent } from './user-form.component';
 

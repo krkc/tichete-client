@@ -3,7 +3,7 @@ import {
   ApolloTestingModule,
   ApolloTestingController,
 } from 'apollo-angular/testing';
-import { Ticket } from 'src/app/content/tickets/ticket';
+import { Ticket } from 'src/app/models/ticket';
 import { TicketCategoryService } from './ticket-category.service';
 import { TicketStatusService } from './ticket-status.service';
 import { TicketService } from './ticket.service';

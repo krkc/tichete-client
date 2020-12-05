@@ -6,12 +6,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ApolloTestingModule } from 'apollo-angular/testing';
+import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { UserService } from 'src/app/service/user.service';
-import { User } from '../../users/user';
 
 import { SubscriptionsComponent } from './subscriptions.component';
 

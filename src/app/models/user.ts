@@ -1,10 +1,9 @@
-import { Base } from '../base/base';
-import { Ticket } from '../tickets/ticket';
-import { TicketCategory } from '../tickets/ticket-category';
-import { Assignment } from '../assignment';
+import { Assignment } from './assignment';
+import { BaseModel } from './base-model';
+import { Ticket } from './ticket';
 import { Subscription } from './subscription';
 
-export class User extends Base {
+export class User extends BaseModel {
     username: string;
     email: string;
     firstName: string;

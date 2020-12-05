@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-
-import { Assignment } from '../content/assignment';
-import { User } from '../content/users/user';
-import { Ticket } from '../content/tickets/ticket';
 import { Apollo, gql } from 'apollo-angular';
-import { BaseService, BaseServiceConfig } from '../content/base/base.service';
+
+import { BaseService, BaseServiceConfig } from './base.service';
+import { Ticket } from '../models/ticket';
+import { User } from '../models/user';
+import { Assignment } from '../models/assignment';
 
 const config: BaseServiceConfig = {
   className: { singular: Assignment.name, plural: `${Assignment.name}s` },

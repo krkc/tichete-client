@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import { User } from './user';
-import { UserService } from '../../service/user.service';
-import { Ticket } from "../tickets/ticket";
 import * as alertify from "alertifyjs";
 import { ApolloError } from '@apollo/client/core';
+import { Ticket } from 'src/app/models/ticket';
+import { User } from 'src/app/models/user';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
     selector: 'my-users',

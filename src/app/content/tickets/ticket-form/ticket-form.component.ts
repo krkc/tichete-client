@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TicketCategory } from '../ticket-category';
-import { Ticket } from '../ticket';
+import { TicketCategory } from '../../../models/ticket-category';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
-import { Tag } from '../tag';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from 'src/app/service/authentication.service';
+import { Tag } from 'src/app/models/tag';
+import { Ticket } from 'src/app/models/ticket';
 
 @Component({
   selector: 'ticket-form',

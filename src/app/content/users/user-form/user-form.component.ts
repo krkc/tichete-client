@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/service/user.service';
-import { User } from '../user';
 
 @Component({
   selector: 'user-form',

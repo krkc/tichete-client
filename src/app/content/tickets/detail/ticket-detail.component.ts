@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Ticket } from '../ticket';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { Ticket } from 'src/app/models/ticket';
 
 @Component({
   selector: 'my-ticket-detail',

@@ -5,9 +5,9 @@ import { AuthenticationService } from './authentication.service';
 import { Apollo, gql } from 'apollo-angular';
 
 import { QueryFragments } from './query-fragments';
-import { BaseService, BaseServiceConfig } from '../content/base/base.service';
-import { User } from '../content/users/user';
-import { Ticket } from '../content/tickets/ticket';
+import { BaseService, BaseServiceConfig } from './base.service';
+import { Ticket } from '../models/ticket';
+import { User } from '../models/user';
 
 const config: BaseServiceConfig = {
   className: { singular: User.name, plural: `${User.name}s` },

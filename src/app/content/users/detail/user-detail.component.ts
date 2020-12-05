@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-
-import { User } from '../user';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'my-user-detail',

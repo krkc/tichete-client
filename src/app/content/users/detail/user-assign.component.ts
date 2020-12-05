@@ -1,13 +1,13 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { TicketService } from "../../../service/ticket/ticket.service";
-import { Ticket } from "../../tickets/ticket";
-import { User } from '../user';
-import { Assignment } from '../../assignment';
+import { Assignment } from '../../../models/assignment';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from 'src/app/service/user.service';
 import { switchMap } from 'rxjs/operators';
+import { Ticket } from 'src/app/models/ticket';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'user-assign',
