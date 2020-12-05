@@ -85,8 +85,8 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        whitelistedDomains: ["localhost:*"],
-        blacklistedRoutes: ["example.com/examplebadroute/"]
+        allowedDomains: ["localhost:*"],
+        disallowedRoutes: ["example.com/examplebadroute/"]
       }
     }),
     GraphQLModule,
