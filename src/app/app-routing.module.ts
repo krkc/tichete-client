@@ -19,6 +19,7 @@ import { TicketCategoriesComponent } from './content/settings/app-settings/ticke
 import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
 import { HomeLayoutComponent } from './shared-content/layouts/home-layout/home-layout.component';
 import { LoginComponent } from './shared-content/login/login.component';
+import { RolesComponent } from './content/settings/app-settings/roles/roles.component';
 
 const routes: Routes = [
   {
@@ -106,40 +107,59 @@ const routes: Routes = [
       },
       {
         path: 'settings/app',
-        component: AppSettingsComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'settings/app/ticket-categories',
         children: [
           {
             path: '',
-            component: TicketCategoriesComponent,
+            component: AppSettingsComponent,
             canActivate: [AuthGuard]
           },
           {
-            path: ':id',
-            component: TicketCategoriesComponent,
-            canActivate: [AuthGuard]
-          }
+            path: 'ticket-categories',
+            children: [
+              {
+                path: '',
+                component: TicketCategoriesComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: ':id',
+                component: TicketCategoriesComponent,
+                canActivate: [AuthGuard]
+              }
+            ]
+          },
+          {
+            path: 'ticket-statuses',
+            children: [
+              {
+                path: '',
+                component: TicketStatusesComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: ':id',
+                component: TicketStatusesComponent,
+                canActivate: [AuthGuard]
+              }
+            ]
+          },
+          {
+            path: 'roles',
+            children: [
+              {
+                path: '',
+                component: RolesComponent,
+                canActivate: [AuthGuard]
+              },
+              {
+                path: ':id',
+                component: RolesComponent,
+                canActivate: [AuthGuard]
+              }
+            ]
+          },
         ]
       },
-      {
-        path: 'settings/app/ticket-statuses',
-        children: [
-          {
-            path: '',
-            component: TicketStatusesComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: ':id',
-            component: TicketStatusesComponent,
-            canActivate: [AuthGuard]
-          }
-        ]
-
-      }
     ]
   }
 ];

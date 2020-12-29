@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '../authentication.service';
 import { Apollo, gql } from 'apollo-angular';
 
-import { QueryFragments } from './query-fragments';
-import { BaseService, BaseServiceConfig } from './base.service';
-import { Ticket } from '../models/ticket';
-import { User } from '../models/user';
+import { QueryFragments } from '../query-fragments';
+import { BaseService, BaseServiceConfig } from '../base.service';
+import { Ticket } from '../../models/ticket';
+import { User } from '../../models/user';
+import { RoleService } from './role.service';
 
 const config: BaseServiceConfig = {
   className: { singular: User.name, plural: `${User.name}s` },
@@ -45,6 +46,7 @@ export class UserService extends BaseService<User> {
   constructor(
     apollo: Apollo,
     private authService: AuthenticationService,
+    private roleService: RoleService,
   ) {
     super(apollo, config);
   }
@@ -111,6 +113,10 @@ export class UserService extends BaseService<User> {
           firstName: user.firstName,
           lastName: user.lastName,
           password: user.password,
+          roleId: user.role?.id, // TODO: Right now roleId gets nulled (by serverside defaultValue) if a valid number isn't passed.
+          //  That doesn't seem right, but graphql doesn't support 'undefined' type in JS. Ideally there should
+          //  be a difference between passing roleId: null, and roleId: undefined (or not passing roleId at all).
+          //  Seems undesireable that if someone unknowingly leaves off roleId in their mutation that it wipes the roleId. more research needed here.
           subscriptions: user.subscriptions?.map(sub => ({ id: sub.id, userId: user.id, categoryId: sub.categoryId || sub.category.id })) || undefined,
           assignments: user.assignments?.map(a => ({ id: a.id, userId: user.id, ticketId: a.ticketId || a.ticket.id })) || undefined,
         }],
@@ -161,4 +167,10 @@ export class UserService extends BaseService<User> {
       return tickets;
     }));
   }
+
+  // Helpers
+  getRoles = this.roleService.getMany;
+  createRole = this.roleService.create;
+  updateRole = this.roleService.update;
+  deleteRole = this.roleService.delete;
 }

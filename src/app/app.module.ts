@@ -22,7 +22,7 @@ import { TicketCreateComponent } from './content/tickets/ticket-create.component
 import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
 import { DashboardComponent } from './content/dashboard.component';
 
-import { UserService } from './service/user.service';
+import { UserService } from './service/user/user.service';
 import { TicketSearchService } from './service/ticket-search.service';
 import { TicketService } from './service/ticket/ticket.service';
 import { AuthenticationService } from './service/authentication.service';
@@ -45,6 +45,10 @@ import { LoginComponent } from './shared-content/login/login.component';
 import { NavComponent } from './shared-content/nav/nav.component';
 import { TicketSearchComponent } from './shared-content/nav/ticket-search.component';
 import { User } from './models/user';
+import { RoleService } from './service/user/role.service';
+import { RolesComponent } from './content/settings/app-settings/roles/roles.component';
+import { PermissionGrantsComponent } from './content/settings/app-settings/roles/permission-grants/permission-grants.component';
+import { PermissionService } from './service/user/permission.service';
 
 export function tokenGetter() {
   return new User({
@@ -75,7 +79,9 @@ export function tokenGetter() {
     AppSettingsComponent,
     SubscriptionsComponent,
     TicketCategoriesComponent,
-    TicketStatusesComponent
+    TicketStatusesComponent,
+    RolesComponent,
+    PermissionGrantsComponent,
   ],
   imports: [
     BrowserModule,
@@ -101,6 +107,8 @@ export function tokenGetter() {
     TicketService,
     TicketSearchService,
     UserService,
+    RoleService,
+    PermissionService,
     AuthenticationService,
     AssignmentService,
     TicketCategoryService,

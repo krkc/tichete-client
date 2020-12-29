@@ -4,7 +4,7 @@ import { Assignment } from '../../../models/assignment';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { UserService } from 'src/app/service/user.service';
+import { UserService } from 'src/app/service/user/user.service';
 import { switchMap } from 'rxjs/operators';
 import { Ticket } from 'src/app/models/ticket';
 import { User } from 'src/app/models/user';

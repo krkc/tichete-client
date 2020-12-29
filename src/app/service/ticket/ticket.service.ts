@@ -79,7 +79,7 @@ export class TicketService extends BaseService<Ticket> {
         newTicketData: [{
           description: ticket.description,
           creatorId: ticket.creatorId,
-          ticketCategoryIds: ticket.tags?.map(tag => tag.categoryId) || []
+          tags: ticket.tags || undefined
         }],
       },
       update: this.updateCache,

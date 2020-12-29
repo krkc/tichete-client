@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { AuthenticationService } from '../service/authentication.service';
 import { map } from 'rxjs/operators';
-import { UserService } from '../service/user.service';
+import { UserService } from '../service/user/user.service';
 import { Ticket } from '../models/ticket';
 import { User } from '../models/user';
 

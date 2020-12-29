@@ -5,7 +5,7 @@ import { ApolloTestingModule } from 'apollo-angular/testing';
 import { of } from 'rxjs';
 import { User } from 'src/app/models/user';
 import { AuthenticationService } from 'src/app/service/authentication.service';
-import { UserService } from 'src/app/service/user.service';
+import { UserService } from 'src/app/service/user/user.service';
 
 import { UserFormComponent } from './user-form.component';
 

@@ -2,6 +2,7 @@ import { Assignment } from './assignment';
 import { BaseModel } from './base-model';
 import { Ticket } from './ticket';
 import { Subscription } from './subscription';
+import { Role } from './role';
 
 export class User extends BaseModel {
     username: string;
@@ -11,9 +12,7 @@ export class User extends BaseModel {
     password?: string;
     accessToken?: string;
 
-    _links: any;
-    _embedded: any;
-
+    role?: Role;
     assignments?: Assignment[];
     submittedTickets?: Ticket[];
     subscriptions?: Subscription[];

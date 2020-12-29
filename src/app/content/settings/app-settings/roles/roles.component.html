@@ -1,0 +1,49 @@
+<h2>Manage Roles</h2>
+<div *ngIf="selectedRole" class="mb-3">
+  Status ID#: {{ selectedRole.id }}<br />
+  Created On: {{ selectedRole?.createdAt | date }}<br />
+</div>
+<section id="new-role">
+    <form [formGroup]="roleForm" (ngSubmit)="onRoleSubmit()">
+        <mat-form-field class="roles w-50"  appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="My role name">
+        </mat-form-field><br />
+        <mat-form-field class="roles w-50"  appearance="outline">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description" placeholder="My role description">
+        </mat-form-field>
+        <br>
+        <div class="form-group">
+            <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+            &nbsp;<button class="btn btn-primary" type="submit" [disabled]="roleForm.pristine">{{ selectedRole?.id ? "Update" : "Add" }}</button>
+            &nbsp;<button class="btn btn-danger" type="button" [hidden]="!selectedRole?.id" (click)="onRoleDelete(); $event.stopPropagation()">Delete</button>
+        </div>
+    </form>
+</section>
+<br />
+<section id="roles">
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Is System Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let role of rolesData | async"
+            routerLink="/settings/app/roles/{{ role.id }}"
+            routerLinkActive="active"
+          >
+            <td>{{ role.name }}</td>
+            <td>{{ role.description }}</td>
+            <td><span *ngIf="role.isSystemAdmin">&#10003;</span></td>
+          </tr>
+        </tbody>
+    </table>
+</section>
+<br>
+<hr>
+<app-permission-grants *ngIf="selectedRole" [role]="selectedRole"></app-permission-grants>

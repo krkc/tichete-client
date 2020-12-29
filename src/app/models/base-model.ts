@@ -1,13 +1,9 @@
-export abstract class BaseModel {
+export abstract class BaseModel<T extends BaseModel = any> {
   id: number;
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(data?: any) {
-    if (!data) return;
-
-    for (let key in data) {
-        this[key] = data[key];
-    }
+  constructor(partial: Partial<T> = {}) {
+    Object.assign(this, partial);
   }
 }

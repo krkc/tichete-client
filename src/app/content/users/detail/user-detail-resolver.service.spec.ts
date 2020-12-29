@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { JwtModule } from '@auth0/angular-jwt';
 import { ApolloTestingModule } from 'apollo-angular/testing';
 import { AuthenticationService } from 'src/app/service/authentication.service';
-import { UserService } from 'src/app/service/user.service';
+import { UserService } from 'src/app/service/user/user.service';
 
 import { UserDetailResolverService } from './user-detail-resolver.service';
 

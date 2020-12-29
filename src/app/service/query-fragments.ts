@@ -49,9 +49,18 @@ const TICKET = gql`
   ${USERMIN}
 `;
 
+const ROLEMIN = gql`
+  fragment roleMin on Role {
+    __typename
+    id
+    name
+  }
+`;
+
 const USER = gql`
   fragment user on User {
     ...userMin
+    role { ...roleMin }
     submittedTickets {
       id
       name
@@ -71,8 +80,34 @@ const USER = gql`
   }
   ${USERMIN}
   ${TICKETMIN}
+  ${ROLEMIN}
+`;
+
+const PERMISSION = gql`
+  fragment permission on Permission {
+    __typename
+    id
+    resourceName
+    creatorOnly
+    canCreate
+    canRead
+    canUpdate
+    canDelete
+    roleId
+  }
+`;
+
+const ROLE = gql`
+  fragment role on Role {
+    ...roleMin
+    createdAt
+    isSystemAdmin
+    permissions { ...permission }
+  }
+  ${ROLEMIN}
+  ${PERMISSION}
 `;
 
 export const QueryFragments = {
-  TICKET, USER, TICKETMIN, USERMIN
+  TICKET, USER, TICKETMIN, USERMIN, ROLE, ROLEMIN, PERMISSION
 }

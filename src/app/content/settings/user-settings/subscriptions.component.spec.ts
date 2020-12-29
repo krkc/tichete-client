@@ -11,7 +11,7 @@ import { AuthenticationService } from 'src/app/service/authentication.service';
 import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
-import { UserService } from 'src/app/service/user.service';
+import { UserService } from 'src/app/service/user/user.service';
 
 import { SubscriptionsComponent } from './subscriptions.component';
 

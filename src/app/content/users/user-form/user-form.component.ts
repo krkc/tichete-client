@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators,  } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { Role } from 'src/app/models/role';
 import { User } from 'src/app/models/user';
-import { UserService } from 'src/app/service/user.service';
+import { UserService } from 'src/app/service/user/user.service';
 
 @Component({
   selector: 'user-form',
@@ -12,6 +13,7 @@ import { UserService } from 'src/app/service/user.service';
 export class UserFormComponent implements OnInit {
   @Input() user$: Observable<User>;
   public user: User;
+  public roles: Role[];
   public userForm: FormGroup;
   public isResetPassword: boolean = false;
 
@@ -20,6 +22,7 @@ export class UserFormComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.userForm = this.fb.group({
+      roleId: ['', ],
       email: ['', Validators.required],
       username: ['', Validators.required],
       firstName: ['', Validators.required],
@@ -44,6 +47,10 @@ export class UserFormComponent implements OnInit {
         }
       },
     });
+
+    this.userService.getRoles().subscribe((roles: Role[]) => {
+      this.roles = roles;
+    });
   }
 
   goBack(): void {
@@ -53,8 +60,11 @@ export class UserFormComponent implements OnInit {
   onUserSubmit() {
     const formVals = this.userForm.value;
     const userData = new User({
-      ...formVals
+      ...formVals,
+      role: this.roles.find(role => role.id === formVals.roleId) || undefined,
     });
+    console.log(userData);
+
 
     let submitResult: Observable<any>;
     if (this.user.id) {
@@ -75,6 +85,7 @@ export class UserFormComponent implements OnInit {
 
   private populateFormFields() {
     this.userForm.setValue({
+      roleId: this.user.role?.id || '',
       email: this.user.email,
       username: this.user.username,
       firstName: this.user.firstName,

@@ -61,7 +61,7 @@ export class TicketStatusService extends BaseService<TicketStatus> {
         }],
       },
     }).pipe(map(fetchResult => {
-      return fetchResult.data['assignTicketsToUser'] as TicketStatus[];
+      return fetchResult.data['addTicketStatus'] as TicketStatus[];
     }));
   }
 
