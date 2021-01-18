@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import * as alertify from 'alertifyjs';
+import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
 import { PermissionService } from 'src/app/service/user/permission.service';
@@ -15,59 +13,81 @@ export class PermissionGrantsComponent implements OnInit {
   @Input() role: Role;
   public permissions: Permission[];
   public selectedPermission = null;
-  public permissionForm: FormGroup;
+  public itemFormInfo: ItemFormInfo<Permission>;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private permissionService: PermissionService,
+    private service: PermissionService,
   ) {
-    this.permissionForm = this.fb.group({
-      resourceName: ['', Validators.required],
-      creatorOnly: [null, Validators.required],
-      operationIds: ['', Validators.required],
-    });
+    const itemFields: FormItemField[] = [
+      {
+        type: 'select',
+        name: 'resourceName',
+        label: 'Resource',
+        options: [
+          { label: 'Users', value: 'users' },
+          { label: 'Roles', value: 'roles' },
+          { label: 'Tickets', value: 'tickets' },
+          { label: 'Ticket Statuses', value: 'ticketStatuses' },
+          { label: 'Ticket Categories', value: 'ticketCategories' },
+        ],
+        required: true,
+      },
+      {
+        type: 'select',
+        name: 'creatorOnly',
+        label: 'Scope',
+        options: [
+          { label: 'Creator Only', value: true },
+          { label: 'Everyone', value: false },
+        ],
+        required: true,
+      },
+      {
+        type: 'select',
+        name: 'permissions',
+        label: 'Permitted Operations',
+        options: [
+          { label: 'Create', value: 'canCreate' },
+          { label: 'Read', value: 'canRead' },
+          { label: 'Update', value: 'canUpdate' },
+          { label: 'Delete', value: 'canDelete' },
+        ],
+        multiple: true,
+        required: true,
+        transformFn: (itemInput: any, value: any[]) => {
+          value.forEach(v => {
+            itemInput[v] = true;
+          });
+          return itemInput;
+        },
+      }
+    ];
+
+    this.itemFormInfo = {
+      service: this.service,
+      formFields: itemFields,
+      propertyResolveFn: (formVals: any) => {
+        let itemInput: Partial<Permission> = {};
+        for (const propertyName in formVals) {
+          if (Object.prototype.hasOwnProperty.call(formVals, propertyName)) {
+            const propertyValue = formVals[propertyName];
+            const itemField = this.itemFormInfo.formFields.find(field => field.name === propertyName);
+            if (itemField.transformFn) {
+              itemInput = itemField.transformFn(itemInput, propertyValue);
+            } else {
+              itemInput[propertyName] = propertyValue;
+            }
+          }
+        }
+
+        itemInput.role = this.role;
+        return itemInput as Permission;
+      }
+    };
   }
 
   ngOnInit(): void {
     this.role = this.role || new Role({permissions: []});
-  }
-
-  goBack(): void {
-    window.history.back();
-  }
-
-  onPermissionSubmit(): void {
-    const formVals = this.permissionForm.value;
-    const permissionInput = new Permission({
-      resourceName: formVals['resourceName'],
-      creatorOnly: !!formVals['creatorOnly'],
-      roleId: this.role.id
-    });
-    formVals['operationIds'].forEach((id: string) => {
-      permissionInput[id] = true;
-    });
-    if (this.selectedPermission) {
-      permissionInput.id = this.selectedPermission.id;
-      this.permissionService.update(permissionInput)
-        .subscribe(() => this.router.navigate(['/settings/app/roles']));
-    } else {
-      this.permissionService.create(permissionInput)
-      .subscribe(() => {
-        this.permissionForm.reset();
-      });
-    }
-  }
-// TODO: Genericize table form
-  onPermissionDelete(): void {
-    alertify.confirm('Caution',
-    'Are you sure you wish to delete this permission?',
-    () => {
-      this.permissionService.delete([this.selectedPermission])
-        .subscribe(() => this.router.navigate(['/settings/app/roles']));
-    },
-    null
-  );
   }
 
 }

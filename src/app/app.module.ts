@@ -33,6 +33,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TicketFormComponent } from './content/tickets/ticket-form/ticket-form.component';
 import { UserFormComponent } from './content/users/user-form/user-form.component';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
@@ -49,6 +50,7 @@ import { RoleService } from './service/user/role.service';
 import { RolesComponent } from './content/settings/app-settings/roles/roles.component';
 import { PermissionGrantsComponent } from './content/settings/app-settings/roles/permission-grants/permission-grants.component';
 import { PermissionService } from './service/user/permission.service';
+import { TableFormComponent } from './content/table-form/table-form.component';
 
 export function tokenGetter() {
   return new User({
@@ -82,6 +84,7 @@ export function tokenGetter() {
     TicketStatusesComponent,
     RolesComponent,
     PermissionGrantsComponent,
+    TableFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -102,6 +105,7 @@ export function tokenGetter() {
     MatCardModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatCheckboxModule,
   ],
   providers: [
     TicketService,

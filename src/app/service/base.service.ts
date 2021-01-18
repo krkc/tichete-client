@@ -38,13 +38,16 @@ export abstract class BaseService<T extends BaseModel> {
     }));
   };
 
+  public abstract create(...resource: T[]): Observable<T[]>;
+  public abstract update(...resource: T[]): Observable<T[]>;
+
   public delete = (resources: T[]) => {
     return this.apollo.mutate({
       mutation: this.config.deleteResourceQuery.mutation,
       variables: {
         ids: resources.map(r => r.id),
       },
-      update: (cacheStore) => this.updateCache(cacheStore, { data: { removeTicket: resources } }),
+      update: (cacheStore) => this.updateCache(cacheStore, { data: { [`remove${this.singularClassNameToCamelCase()}`]: resources } }),
     });
   };
 

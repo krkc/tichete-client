@@ -41,8 +41,8 @@ export class RolesComponent implements OnInit {
 
         this.selectedRole = this.roles.find(r => r.id === +params['id']);
         this.roleForm.patchValue(this.selectedRole);
-      })
-    })
+      });
+    });
   }
 
   goBack(): void {

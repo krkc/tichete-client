@@ -1,0 +1,44 @@
+<form class="items-form" [formGroup]="itemForm" (ngSubmit)="onItemSubmit()">
+  <mat-form-field *ngFor="let itemField of itemFormInfo.formFields" [ngSwitch]="itemField.type" class="item-input" appearance="outline">
+    <mat-label>{{ itemField.label }}</mat-label>
+    <input *ngSwitchCase="'input'" matInput [formControlName]="itemField.name" [placeholder]="itemField.placeholder">
+    <mat-select *ngSwitchCase="'select'" [formControlName]="itemField.name" [multiple]="itemField.multiple">
+      <mat-option *ngFor="let option of itemField.options" [value]="option.value">{{ option.label }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div class="inline-group">
+    <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+    <button class="btn btn-primary" type="submit" [disabled]="itemForm.pristine">{{ selectedItem?.id ? "Update" : "Add" }}</button>
+    <button class="btn btn-danger" type="button" [hidden]="!selectedItem?.id" (click)="onItemDelete(); $event.stopPropagation()">Delete</button>
+  </div>
+</form>
+<table class="items-table table table-hover">
+  <thead>
+    <tr>
+      <th scope="col" *ngFor="let itemField of itemFormInfo.formFields">{{ itemField.label }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let item of items"
+      [routerLink]="itemFormInfo.linkPrefix"
+      routerLinkActive="active"
+    >
+      <td scope="row" *ngFor="let itemField of itemFormInfo.formFields">
+        <span *ngIf="!itemField.multiple">
+          {{ getRowValue(itemField, item[itemField.name]) }}
+        </span>
+        <span *ngIf="itemField.multiple">
+          <ng-template #defaultMultiColBody>
+            <div class="default-multi-col-body">
+              <mat-checkbox *ngFor="let option of itemField.options" [checked]="item[option.value]" disabled>{{ option.label }}</mat-checkbox>
+            </div>
+          </ng-template>
+          <ng-container
+            *ngTemplateOutlet="multiColBodyTempl ? multiColBodyTempl : defaultMultiColBody; context: { $implicit: item }"
+          ></ng-container>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>

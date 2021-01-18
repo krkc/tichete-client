@@ -1,0 +1,27 @@
+.items-form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-bottom: 2rem;
+
+  .item-input {
+
+  }
+
+  .inline-group {
+    align-self: flex-end;
+
+    .btn {
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+.items-table {
+
+}
+
+.default-multi-col-body {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { Apollo, gql } from 'apollo-angular';
-
+import { of } from 'rxjs';
 import { BaseService, BaseServiceConfig } from './base.service';
-import { Ticket } from '../models/ticket';
-import { User } from '../models/user';
 import { Assignment } from '../models/assignment';
 
 const config: BaseServiceConfig = {
@@ -49,29 +46,6 @@ export class AssignmentService extends BaseService<Assignment> {
     super(apollo, config);
   }
 
-  create = (user: User, ticket: Ticket) => {
-    return this.apollo.mutate({
-      mutation: gql`
-        mutation AddAssignment($newAssignmentData: [NewAssignmentInput!]!) {
-          addAssignment(newAssignmentData: $newAssignmentData) {
-            id
-            userId
-            ticketId
-          }
-        }
-      `,
-      variables: {
-        newAssignmentData: [
-          {
-            userId: user.id,
-            ticketId: ticket.id
-          }
-        ],
-      },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addAssignment']
-        .map((assignment: Assignment) => new Assignment({...assignment})) as Assignment[];
-    }));
-  };
-
+  create(assignment: Assignment) {return of([assignment])}
+  update(assignment: Assignment) {return of([assignment])}
 }
