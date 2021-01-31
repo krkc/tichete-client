@@ -73,7 +73,7 @@ export class PermissionService extends BaseService<Permission> {
   update(permission: Permission) {
     return this.apollo.mutate({
       mutation: gql`
-        mutation UpdateRole($updatePermissionData: [UpdatePermissionInput!]!) {
+        mutation UpdatePermission($updatePermissionData: [UpdatePermissionInput!]!) {
           updatePermission(updatePermissionData: $updatePermissionData) {
             id
             resourceName

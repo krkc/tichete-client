@@ -50,12 +50,11 @@ export class SubscriptionsComponent implements OnInit {
   onTicketSubmit() {
     if (!this.subscriptionsForm.dirty) return;
 
-    const myUserId = this.authService.currentUserValue.id;
     const subscribedCategoryIds = this.subscriptionsForm.value.subscribedCategories;
     const userData = new User({
-      id: myUserId,
-    });
-
+      id: this.me.id,
+      role: this.me.role,
+    });    
     userData.subscriptions = subscribedCategoryIds.map(cid => {
       const subscriptionFound = this.me.subscriptions?.find(subscription => subscription.category.id === cid);
       return {

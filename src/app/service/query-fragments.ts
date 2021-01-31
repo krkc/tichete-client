@@ -54,6 +54,8 @@ const ROLEMIN = gql`
     __typename
     id
     name
+    isSystemAdmin
+    createdAt
   }
 `;
 
@@ -100,8 +102,6 @@ const PERMISSION = gql`
 const ROLE = gql`
   fragment role on Role {
     ...roleMin
-    createdAt
-    isSystemAdmin
     permissions { ...permission }
   }
   ${ROLEMIN}

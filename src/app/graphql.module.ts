@@ -6,7 +6,7 @@ import { InMemoryCache,ApolloLink } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-const uri = 'http://192.168.1.94:3000/graphql';
+const uri = 'http://localhost:3000/graphql';
 
 export function createApollo(
   httpLink: HttpLink,

@@ -134,9 +134,11 @@ export class UserService extends BaseService<User> {
         query MyFeed($id: Int!) {
           user(id: $id) {
             id
+            role { ...roleMin }
             subscriptions {
               id
               category {
+                id
                 tags {
                   ticket {
                     id
@@ -153,6 +155,7 @@ export class UserService extends BaseService<User> {
             }
           }
         }
+        ${QueryFragments.ROLEMIN}
       `,
       variables: {
         id: this.authService.currentUserValue.id
@@ -162,8 +165,10 @@ export class UserService extends BaseService<User> {
       const tickets : Ticket[] = user.subscriptions?.reduce((acc, subscription) => {
         acc.push(...subscription.category.tags.map(tag => tag.ticket));
         return acc;
-      }, [] as Ticket[]);
-      tickets.push(...user.assignments.map(a => a.ticket));
+      }, [] as Ticket[]) || [];
+      if (user.assignments) {
+        tickets.push(...user.assignments.map(a => a.ticket));
+      }
       return tickets;
     }));
   }
