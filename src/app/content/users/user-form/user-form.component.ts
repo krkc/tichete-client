@@ -22,7 +22,7 @@ export class UserFormComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.userForm = this.fb.group({
-      roleId: ['', ],
+      roleId: [''],
       email: ['', Validators.required],
       username: ['', Validators.required],
       firstName: ['', Validators.required],

@@ -11,6 +11,7 @@ import { AuthenticationService } from 'src/app/service/authentication.service';
 import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
+import { RoleService } from 'src/app/service/user/role.service';
 import { UserService } from 'src/app/service/user/user.service';
 
 import { SubscriptionsComponent } from './subscriptions.component';
@@ -36,6 +37,7 @@ describe('SubscriptionsComponent', () => {
         TicketCategoryService,
         TicketStatusService,
         UserService,
+        RoleService,
         AuthenticationService,
       ],
       declarations: [ SubscriptionsComponent ]

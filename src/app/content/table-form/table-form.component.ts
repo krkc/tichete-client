@@ -100,7 +100,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
    * @param item The item for this row, containing the value
    * @param itemField The form field for this column, which is being updated
    */
-  getItemDisplayValue(item: T, itemField: FormItemField): string {
+  static getItemDisplayValue<T extends BaseModel>(item: T, itemField: FormItemField): string {
     const itemFieldValue = item[itemField.name];
     if (itemField.type === 'select') {
       const selectedOption = itemField.options.find(o => o.value === itemFieldValue);
@@ -167,7 +167,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
    */
   private setFormControls() {
     this.itemFormInfo.formFields.forEach(field => {
-      const control = this.selectedItem ? new FormControl(this.getItemFormValue(this.selectedItem, field)) : new FormControl();      
+      const control = this.selectedItem ? new FormControl(TableFormComponent.getItemFormValue(this.selectedItem, field)) : new FormControl();      
       if (field.required) {
         control.setValidators(Validators.required);
       }
@@ -185,7 +185,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
    * @param item Item containing the value
    * @param itemField Form field to get the value for
    */
-  private getItemFormValue(item: T, itemField: FormItemField): string[] {
+  private static getItemFormValue<T extends BaseModel>(item: T, itemField: FormItemField): string[] {
     if (itemField.type === 'select' && itemField.multiple) {
       return itemField.options.reduce((acc: string[], o: FormItemOptionField) => {
         if (item[o.value]) {

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PermissionService } from 'src/app/service/user/permission.service';
 
 import { PermissionGrantsComponent } from './permission-grants.component';
 
@@ -8,7 +9,10 @@ describe('PermissionGrantsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PermissionGrantsComponent ]
+      declarations: [ PermissionGrantsComponent ],
+      providers: [
+        PermissionService,
+      ]
     })
     .compileComponents();
   });
