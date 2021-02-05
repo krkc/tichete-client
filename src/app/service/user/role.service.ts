@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Role } from 'src/app/models/role';
 import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
 import { QueryFragments } from '../query-fragments';
@@ -51,19 +51,21 @@ export class RoleService extends BaseService<Role> {
           addRole(newRoleData: $newRoleData) {
             id
             name
+            isSystemAdmin
           }
         }
       `,
       variables: {
         newRoleData: [{
-          name: role.name
+          name: role.name,
+          isSystemAdmin: role.isSystemAdmin,
         }],
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['addRole'] as Role[];
-    }));
+    }),catchError(this.handleError<any>()));
   }
-
+// TODO: cache updating for create/update
   update(role: Role) {
     return this.apollo.mutate({
       mutation: gql`
@@ -71,6 +73,7 @@ export class RoleService extends BaseService<Role> {
           updateRole(updateRoleData: $updateRoleData) {
             id
             name
+            isSystemAdmin
           }
         }
       `,
@@ -78,11 +81,12 @@ export class RoleService extends BaseService<Role> {
         updateRoleData: [{
           id: role.id,
           name: role.name,
+          isSystemAdmin: role.isSystemAdmin,
           permissions: role.permissions,
         }],
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['updateRole'] as Role[];
-    }));
+    }),catchError(this.handleError<any>()));
   }
 }

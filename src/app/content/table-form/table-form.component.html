@@ -1,13 +1,20 @@
 <form class="items-form" [formGroup]="itemForm" (ngSubmit)="onItemSubmit()">
-  <mat-form-field *ngFor="let itemField of itemFormInfo.formFields" [ngSwitch]="itemField.type" class="item-input" appearance="outline">
-    <mat-label>{{ itemField.label }}</mat-label>
-    <input *ngSwitchCase="'input'" matInput [formControlName]="itemField.name" [placeholder]="itemField.placeholder">
-    <mat-select *ngSwitchCase="'select'" [formControlName]="itemField.name" [multiple]="itemField.multiple">
-      <mat-option *ngFor="let option of itemField.options" [value]="option.value">{{ option.label }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div *ngFor="let itemField of itemFormInfo.formFields" [ngSwitch]="itemField.type">
+    <mat-form-field *ngSwitchCase="'input'" appearance="outline">
+      <mat-label>{{ itemField.label }}</mat-label>
+      <input matInput [formControlName]="itemField.name" [placeholder]="itemField.placeholder">
+    </mat-form-field>
+    <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="itemField.name">{{ itemField.label }}</mat-checkbox>
+    <mat-form-field *ngSwitchCase="'select'">
+      <mat-label>{{ itemField.label }}</mat-label>
+      <select matNativeControl [formControlName]="itemField.name" [multiple]="itemField.multiple">
+        <option *ngFor="let option of itemField.options" [value]="option.value">{{ option.label }}</option>
+      </select>
+    </mat-form-field>
+    <input [formControlName]="itemField.name" type="hidden" />
+  </div>
   <div class="inline-group">
-    <button class="btn btn-secondary" type="button" (click)="goBack()">Back</button>
+    <button *ngIf="itemFormInfo.linkPrefix" class="btn btn-secondary" type="button" (click)="onBack()">Back</button>
     <button class="btn btn-primary" type="submit" [disabled]="itemForm.pristine">{{ selectedItem?.id ? "Update" : "Add" }}</button>
     <button class="btn btn-danger" type="button" [hidden]="!selectedItem?.id" (click)="onItemDelete(); $event.stopPropagation()">Delete</button>
   </div>
@@ -15,18 +22,26 @@
 <table class="items-table table table-hover">
   <thead>
     <tr>
-      <th scope="col" *ngFor="let itemField of itemFormInfo.formFields">{{ itemField.label }}</th>
+      <th scope="col" *ngFor="let itemField of getNonHiddenFormFields()">{{ itemField.label }}</th>
     </tr>
   </thead>
   <tbody>
     <tr
       *ngFor="let item of items"
-      [routerLink]="itemFormInfo.linkPrefix"
-      routerLinkActive="active"
     >
-      <td scope="row" *ngFor="let itemField of itemFormInfo.formFields">
+      <td scope="row" *ngFor="let itemField of getNonHiddenFormFields()">
         <span *ngIf="!itemField.multiple">
-          {{ getRowValue(itemField, item[itemField.name]) }}
+          <a
+            *ngIf="itemFormInfo.linkColumnName === itemField.name; else nonLinkColumn"
+            [routerLink]="itemFormInfo.linkPrefix ? itemFormInfo.linkPrefix + item.id : undefined"
+            routerLinkActive="active"
+            (click)="itemFormInfo.linkPrefix ? undefined : onRowSelect(item.id)"
+          >
+            {{ getItemDisplayValue(item, itemField) }}
+          </a>
+          <ng-template #nonLinkColumn>
+            {{ getItemDisplayValue(item, itemField) }}
+          </ng-template>
         </span>
         <span *ngIf="itemField.multiple">
           <ng-template #defaultMultiColBody>

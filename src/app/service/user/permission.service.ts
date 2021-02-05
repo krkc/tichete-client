@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Permission } from 'src/app/models/permission';
 import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
 import { QueryFragments } from '../query-fragments';
@@ -57,19 +57,19 @@ export class PermissionService extends BaseService<Permission> {
       variables: {
         newPermissionData: [{
           resourceName: permission.resourceName,
-          creatorOnly: permission.creatorOnly,
-          canCreate: permission.canCreate,
-          canRead: permission.canRead,
-          canUpdate: permission.canUpdate,
-          canDelete: permission.canDelete,
+          creatorOnly: !!permission.creatorOnly,
+          canCreate: !!permission.canCreate,
+          canRead: !!permission.canRead,
+          canUpdate: !!permission.canUpdate,
+          canDelete: !!permission.canDelete,
           roleId: permission.roleId || permission.role.id,
         }],
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['addPermission'] as Permission[];
-    }));
+    }),catchError(this.handleError<any>()));
   }
-
+// TODO: cache updating for create/update
   update(permission: Permission) {
     return this.apollo.mutate({
       mutation: gql`
@@ -84,16 +84,16 @@ export class PermissionService extends BaseService<Permission> {
         updatePermissionData: [{
           id: permission.id,
           resourceName: permission.resourceName,
-          creatorOnly: permission.creatorOnly,
-          canCreate: permission.canCreate,
-          canRead: permission.canRead,
-          canUpdate: permission.canUpdate,
-          canDelete: permission.canDelete,
+          creatorOnly: !!permission.creatorOnly,
+          canCreate: !!permission.canCreate,
+          canRead: !!permission.canRead,
+          canUpdate: !!permission.canUpdate,
+          canDelete: !!permission.canDelete,
           roleId: permission.roleId || permission.role.id,
         }],
       },
     }).pipe(map(fetchResult => {
       return fetchResult.data['updatePermission'] as Permission[];
-    }));
+    }),catchError(this.handleError<any>()));
   }
 }

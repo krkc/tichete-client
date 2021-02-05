@@ -54,35 +54,29 @@ export class PermissionGrantsComponent implements OnInit {
         ],
         multiple: true,
         required: true,
-        transformFn: (itemInput: any, value: any[]) => {
-          value.forEach(v => {
-            itemInput[v] = true;
+        fieldValMapFn: (item, fieldValue) => {
+          fieldValue.forEach((v: any) => {
+            item[v] = true;
           });
-          return itemInput;
+          return item;
+        },
+      },
+      {
+        type: 'hidden',
+        name: 'roleId',
+        label: 'Role Id',
+        required: true,
+        fieldValMapFn: (item) => {
+          item['roleId'] = this.role.id;
+          return item;
         },
       }
     ];
 
     this.itemFormInfo = {
       service: this.service,
+      linkColumnName: 'resourceName',
       formFields: itemFields,
-      propertyResolveFn: (formVals: any) => {
-        let itemInput: Partial<Permission> = {};
-        for (const propertyName in formVals) {
-          if (Object.prototype.hasOwnProperty.call(formVals, propertyName)) {
-            const propertyValue = formVals[propertyName];
-            const itemField = this.itemFormInfo.formFields.find(field => field.name === propertyName);
-            if (itemField.transformFn) {
-              itemInput = itemField.transformFn(itemInput, propertyValue);
-            } else {
-              itemInput[propertyName] = propertyValue;
-            }
-          }
-        }
-
-        itemInput.role = this.role;
-        return itemInput as Permission;
-      }
     };
   }
 

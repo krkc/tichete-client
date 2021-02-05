@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
-import * as alertify from 'alertifyjs';
 import { Role } from 'src/app/models/role';
 import { UserService } from 'src/app/service/user/user.service';
+import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
+import { RoleService } from 'src/app/service/user/role.service';
 
 @Component({
   selector: 'app-roles',
@@ -14,25 +14,47 @@ import { UserService } from 'src/app/service/user/user.service';
 export class RolesComponent implements OnInit {
   public rolesData: Observable<Role[]>;
   public roles: Role[];
+  public itemFormInfo: ItemFormInfo<Role>;
   public selectedRole: Role;
-  public roleForm: FormGroup;
 
   constructor(
+    private service: RoleService,
     private userService: UserService,
-    private fb: FormBuilder,
-    private router: Router,
     private route: ActivatedRoute,
   ) {
-    this.roles = [];
-    this.roleForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
+    const itemFields: FormItemField[] = [
+      {
+        type: 'input',
+        name: 'name',
+        label: 'Name',
+        required: true,
+      },
+      {
+        type: 'input',
+        name: 'description',
+        label: 'Description',
+        required: false,
+      },
+      {
+        type: 'checkbox',
+        name: 'isSystemAdmin',
+        label: 'Is System Admin?',
+        required: true,
+      },
+    ];
+
+    this.itemFormInfo = {
+      linkPrefix: '/settings/app/roles/',
+      linkColumnName: 'name',
+      service: this.service,
+      formFields: itemFields,
+    };
   }
 
   ngOnInit(): void {
     this.rolesData = this.userService.getRoles();
     this.rolesData.subscribe(roles => {
+      this.roles = [];
       this.roles.push(...roles);
 
       this.route.params.forEach((params: Params) => {
@@ -40,37 +62,7 @@ export class RolesComponent implements OnInit {
         if (!roleId) return;
 
         this.selectedRole = this.roles.find(r => r.id === +params['id']);
-        this.roleForm.patchValue(this.selectedRole);
       });
     });
-  }
-
-  goBack(): void {
-    window.history.back();
-  }
-
-  onRoleSubmit() {
-    const formVals = this.roleForm.value;
-    if (this.selectedRole) {
-      formVals.id = this.selectedRole.id;
-      this.userService.updateRole(formVals)
-        .subscribe(() => this.router.navigate(['/settings/app/roles']));
-    } else {
-      this.userService.createRole(formVals)
-      .subscribe(() => {
-        this.roleForm.reset();
-      });
-    }
-  }
-
-  onRoleDelete() {
-    alertify.confirm('Caution',
-      'Are you sure you wish to delete this role?',
-      () => {
-        this.userService.deleteRole([this.selectedRole])
-          .subscribe(() => this.router.navigate(['/settings/app/roles']));
-      },
-      null
-    );
   }
 }
