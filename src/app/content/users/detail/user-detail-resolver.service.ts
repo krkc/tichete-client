@@ -12,7 +12,7 @@ export class UserDetailResolverService implements Resolve<Observable<User>> {
   constructor(private userService: UserService, private router: Router) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<User>> {
-    let id = route.paramMap.get('id');
+    const id = route.paramMap.get('id');
     return of(this.userService.getOne(+id));
   }
 }

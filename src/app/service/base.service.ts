@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { BaseModel } from '../models/base-model';
 
 export interface BaseServiceConfig {
-  className: { singular: string, plural: string };
+  className: { singular: string; plural: string };
   getResourceQuery: WatchQueryOptions;
   getResourcesQuery: WatchQueryOptions;
   deleteResourceQuery: MutationOptions;
@@ -17,39 +17,25 @@ export abstract class BaseService<T extends BaseModel> {
     protected config: BaseServiceConfig,
   ) {}
 
-  public getOne = (id: number) => {
-    return this.apollo.watchQuery({
-      query: this.config.getResourceQuery.query,
-      variables: {
-        id: id
-      },
-    }).valueChanges.pipe(map(fetchResult => {
-      return fetchResult.data[this.singularClassNameToCamelCase()] as T;
-    }));
-  };
+  public getOne = (id: number) => this.apollo.watchQuery({
+    query: this.config.getResourceQuery.query,
+    variables: {
+      id
+    },
+  }).valueChanges.pipe(map(fetchResult => fetchResult.data[this.singularClassNameToCamelCase()] as T));
 
-  public getMany = (take: number = 10) => {
-    return this.apollo.watchQuery({
-      query: this.config.getResourcesQuery.query,
-      variables: { take }
-    })
-      .valueChanges.pipe(map(fetchResult => {
-        return fetchResult.data[this.pluralClassNameToCamelCase()] as T[];
-    }));
-  };
+  public getMany = (take: number = 10) => this.apollo.watchQuery({
+    query: this.config.getResourcesQuery.query,
+    variables: { take }
+  }).valueChanges.pipe(map(fetchResult => fetchResult.data[this.pluralClassNameToCamelCase()] as T[]));
 
-  public abstract create(...resource: T[]): Observable<T[]>;
-  public abstract update(...resource: T[]): Observable<T[]>;
-
-  public delete = (resources: T[]) => {
-    return this.apollo.mutate({
-      mutation: this.config.deleteResourceQuery.mutation,
-      variables: {
-        ids: resources.map(r => r.id),
-      },
-      update: (cacheStore) => this.updateCache(cacheStore, { data: { [`remove${this.singularClassNameToCamelCase()}`]: resources } }),
-    });
-  };
+  public delete = (resources: T[]) => this.apollo.mutate({
+    mutation: this.config.deleteResourceQuery.mutation,
+    variables: {
+      ids: resources.map(r => r.id),
+    },
+    update: (cacheStore) => this.updateCache(cacheStore, { data: { [`remove${this.singularClassNameToCamelCase()}`]: resources } }),
+  });
 
   protected updateCache = (cacheStore: ApolloCache<any>, { data }: FetchResult<any>) => {
     const mutationAction = Object.keys(data)[0];
@@ -57,7 +43,7 @@ export abstract class BaseService<T extends BaseModel> {
 
     mutatedResources.forEach(mutatedResource => {
       if (mutationAction === `add${this.config.className.singular}`) {
-        let queryOut = { query: undefined, variables: undefined, data: {} };
+        const queryOut = { query: undefined, variables: undefined, data: {} };
         queryOut.query = this.config.getResourcesQuery.query;
         queryOut.variables = { take: 10 };
 
@@ -74,7 +60,7 @@ export abstract class BaseService<T extends BaseModel> {
           // the cache will be empty and (annoyingly) it throws an error. This doesn't seem to occur
           // on the user create page. In that case, readQuery just returns null. Not sure yet why
           // the inconsistency.
-          if (error.message !== `Can't find field '${this.pluralClassNameToCamelCase()}' on ROOT_QUERY object`) throw error;
+          if (error.message !== `Can't find field '${this.pluralClassNameToCamelCase()}' on ROOT_QUERY object`) {throw error;}
 
           resources = [];
         }
@@ -96,27 +82,29 @@ export abstract class BaseService<T extends BaseModel> {
         cacheStore.evict({ id: cacheId });
       }
     });
-  }
+  };
 
   /**
    * Handle Http operation that failed.
    * Let the app continue.
+   *
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  protected handleError = <T>(result?: T) => {
-    return (error: any): Observable<T> => {
+  protected handleError = <T2>(result?: T2) => (error: any): Observable<T2> => {
       console.error(error);
       // Let the app keep running by returning an empty result.
-      return of(result as T);
+      return of(result as T2);
     };
-  }
 
   private singularClassNameToCamelCase() {
-    return this.config.className.singular.replace(/^(.)/, function($1) { return $1.toLowerCase(); });
+    return this.config.className.singular.replace(/^(.)/, ($1) => $1.toLowerCase());
   }
 
   private pluralClassNameToCamelCase() {
-    return this.config.className.plural.replace(/^(.)/, function($1) { return $1.toLowerCase(); });
+    return this.config.className.plural.replace(/^(.)/, ($1) => $1.toLowerCase());
   }
+
+  public abstract create(...resource: T[]): Observable<T[]>;
+  public abstract update(...resource: T[]): Observable<T[]>;
 }

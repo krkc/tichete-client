@@ -8,7 +8,7 @@ import { Tag } from 'src/app/models/tag';
 import { Ticket } from 'src/app/models/ticket';
 
 @Component({
-  selector: 'ticket-form',
+  selector: 'app-ticket-form',
   templateUrl: './ticket-form.component.html',
   styleUrls: ['./ticket-form.component.scss']
 })
@@ -62,7 +62,7 @@ export class TicketFormComponent implements OnInit {
       ...formVals
     });
 
-    if (this.ticketForm.controls['taggedCategories'].dirty) {
+    if (this.ticketForm.controls.taggedCategories.dirty) {
       const taggedCategoryIds: number[] = formVals.taggedCategories;
       ticketData.tags = taggedCategoryIds.map(cid => {
         const tagFound = this.ticket?.tags?.find(tag => tag.category.id === cid);
@@ -86,7 +86,7 @@ export class TicketFormComponent implements OnInit {
     }
 
     submitResult.subscribe((updatedResource) => {
-      if (updatedResource?.length > 0) return this.goBack();
+      if (updatedResource?.length > 0) {return this.goBack();}
 
       throw new Error(`Ticket ${this.ticket.id ? 'Create': 'Update'} failed`);
     });

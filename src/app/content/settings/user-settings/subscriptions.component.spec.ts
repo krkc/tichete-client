@@ -50,7 +50,7 @@ describe('SubscriptionsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SubscriptionsComponent);
     component = fixture.componentInstance;
-    spyOnProperty(authService, 'currentUserValue', 'get').and.returnValue(new User({ id: 1 }))
+    spyOnProperty(authService, 'currentUserValue', 'get').and.returnValue(new User({ id: 1 }));
     fixture.detectChanges();
   });
 

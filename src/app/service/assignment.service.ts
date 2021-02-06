@@ -46,6 +46,6 @@ export class AssignmentService extends BaseService<Assignment> {
     super(apollo, config);
   }
 
-  create(assignment: Assignment) {return of([assignment])}
-  update(assignment: Assignment) {return of([assignment])}
+  create(assignment: Assignment) {return of([assignment]);}
+  update(assignment: Assignment) {return of([assignment]);}
 }

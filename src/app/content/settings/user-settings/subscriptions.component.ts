@@ -9,7 +9,7 @@ import { Subscription } from 'src/app/models/subscription';
 import { TicketCategory } from 'src/app/models/ticket-category';
 
 @Component({
-  selector: 'manage-subscriptions',
+  selector: 'app-manage-subscriptions',
   templateUrl: './subscriptions.component.html',
   styleUrls: ['./subscriptions.component.scss']
 })
@@ -48,13 +48,13 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   onTicketSubmit() {
-    if (!this.subscriptionsForm.dirty) return;
+    if (!this.subscriptionsForm.dirty) {return;}
 
     const subscribedCategoryIds = this.subscriptionsForm.value.subscribedCategories;
     const userData = new User({
       id: this.me.id,
       role: this.me.role,
-    });    
+    });
     userData.subscriptions = subscribedCategoryIds.map(cid => {
       const subscriptionFound = this.me.subscriptions?.find(subscription => subscription.category.id === cid);
       return {

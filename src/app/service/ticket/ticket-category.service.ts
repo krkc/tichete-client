@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
 import { TicketCategory } from 'src/app/models/ticket-category';
-import { QueryFragments } from '../query-fragments';
+import { QUERY_FRAGMENTS } from '../query-fragments';
 
 const config: BaseServiceConfig = {
   className: { singular: TicketCategory.name, plural: `TicketCategories` },
@@ -15,7 +15,7 @@ const config: BaseServiceConfig = {
           name
         }
       }
-      ${QueryFragments.TICKET}
+      ${QUERY_FRAGMENTS.ticket}
     `,
   },
   getResourcesQuery: {
@@ -46,7 +46,7 @@ export class TicketCategoryService extends BaseService<TicketCategory> {
   }
 
   create(ticketCategory: TicketCategory) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation AddTicketCategory($newTicketCategoryData: [NewCategoryInput!]!) {
           addTicketCategory(newTicketCategoryData: $newTicketCategoryData) {
@@ -60,13 +60,11 @@ export class TicketCategoryService extends BaseService<TicketCategory> {
           name: ticketCategory.name
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addTicketCategory'] as TicketCategory[];
-    }));
+    }).pipe(map(fetchResult => fetchResult.data.addTicketCategory as TicketCategory[]));
   }
 
   update(ticketCategory: TicketCategory) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation UpdateTicketCategory($updateTicketCategoryData: [UpdateCategoryInput!]!) {
           updateTicketCategory(updateTicketCategoryData: $updateTicketCategoryData) {
@@ -81,8 +79,6 @@ export class TicketCategoryService extends BaseService<TicketCategory> {
           name: ticketCategory.name
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['updateTicketCategory'] as TicketCategory[];
-    }));
+    }).pipe(map(fetchResult => fetchResult.data.updateTicketCategory as TicketCategory[]));
   }
 }

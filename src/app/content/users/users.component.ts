@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import * as alertify from "alertifyjs";
+import * as alertify from 'alertifyjs';
 import { ApolloError } from '@apollo/client/core';
 import { Ticket } from 'src/app/models/ticket';
 import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/service/user/user.service';
 
 @Component({
-    selector: 'my-users',
+    selector: 'app-users',
     templateUrl: './users.component.html',
     styleUrls: ['./users.component.scss']
 })

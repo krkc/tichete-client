@@ -3,7 +3,7 @@ import { of, Observable } from 'rxjs';
 import { Ticket } from 'src/app/models/ticket';
 
 @Component({
-  selector: 'ticket-create',
+  selector: 'app-ticket-create',
   templateUrl: './ticket-create.component.html',
   styleUrls: ['./ticket-create.component.scss']
 })

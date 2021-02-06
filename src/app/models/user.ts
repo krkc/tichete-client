@@ -23,5 +23,5 @@ export class User extends BaseModel {
       }
 
       return `${this.firstName} ${this.lastName}`;
-    }
+    };
 }

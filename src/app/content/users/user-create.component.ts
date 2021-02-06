@@ -3,7 +3,7 @@ import { of, Observable } from 'rxjs';
 import { User } from 'src/app/models/user';
 
 @Component({
-  selector: 'user-create',
+  selector: 'app-user-create',
   templateUrl: './user-create.component.html',
   styleUrls: ['./user-create.component.scss']
 })

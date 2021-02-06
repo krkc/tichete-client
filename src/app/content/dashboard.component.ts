@@ -8,14 +8,14 @@ import { Ticket } from '../models/ticket';
 import { User } from '../models/user';
 
 @Component({
-  selector: 'dashboard',
+  selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   me$: Observable<User>;
-  hasTickets: boolean = false;
-  hasFeed: boolean = false;
+  hasTickets = false;
+  hasFeed = false;
   myTickets$: Observable<Ticket[]>;
   feedTickets$: Observable<Ticket[]>;
 
@@ -26,9 +26,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.me$ = this.userService.getOne(this.authService.currentUserValue.id);
-    this.myTickets$ = this.me$.pipe(map((user: User) => {
-      return user.submittedTickets.slice(1,5) as Ticket[];
-    }));
+    this.myTickets$ = this.me$.pipe(map((user: User) => user.submittedTickets.slice(1,5) as Ticket[]));
 
     this.me$.subscribe({
       next: (user) => {

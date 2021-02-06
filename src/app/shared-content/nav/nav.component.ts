@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/service/authentication.service';
 
 @Component({
-  selector: 'navi-pane',
+  selector: 'app-navi-pane',
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })

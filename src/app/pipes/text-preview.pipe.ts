@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from '@angular/core';
 
 /*
  * Shorten a long string into preview form
@@ -13,8 +13,8 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class TextPreview implements PipeTransform {
     transform(value: string): string {
         if (value?.length > 70)
-            return `${value.substr(0,70)}...`;
+            {return `${value.substr(0,70)}...`;}
         else
-            return value;
+            {return value;}
     }
 }

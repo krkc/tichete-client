@@ -6,6 +6,6 @@
     <a routerLink="/user/detail/{{ ticket?.creator?.id }}">{{ ticket?.creator?.displayName }}</a><br />
     Submitted On: {{ ticket?.createdAt | date }}<br />
   </div>
-  <ticket-form [ticket$]="ticket$"></ticket-form>
-  <ticket-assign [ticket$]="ticket$"></ticket-assign>
+  <app-ticket-form [ticket$]="ticket$"></app-ticket-form>
+  <app-ticket-assign [ticket$]="ticket$"></app-ticket-assign>
 </div>

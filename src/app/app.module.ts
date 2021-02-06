@@ -52,11 +52,9 @@ import { PermissionGrantsComponent } from './content/settings/app-settings/roles
 import { PermissionService } from './service/user/permission.service';
 import { TableFormComponent } from './content/table-form/table-form.component';
 
-export function tokenGetter() {
-  return new User({
-    ...JSON.parse(localStorage.getItem("current_user"))
-  }).accessToken;
-}
+export const tokenGetter = () => new User({
+  ...JSON.parse(localStorage.getItem('current_user'))
+}).accessToken;
 
 @NgModule({
   declarations: [
@@ -93,9 +91,9 @@ export function tokenGetter() {
     HttpClientModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: ["localhost:*"],
-        disallowedRoutes: ["example.com/examplebadroute/"]
+        tokenGetter,
+        allowedDomains: ['localhost:*'],
+        disallowedRoutes: ['example.com/examplebadroute/']
       }
     }),
     GraphQLModule,

@@ -10,7 +10,7 @@ import { User } from 'src/app/models/user';
 import { TicketService } from 'src/app/service/ticket/ticket.service';
 
 @Component({
-  selector: 'my-tickets',
+  selector: 'app-tickets',
   templateUrl: './tickets.component.html',
   styleUrls: ['./tickets.component.scss']
 })

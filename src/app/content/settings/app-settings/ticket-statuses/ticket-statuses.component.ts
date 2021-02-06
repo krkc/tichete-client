@@ -37,10 +37,10 @@ export class TicketStatusesComponent implements OnInit {
       this.ticketStatuses.push(...statuses);
 
       this.route.params.forEach((params: Params) => {
-        const ticketStatusId = +params['id'];
-        if (!ticketStatusId) return;
+        const ticketStatusId = +params.id;
+        if (!ticketStatusId) {return;}
 
-        this.selectedTicketStatus = this.ticketStatuses.find(c => c.id === +params['id']);
+        this.selectedTicketStatus = this.ticketStatuses.find(c => c.id === +params.id);
         this.ticketStatusForm.patchValue(this.selectedTicketStatus);
       });
     });

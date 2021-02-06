@@ -4,7 +4,7 @@ import { map, catchError } from 'rxjs/operators';
 import { AuthenticationService } from '../authentication.service';
 import { Apollo, gql } from 'apollo-angular';
 
-import { QueryFragments } from '../query-fragments';
+import { QUERY_FRAGMENTS } from '../query-fragments';
 import { BaseService, BaseServiceConfig } from '../base.service';
 import { Ticket } from '../../models/ticket';
 import { User } from '../../models/user';
@@ -19,7 +19,7 @@ const config: BaseServiceConfig = {
           ...user
         }
       }
-      ${QueryFragments.USER}
+      ${QUERY_FRAGMENTS.user}
     `,
   },
   getResourcesQuery: {
@@ -29,7 +29,7 @@ const config: BaseServiceConfig = {
           ...user
         }
       }
-      ${QueryFragments.USER}
+      ${QUERY_FRAGMENTS.user}
     `,
   },
   deleteResourceQuery: {
@@ -43,6 +43,12 @@ const config: BaseServiceConfig = {
 
 @Injectable()
 export class UserService extends BaseService<User> {
+  // Helpers
+  getRoles = this.roleService.getMany;
+  createRole = this.roleService.create;
+  updateRole = this.roleService.update;
+  deleteRole = this.roleService.delete;
+
   constructor(
     apollo: Apollo,
     private authService: AuthenticationService,
@@ -58,7 +64,7 @@ export class UserService extends BaseService<User> {
           ...userMin
         }
       }
-      ${QueryFragments.USERMIN}
+      ${QUERY_FRAGMENTS.userMin}
       `,
       variables: { take }
     };
@@ -89,10 +95,8 @@ export class UserService extends BaseService<User> {
         }],
       },
       update: this.updateCache,
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addUser']
-      .map((user: User) => new User({...user})) as User[];
-    }),catchError(this.handleError<any>()));
+    }).pipe(map(fetchResult => fetchResult.data.addUser
+      .map((_user: User) => new User({..._user})) as User[]),catchError(this.handleError<any>()));
   }
 
   update(user: User) {
@@ -103,7 +107,7 @@ export class UserService extends BaseService<User> {
             ...user
           }
         }
-        ${QueryFragments.USER}
+        ${QUERY_FRAGMENTS.user}
       `,
       variables: {
         updateUserData: [{
@@ -116,20 +120,19 @@ export class UserService extends BaseService<User> {
           roleId: user.role?.id, // TODO: Right now roleId gets nulled (by serverside defaultValue) if a valid number isn't passed.
           //  That doesn't seem right, but graphql doesn't support 'undefined' type in JS. Ideally there should
           //  be a difference between passing roleId: null, and roleId: undefined (or not passing roleId at all).
-          //  Seems undesireable that if someone unknowingly leaves off roleId in their mutation that it wipes the roleId. more research needed here.
-          subscriptions: user.subscriptions?.map(sub => ({ id: sub.id, userId: user.id, categoryId: sub.categoryId || sub.category.id })) || undefined,
+          //  Seems undesireable that if someone unknowingly leaves off roleId in their mutation that it wipes the roleId.
+          //  more research needed here.
+          subscriptions: user.subscriptions?.map(sub =>
+            ({ id: sub.id, userId: user.id, categoryId: sub.categoryId || sub.category.id })) || undefined,
           assignments: user.assignments?.map(a => ({ id: a.id, userId: user.id, ticketId: a.ticketId || a.ticket.id })) || undefined,
         }],
       },
       update: this.updateCache,
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['updateUser']
-      .map((user: User) => new User({...user})) as User[];
-    }),catchError(this.handleError<any>()));
+    }).pipe(map(fetchResult => fetchResult.data.updateUser
+      .map((_user: User) => new User({..._user})) as User[]),catchError(this.handleError<any>()));
   }
 
-  getTicketFeed = (): Observable<Ticket[]> => {
-    return this.apollo.query({
+  getTicketFeed = (): Observable<Ticket[]> => this.apollo.query<any>({
       query: gql`
         query MyFeed($id: Int!) {
           user(id: $id) {
@@ -155,14 +158,14 @@ export class UserService extends BaseService<User> {
             }
           }
         }
-        ${QueryFragments.ROLEMIN}
+        ${QUERY_FRAGMENTS.roleMin}
       `,
       variables: {
         id: this.authService.currentUserValue.id
       }
     }).pipe(map(fetchResult => {
-      const user: User = fetchResult.data['user'];
-      const tickets : Ticket[] = user.subscriptions?.reduce((acc, subscription) => {
+      const user: User = fetchResult.data.user;
+      const tickets: Ticket[] = user.subscriptions?.reduce((acc, subscription) => {
         acc.push(...subscription.category.tags.map(tag => tag.ticket));
         return acc;
       }, [] as Ticket[]) || [];
@@ -171,11 +174,4 @@ export class UserService extends BaseService<User> {
       }
       return tickets;
     }));
-  }
-
-  // Helpers
-  getRoles = this.roleService.getMany;
-  createRole = this.roleService.create;
-  updateRole = this.roleService.update;
-  deleteRole = this.roleService.delete;
 }

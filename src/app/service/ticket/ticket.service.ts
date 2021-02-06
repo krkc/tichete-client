@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { catchError, map } from 'rxjs/operators';
 import { Ticket } from 'src/app/models/ticket';
 import { BaseService, BaseServiceConfig } from '../base.service';
-import { QueryFragments } from '../query-fragments';
+import { QUERY_FRAGMENTS } from '../query-fragments';
 import { TicketCategoryService } from './ticket-category.service';
 import { TicketStatusService } from './ticket-status.service';
 
@@ -16,7 +16,7 @@ const config: BaseServiceConfig = {
           ...ticket
         }
       }
-      ${QueryFragments.TICKET}
+      ${QUERY_FRAGMENTS.ticket}
     `,
   },
   getResourcesQuery: {
@@ -26,7 +26,7 @@ const config: BaseServiceConfig = {
           ...ticket
         }
       }
-      ${QueryFragments.TICKET}
+      ${QUERY_FRAGMENTS.ticket}
     `,
   },
   deleteResourceQuery: {
@@ -41,6 +41,17 @@ const config: BaseServiceConfig = {
 // TODO: https://www.apollographql.com/docs/angular/recipes/pagination/
 @Injectable()
 export class TicketService extends BaseService<Ticket> {
+  // Helpers
+  getTicketCategories = this.ticketCategoryService.getMany;
+  createTicketCategory = this.ticketCategoryService.create;
+  updateTicketCategory = this.ticketCategoryService.update;
+  deleteTicketCategory = this.ticketCategoryService.delete;
+
+  getTicketStatuses = this.ticketStatusService.getMany;
+  createTicketStatus = this.ticketStatusService.create;
+  updateTicketStatus = this.ticketStatusService.update;
+  deleteTicketStatus = this.ticketStatusService.delete;
+
   constructor(
     apollo: Apollo,
     private ticketCategoryService: TicketCategoryService,
@@ -56,24 +67,21 @@ export class TicketService extends BaseService<Ticket> {
           ...ticketMin
         }
       }
-      ${QueryFragments.TICKETMIN}
+      ${QUERY_FRAGMENTS.ticketMin}
       `, variables: { take }
     };
     return this.apollo.watchQuery<{ tickets: Ticket[] }>(query)
-      .valueChanges.pipe(map(fetchResult => {
-        return fetchResult.data.tickets;
-    }));
+      .valueChanges.pipe(map(fetchResult => fetchResult.data.tickets));
   };
 
-  create = (ticket: Ticket) => {
-    return this.apollo.mutate({
+  create = (ticket: Ticket) => this.apollo.mutate({
       mutation: gql`
         mutation AddTicket($newTicketData: [NewTicketInput!]!) {
           addTicket(newTicketData: $newTicketData) {
             ...ticket
           }
         }
-        ${QueryFragments.TICKET}
+        ${QUERY_FRAGMENTS.ticket}
       `,
       variables: {
         newTicketData: [{
@@ -83,20 +91,18 @@ export class TicketService extends BaseService<Ticket> {
         }],
       },
       update: this.updateCache,
-    }).pipe(map(fetchResult => fetchResult.data['addTicket']),
+    }).pipe(map(fetchResult => fetchResult.data.addTicket),
       catchError(this.handleError<any>())
     );
-  };
 
-  update = (ticket: Ticket) => {
-    return this.apollo.mutate({
+  update = (ticket: Ticket) => this.apollo.mutate({
       mutation: gql`
         mutation UpdateTicket($updateTicketData: [UpdateTicketInput!]!) {
           updateTicket(updateTicketData: $updateTicketData) {
             ...ticket
           }
         }
-        ${QueryFragments.TICKET}
+        ${QUERY_FRAGMENTS.ticket}
       `,
       variables: {
         updateTicketData: [
@@ -105,25 +111,13 @@ export class TicketService extends BaseService<Ticket> {
             creatorId: ticket.creatorId,
             statusId: ticket.statusId,
             description: ticket.description,
-            tags: ticket.tags?.map(tag => ({ id: tag.id, ticketId: ticket.id || undefined, categoryId: tag.categoryId || tag.category.id })) || undefined,
-            assignments: ticket.assignments?.map(a => ({ id: a.id, ticketId: ticket.id || undefined, userId: a.userId || a.user.id })) || undefined,
+            tags: ticket.tags?.map(tag =>
+              ({ id: tag.id, ticketId: ticket.id || undefined, categoryId: tag.categoryId || tag.category.id })) || undefined,
+            assignments: ticket.assignments?.map(a =>
+              ({ id: a.id, ticketId: ticket.id || undefined, userId: a.userId || a.user.id })) || undefined,
           },
         ]
       },
       update: this.updateCache,
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['updateTicket'];
-    }),catchError(this.handleError<any>()));
-  };
-
-  // Helpers
-  getTicketCategories = this.ticketCategoryService.getMany;
-  createTicketCategory = this.ticketCategoryService.create;
-  updateTicketCategory = this.ticketCategoryService.update;
-  deleteTicketCategory = this.ticketCategoryService.delete;
-
-  getTicketStatuses = this.ticketStatusService.getMany;
-  createTicketStatus = this.ticketStatusService.create;
-  updateTicketStatus = this.ticketStatusService.update;
-  deleteTicketStatus = this.ticketStatusService.delete;
+    }).pipe(map(fetchResult => fetchResult.data.updateTicket),catchError(this.handleError<any>()));
 }

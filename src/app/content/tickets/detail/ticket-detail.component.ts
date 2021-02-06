@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Ticket } from 'src/app/models/ticket';
 
 @Component({
-  selector: 'my-ticket-detail',
+  selector: 'app-ticket-detail',
   templateUrl: './ticket-detail.component.html',
   styleUrls: ['./ticket-detail.component.scss']
 })

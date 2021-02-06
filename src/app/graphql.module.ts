@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { APOLLO_OPTIONS } from 'apollo-angular';
@@ -8,10 +9,10 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 
 const uri = 'http://localhost:3000/graphql';
 
-export function createApollo(
+export const createApollo = (
   httpLink: HttpLink,
   jwtHelper: JwtHelperService
-) {
+) => {
   const basic = setContext((operation, context) => ({
     headers: {
       Accept: 'charset=utf-8'
@@ -49,8 +50,8 @@ export function createApollo(
     fetchOptions: {
       mode: 'no-cors',
     },
-  }
-}
+  };
+};
 
 @NgModule({
   exports: [

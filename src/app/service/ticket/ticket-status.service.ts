@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 import { TicketStatus } from 'src/app/models/status';
 import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
-import { QueryFragments } from '../query-fragments';
+import { QUERY_FRAGMENTS } from '../query-fragments';
 
 const config: BaseServiceConfig = {
   className: { singular: TicketStatus.name, plural: `${TicketStatus.name}es` },
@@ -15,7 +15,7 @@ const config: BaseServiceConfig = {
           name
         }
       }
-      ${QueryFragments.TICKET}
+      ${QUERY_FRAGMENTS.ticket}
     `,
   },
   getResourcesQuery: {
@@ -46,7 +46,7 @@ export class TicketStatusService extends BaseService<TicketStatus> {
   }
 
   create(ticketStatus: TicketStatus) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation AddTicketStatus($newTicketStatusData: [NewTicketStatusInput!]!) {
           addTicketStatus(newTicketStatusData: $newTicketStatusData) {
@@ -60,13 +60,11 @@ export class TicketStatusService extends BaseService<TicketStatus> {
           name: ticketStatus.name
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addTicketStatus'] as TicketStatus[];
-    }));
+    }).pipe(map(fetchResult => fetchResult.data.addTicketStatus as TicketStatus[]));
   }
 
   update(ticketStatus: TicketStatus) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation UpdateTicketStatus($updateTicketStatusData: [UpdateTicketStatusInput!]!) {
           updateTicketStatus(updateTicketStatusData: $updateTicketStatusData) {
@@ -81,8 +79,6 @@ export class TicketStatusService extends BaseService<TicketStatus> {
           name: ticketStatus.name
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['updateTicketStatus'] as TicketStatus[];
-    }));
+    }).pipe(map(fetchResult => fetchResult.data.updateTicketStatus as TicketStatus[]));
   }
 }

@@ -6,7 +6,7 @@ import { Ticket } from 'src/app/models/ticket';
 import { TicketSearchService } from 'src/app/service/ticket-search.service';
 
 @Component({
-  selector: 'ticket-search',
+  selector: 'app-ticket-search',
   templateUrl: './ticket-search.component.html',
   styleUrls:  ['./ticket-search.component.scss'],
   providers: [TicketSearchService]
@@ -36,7 +36,7 @@ export class TicketSearchComponent implements OnInit {
   }
 
   gotoDetail(ticket: Ticket): void {
-    let link = ['/ticket/detail', ticket.id];
+    const link = ['/ticket/detail', ticket.id];
     this.router.navigate(link);
   }
 }

@@ -6,7 +6,7 @@ import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/service/user/user.service';
 
 @Component({
-  selector: 'user-form',
+  selector: 'app-user-form',
   templateUrl: './user-form.component.html',
   styleUrls: ['./user-form.component.scss']
 })
@@ -15,7 +15,7 @@ export class UserFormComponent implements OnInit {
   public user: User;
   public roles: Role[];
   public userForm: FormGroup;
-  public isResetPassword: boolean = false;
+  public isResetPassword = false;
 
   constructor(
     private userService: UserService,
@@ -77,7 +77,7 @@ export class UserFormComponent implements OnInit {
     }
 
     submitResult.subscribe((updatedResource) => {
-      if (updatedResource.length > 0) return this.goBack();
+      if (updatedResource.length > 0) {return this.goBack();}
 
       throw new Error(`User ${this.user.id ? 'Create': 'Update'} failed`);
     });

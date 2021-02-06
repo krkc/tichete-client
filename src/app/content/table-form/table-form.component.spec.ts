@@ -30,14 +30,14 @@ describe('TableFormComponent', () => {
       fixture = TestBed.createComponent<TableFormComponent<Permission>>(TableFormComponent);
       component = fixture.componentInstance;
     });
-  
+
     it('should return non hidden fields', () => {
       const hiddenField: FormItemField = {
         type: 'hidden',
         name: 'hiddenTestField',
         label: 'Hidden Test Field',
         required: false,
-      }
+      };
       component.itemFormInfo = {
         service: undefined,
         linkColumnName: undefined,
@@ -66,9 +66,9 @@ describe('TableFormComponent', () => {
         testInputField: 'Input Test Value',
         testCheckboxField: true,
         testSelectField: 'testOptionValue2',
-      }
-  
-      it('should get input item\'s display value', () => {  
+      };
+
+      it('should get input item\'s display value', () => {
         const inputItemField: FormItemField = {
           type: 'input',
           name: 'testInputField',
@@ -78,8 +78,8 @@ describe('TableFormComponent', () => {
         const result = TableFormComponent.getItemDisplayValue(item, inputItemField);
         expect(result).toEqual(item.testInputField);
       });
-  
-      it('should get checkbox item\'s display value', () => {  
+
+      it('should get checkbox item\'s display value', () => {
         const checkboxItemField: FormItemField = {
           type: 'checkbox',
           name: 'testCheckboxField',
@@ -89,7 +89,7 @@ describe('TableFormComponent', () => {
         const result = TableFormComponent.getItemDisplayValue(item, checkboxItemField);
         expect(result).toEqual('✔');
       });
-  
+
       it('should get select item\'s display value', () => {
         const testOptionLabel = { label: 'Test Option Label 2', value: 'testOptionValue2' };
         const selectItemField: FormItemField = {

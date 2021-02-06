@@ -1,4 +1,4 @@
-/* tslint:disable:no-unused-variable */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { TicketsComponent } from './tickets.component';
 import { ApolloTestingModule } from 'apollo-angular/testing';

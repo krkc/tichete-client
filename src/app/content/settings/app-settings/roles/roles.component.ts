@@ -58,10 +58,10 @@ export class RolesComponent implements OnInit {
       this.roles.push(...roles);
 
       this.route.params.forEach((params: Params) => {
-        const roleId = +params['id'];
-        if (!roleId) return;
+        const roleId = +params.id;
+        if (!roleId) {return;}
 
-        this.selectedRole = this.roles.find(r => r.id === +params['id']);
+        this.selectedRole = this.roles.find(r => r.id === +params.id);
       });
     });
   }

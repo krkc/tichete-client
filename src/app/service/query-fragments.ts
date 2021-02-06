@@ -1,6 +1,6 @@
 import { gql } from 'apollo-angular';
 
-const TICKETMIN = gql`
+const ticketMin = gql`
   fragment ticketMin on Ticket {
     __typename
     id
@@ -10,7 +10,7 @@ const TICKETMIN = gql`
   }
 `;
 
-const USERMIN = gql`
+const userMin = gql`
   fragment userMin on User {
     __typename
     id
@@ -22,7 +22,7 @@ const USERMIN = gql`
   }
 `;
 
-const TICKET = gql`
+const ticket = gql`
   fragment ticket on Ticket {
     ...ticketMin
     creator {
@@ -45,11 +45,11 @@ const TICKET = gql`
       user { ...userMin }
     }
   }
-  ${TICKETMIN}
-  ${USERMIN}
+  ${ticketMin}
+  ${userMin}
 `;
 
-const ROLEMIN = gql`
+const roleMin = gql`
   fragment roleMin on Role {
     __typename
     id
@@ -59,7 +59,7 @@ const ROLEMIN = gql`
   }
 `;
 
-const USER = gql`
+const user = gql`
   fragment user on User {
     ...userMin
     role { ...roleMin }
@@ -80,12 +80,12 @@ const USER = gql`
       }
     }
   }
-  ${USERMIN}
-  ${TICKETMIN}
-  ${ROLEMIN}
+  ${userMin}
+  ${ticketMin}
+  ${roleMin}
 `;
 
-const PERMISSION = gql`
+const permission = gql`
   fragment permission on Permission {
     __typename
     id
@@ -99,15 +99,15 @@ const PERMISSION = gql`
   }
 `;
 
-const ROLE = gql`
+const role = gql`
   fragment role on Role {
     ...roleMin
     permissions { ...permission }
   }
-  ${ROLEMIN}
-  ${PERMISSION}
+  ${roleMin}
+  ${permission}
 `;
 
-export const QueryFragments = {
-  TICKET, USER, TICKETMIN, USERMIN, ROLE, ROLEMIN, PERMISSION
-}
+export const QUERY_FRAGMENTS = {
+  ticket, user, ticketMin, userMin, role, roleMin, permission
+};

@@ -33,9 +33,9 @@ describe('TicketService', () => {
 
     const take = 2;
     const tickets = [new Ticket({ id: 1, name: 'Test Ticket' })];
-    ticketService.getManyNoRels(take).subscribe(tickets => {
-      expect(tickets.length).toBeDefined();
-      expect(tickets).toContain(tickets[0]);
+    ticketService.getManyNoRels(take).subscribe(_tickets => {
+      expect(_tickets.length).toBeDefined();
+      expect(_tickets).toContain(_tickets[0]);
     });
 
     const op = controller.expectOne('GetTicketsMin');

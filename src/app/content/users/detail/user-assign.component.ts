@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { TicketService } from "../../../service/ticket/ticket.service";
+import { Component, OnInit, Input } from '@angular/core';
+import { TicketService } from '../../../service/ticket/ticket.service';
 import { Assignment } from '../../../models/assignment';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -10,7 +10,7 @@ import { Ticket } from 'src/app/models/ticket';
 import { User } from 'src/app/models/user';
 
 @Component({
-  selector: 'user-assign',
+  selector: 'app-user-assign',
   templateUrl: './user-assign.component.html',
   styleUrls: ['./user-assign.component.scss']
 })

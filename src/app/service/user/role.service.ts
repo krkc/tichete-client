@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { catchError, map } from 'rxjs/operators';
 import { Role } from 'src/app/models/role';
 import { BaseServiceConfig, BaseService } from 'src/app/service/base.service';
-import { QueryFragments } from '../query-fragments';
+import { QUERY_FRAGMENTS } from '../query-fragments';
 
 const config: BaseServiceConfig = {
   className: { singular: Role.name, plural: `${Role.name}s` },
@@ -14,7 +14,7 @@ const config: BaseServiceConfig = {
           ...role
         }
       }
-      ${QueryFragments.ROLE}
+      ${QUERY_FRAGMENTS.role}
     `,
   },
   getResourcesQuery: {
@@ -24,7 +24,7 @@ const config: BaseServiceConfig = {
           ...role
         }
       }
-      ${QueryFragments.ROLE}
+      ${QUERY_FRAGMENTS.role}
     `,
   },
   deleteResourceQuery: {
@@ -45,7 +45,7 @@ export class RoleService extends BaseService<Role> {
   }
 
   create(role: Role) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation AddRole($newRoleData: [NewRoleInput!]!) {
           addRole(newRoleData: $newRoleData) {
@@ -61,13 +61,11 @@ export class RoleService extends BaseService<Role> {
           isSystemAdmin: role.isSystemAdmin,
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['addRole'] as Role[];
-    }),catchError(this.handleError<any>()));
+    }).pipe(map(fetchResult => fetchResult.data.addRole as Role[]),catchError(this.handleError<any>()));
   }
 // TODO: cache updating for create/update
   update(role: Role) {
-    return this.apollo.mutate({
+    return this.apollo.mutate<any>({
       mutation: gql`
         mutation UpdateRole($updateRoleData: [UpdateRoleInput!]!) {
           updateRole(updateRoleData: $updateRoleData) {
@@ -85,8 +83,6 @@ export class RoleService extends BaseService<Role> {
           permissions: role.permissions,
         }],
       },
-    }).pipe(map(fetchResult => {
-      return fetchResult.data['updateRole'] as Role[];
-    }),catchError(this.handleError<any>()));
+    }).pipe(map(fetchResult => fetchResult.data.updateRole as Role[]),catchError(this.handleError<any>()));
   }
 }

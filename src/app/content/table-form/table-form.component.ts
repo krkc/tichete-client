@@ -10,8 +10,8 @@ import { BaseService } from 'src/app/service/base.service';
  * of a table form component.
  */
 export interface FormItemOptionField {
-  label: string,
-  value: any,
+  label: string;
+  value: any;
 }
 
 /**
@@ -19,41 +19,41 @@ export interface FormItemOptionField {
  * in an instance of a table form component.
  */
 export interface FormItemField {
-  type: 'input' | 'checkbox' | 'select' | 'hidden',
-  name: string,
-  label: string,
-  placeholder?: string,
-  value?: any,
-  options?: FormItemOptionField[],
-  multiple?: boolean,
-  required: boolean,
+  type: 'input' | 'checkbox' | 'select' | 'hidden';
+  name: string;
+  label: string;
+  placeholder?: string;
+  value?: any;
+  options?: FormItemOptionField[];
+  multiple?: boolean;
+  required: boolean;
   /**
    * Custom logic to map the value from a specific field in the form data for non-trivial cases.
-   * 
+   *
    * @param item New item object to be sent to service
    * @param fieldValue Value from the form data for this field
    */
-  fieldValMapFn?: <T extends BaseModel>(item: Partial<T>, fieldValue: any) => Partial<T>,
+  fieldValMapFn?: <T extends BaseModel>(item: Partial<T>, fieldValue: any) => Partial<T>;
 }
 
 /**
  * Information needed to initialize an instance of the table form component.
  */
 export interface ItemFormInfo<T extends BaseModel> {
-  service: BaseService<T>,
+  service: BaseService<T>;
   /**
    * Link prefix for routing. If this is not given, onRowSelect handler will be used.
    */
-  linkPrefix?: string,
+  linkPrefix?: string;
   /**
    * Name of the column to be used as the link for selecting the row.
    */
-  linkColumnName: string,
-  formFields: FormItemField[],
+  linkColumnName: string;
+  formFields: FormItemField[];
   /**
    * Custom logic to map the values from the form data for non-trivial cases.
    */
-  formDataMapFn?: (formVals: { [key: string]: any }) => T,
+  formDataMapFn?: (formVals: { [key: string]: any }) => T;
 }
 
 /**
@@ -68,9 +68,10 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
   @Input() public itemFormInfo: ItemFormInfo<T>;
   @Input() public items: T[];
   @Input() public multiColBodyTempl: TemplateRef<any>;
-  
+
   public selectedItem: T;
   public itemForm: FormGroup;
+  public getItemDisplayValue = TableFormComponent.getItemDisplayValue;
 
   constructor(
     private fb: FormBuilder,
@@ -80,27 +81,13 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
     this.itemForm = this.fb.group({});
   }
 
-  ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-      const itemId = +params['id'];      
-      this.selectedItem = this.itemFormInfo.linkPrefix && itemId ? this.items.find(item => item.id === itemId) : null;
-
-      this.setFormControls();
-    });      
-  }  
-
-  /**
-   * Gets array of form fields, ignoring the ones of type 'hidden'.
-   */
-  getNonHiddenFormFields = () => this.itemFormInfo.formFields.filter(field => field.type !== 'hidden');
-
   /**
    * Get the value that will be displayed for a row's column in the table.
-   * 
+   *
    * @param item The item for this row, containing the value
    * @param itemField The form field for this column, which is being updated
    */
-  static getItemDisplayValue<T extends BaseModel>(item: T, itemField: FormItemField): string {
+  static getItemDisplayValue<T2 extends BaseModel>(item: T2, itemField: FormItemField): string {
     const itemFieldValue = item[itemField.name];
     if (itemField.type === 'select') {
       const selectedOption = itemField.options.find(o => o.value === itemFieldValue);
@@ -110,6 +97,39 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
     }
     return itemFieldValue;
   }
+
+  /**
+   * Get the value for setting/updating a form control.
+   *
+   * @param item Item containing the value
+   * @param itemField Form field to get the value for
+   */
+  private static getItemFormValue<T2 extends BaseModel>(item: T2, itemField: FormItemField): string[] {
+    if (itemField.type === 'select' && itemField.multiple) {
+      return itemField.options.reduce((acc: string[], o: FormItemOptionField) => {
+        if (item[o.value]) {
+          acc.push(o.value);
+        }
+        return acc;
+      }, []);
+    }
+
+    return [item[itemField.name]];
+  }
+
+  ngOnInit(): void {
+    this.route.params.forEach((params: Params) => {
+      const itemId = +params.id;
+      this.selectedItem = this.itemFormInfo.linkPrefix && itemId ? this.items.find(item => item.id === itemId) : null;
+
+      this.setFormControls();
+    });
+  }
+
+  /**
+   * Gets array of form fields, ignoring the ones of type 'hidden'.
+   */
+  getNonHiddenFormFields = () => this.itemFormInfo.formFields.filter(field => field.type !== 'hidden');
 
   /**
    * Handler for Back button being clicked.
@@ -124,7 +144,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
    */
   onRowSelect(itemId: number): void {
     this.selectedItem = !this.itemFormInfo.linkPrefix && itemId ? this.items.find(item => item.id === itemId) : null;
-    if (!this.selectedItem) return;
+    if (!this.selectedItem) {return;}
 
     this.setFormControls();
   }
@@ -134,7 +154,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
    */
   onItemSubmit(): void {
     const formVals = this.itemForm.value;
-    let itemInput: T = this.itemFormInfo.formDataMapFn ? this.itemFormInfo.formDataMapFn(formVals) : this.getItemFromFormValues(formVals);
+    const itemInput: T = this.itemFormInfo.formDataMapFn ? this.itemFormInfo.formDataMapFn(formVals) : this.getItemFromFormValues(formVals);
 
     if (this.selectedItem) {
       itemInput.id = this.selectedItem.id;
@@ -161,13 +181,15 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
       null
     );
   }
-  
+
   /**
    * Initialize or update the form's controls from the selected item.
    */
   private setFormControls() {
     this.itemFormInfo.formFields.forEach(field => {
-      const control = this.selectedItem ? new FormControl(TableFormComponent.getItemFormValue(this.selectedItem, field)) : new FormControl();      
+      const control = this.selectedItem ?
+        new FormControl(TableFormComponent.getItemFormValue(this.selectedItem, field)) :
+        new FormControl();
       if (field.required) {
         control.setValidators(Validators.required);
       }
@@ -180,27 +202,8 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
   }
 
   /**
-   * Get the value for setting/updating a form control.
-   * 
-   * @param item Item containing the value
-   * @param itemField Form field to get the value for
-   */
-  private static getItemFormValue<T extends BaseModel>(item: T, itemField: FormItemField): string[] {
-    if (itemField.type === 'select' && itemField.multiple) {
-      return itemField.options.reduce((acc: string[], o: FormItemOptionField) => {
-        if (item[o.value]) {
-          acc.push(o.value);
-        }
-        return acc;
-      }, [])
-    }
-
-    return [item[itemField.name]];
-  }
-
-  /**
    * Map form data into an object that will be used by the service.
-   * 
+   *
    * @param formVals Object containing form data. Object properties are the field names.
    */
   private getItemFromFormValues(formVals: { [key: string]: any }) {
@@ -208,7 +211,7 @@ export class TableFormComponent<T extends BaseModel> implements OnInit {
     for (const propertyName in formVals) {
       if (Object.prototype.hasOwnProperty.call(formVals, propertyName)) {
         const propertyValue = formVals[propertyName];
-        if (!propertyValue) continue;
+        if (!propertyValue) {continue;}
 
         const itemField = this.itemFormInfo.formFields.find(field => field.name === propertyName);
         if (itemField.fieldValMapFn) {

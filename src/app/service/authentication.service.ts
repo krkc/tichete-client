@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { JwtHelperService } from "@auth0/angular-jwt";
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
@@ -8,9 +8,9 @@ import { User } from '../models/user';
 
 @Injectable()
 export class AuthenticationService {
+  public currentUser: Observable<User>;
   private loggedIn = new BehaviorSubject<boolean>(false);
   private currentUserSubject: BehaviorSubject<User>;
-  public currentUser: Observable<User>;
 
   constructor(
     private apollo: Apollo,
@@ -30,7 +30,7 @@ export class AuthenticationService {
   }
 
   login = async (emailOrUsername: string, password: string): Promise<User> => {
-    const fetchResult = await this.apollo.mutate({
+    const fetchResult = await this.apollo.mutate<any>({
       mutation: gql`
         mutation Login($email: String!, $password: String!) {
           login(email: $email,password: $password) {
@@ -48,7 +48,7 @@ export class AuthenticationService {
       },
     }).toPromise();
 
-    const user: User = fetchResult.data['login'] as User;
+    const user: User = fetchResult.data.login as User;
 
     if (!user) {
       throw new Error(fetchResult.errors.toString());
@@ -57,7 +57,7 @@ export class AuthenticationService {
     localStorage.setItem('current_user', JSON.stringify(user));
     this.currentUserSubject.next(user);
     return user;
-  }
+  };
 
   logout() {
     localStorage.removeItem('current_user');

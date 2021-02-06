@@ -41,16 +41,16 @@ export class LoginComponent {
     } catch (error) {
       this.onLoginError(error);
     }
-  }
+  };
 
   onLoginSuccess = () => {
     this.loginSuccess = true;
     setTimeout(() => { this.router.navigate(['']); }, 300);
-  }
+  };
 
   onLoginError = (error: any) => {
     this.requestPending = false;
     this.credsInvalid = (error.status === 401);
     throw new Error(error);
-  }
+  };
 }

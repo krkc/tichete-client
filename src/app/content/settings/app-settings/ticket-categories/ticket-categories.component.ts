@@ -8,7 +8,7 @@ import { TicketCategory } from '../../../../models/ticket-category';
 import * as alertify from 'alertifyjs';
 
 @Component({
-  selector: 'manage-ticket-categories',
+  selector: 'app-manage-ticket-categories',
   templateUrl: './ticket-categories.component.html',
   styleUrls: ['./ticket-categories.component.scss']
 })
@@ -37,10 +37,10 @@ export class TicketCategoriesComponent implements OnInit {
       this.ticketCategories.push(...categories);
 
       this.route.params.forEach((params: Params) => {
-        const ticketCategoryId = +params['id'];
-        if (!ticketCategoryId) return;
+        const ticketCategoryId = +params.id;
+        if (!ticketCategoryId) {return;}
 
-        this.selectedTicketCategory = this.ticketCategories.find(c => c.id === +params['id']);
+        this.selectedTicketCategory = this.ticketCategories.find(c => c.id === +params.id);
         this.ticketCategoryForm.patchValue(this.selectedTicketCategory);
       });
     });

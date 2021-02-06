@@ -2,7 +2,7 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-navi-pane {
+app-navi-pane {
   width: 100%;
 }
 .content-pane {
@@ -13,7 +13,7 @@ navi-pane {
 }
 
 @include media-breakpoint-up(md) {
-  navi-pane {
+  app-navi-pane {
     float: left;
     width: 33%;
     height: 100%;
@@ -23,7 +23,7 @@ navi-pane {
   }
 }
 @include media-breakpoint-up(lg) {
-  navi-pane {
+  app-navi-pane {
     width: 26%;
   }
   .content-pane {
@@ -31,7 +31,7 @@ navi-pane {
   }
 }
 @include media-breakpoint-up(xl) {
-  navi-pane {
+  app-navi-pane {
     width: 21%;
   }
   .content-pane {
