@@ -57,9 +57,11 @@ export class TicketStatusService extends BaseService<TicketStatus> {
       `,
       variables: {
         newTicketStatusData: [{
-          name: ticketStatus.name
+          name: ticketStatus.name,
+          description: ticketStatus.description,
         }],
       },
+      update: this.updateCache,
     }).pipe(map(fetchResult => fetchResult.data.addTicketStatus as TicketStatus[]));
   }
 

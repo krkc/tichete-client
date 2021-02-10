@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Role } from 'src/app/models/role';
-import { UserService } from 'src/app/service/user/user.service';
 import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
 import { RoleService } from 'src/app/service/user/role.service';
 
@@ -19,7 +18,6 @@ export class RolesComponent implements OnInit {
 
   constructor(
     private service: RoleService,
-    private userService: UserService,
     private route: ActivatedRoute,
   ) {
     const itemFields: FormItemField[] = [
@@ -52,7 +50,7 @@ export class RolesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.rolesData = this.userService.getRoles();
+    this.rolesData = this.service.getMany();
     this.rolesData.subscribe(roles => {
       this.roles = [];
       this.roles.push(...roles);

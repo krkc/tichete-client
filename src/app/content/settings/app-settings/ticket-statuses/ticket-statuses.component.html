@@ -3,7 +3,14 @@
   Status ID#: {{ selectedTicketStatus.id }}<br />
   Created On: {{ selectedTicketStatus?.createdAt | date }}<br />
 </div>
-<section id="new-ticket-status">
+<app-table-form
+  *ngIf="ticketStatuses"
+  [itemFormInfo]="itemFormInfo"
+  [items]="ticketStatuses"
+></app-table-form>
+
+
+<!-- <section id="new-ticket-status">
     <form [formGroup]="ticketStatusForm" (ngSubmit)="onTicketStatusSubmit()">
         <mat-form-field class="ticket-statuses w-50"  appearance="outline">
             <mat-label>Name</mat-label>
@@ -40,4 +47,4 @@
           </tr>
         </tbody>
     </table>
-</section>
+</section> -->

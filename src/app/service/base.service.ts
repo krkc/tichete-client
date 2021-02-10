@@ -34,7 +34,7 @@ export abstract class BaseService<T extends BaseModel> {
     variables: {
       ids: resources.map(r => r.id),
     },
-    update: (cacheStore) => this.updateCache(cacheStore, { data: { [`remove${this.singularClassNameToCamelCase()}`]: resources } }),
+    update: (cacheStore) => this.updateCache(cacheStore, { data: { [`remove${this.config.className.singular}`]: resources } }),
   });
 
   protected updateCache = (cacheStore: ApolloCache<any>, { data }: FetchResult<any>) => {

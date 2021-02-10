@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { TicketService } from 'src/app/service/ticket/ticket.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import * as alertify from 'alertifyjs';
 import { TicketStatus } from 'src/app/models/status';
+import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
+import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 
 @Component({
   selector: 'app-ticket-statuses',
@@ -16,24 +14,39 @@ export class TicketStatusesComponent implements OnInit {
   public ticketStatusesData: Observable<TicketStatus[]>;
   public ticketStatuses: TicketStatus[];
   public selectedTicketStatus: TicketStatus;
-  public ticketStatusForm: FormGroup;
+  public itemFormInfo: ItemFormInfo<TicketStatus>;
 
   constructor(
-    private ticketService: TicketService,
-    private fb: FormBuilder,
-    private router: Router,
+    private service: TicketStatusService,
     private route: ActivatedRoute
   ) {
-    this.ticketStatuses = [];
-    this.ticketStatusForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
+    const itemFields: FormItemField[] = [
+      {
+        type: 'input',
+        name: 'name',
+        label: 'Name',
+        required: true,
+      },
+      {
+        type: 'input',
+        name: 'description',
+        label: 'Description',
+        required: false,
+      },
+    ];
+
+    this.itemFormInfo = {
+      linkPrefix: '/settings/app/ticket-statuses/',
+      linkColumnName: 'name',
+      service: this.service,
+      formFields: itemFields,
+    };
   }
 
   ngOnInit(): void {
-    this.ticketStatusesData = this.ticketService.getTicketStatuses();
+    this.ticketStatusesData = this.service.getMany();
     this.ticketStatusesData.subscribe(statuses => {
+      this.ticketStatuses = [];
       this.ticketStatuses.push(...statuses);
 
       this.route.params.forEach((params: Params) => {
@@ -41,37 +54,7 @@ export class TicketStatusesComponent implements OnInit {
         if (!ticketStatusId) {return;}
 
         this.selectedTicketStatus = this.ticketStatuses.find(c => c.id === +params.id);
-        this.ticketStatusForm.patchValue(this.selectedTicketStatus);
       });
     });
-  }
-
-  goBack(): void {
-    window.history.back();
-  }
-
-  onTicketStatusSubmit() {
-    const formVals = this.ticketStatusForm.value;
-    if (this.selectedTicketStatus) {
-      formVals.id = this.selectedTicketStatus.id;
-      this.ticketService.updateTicketStatus(formVals)
-        .subscribe(() => this.router.navigate(['/settings/app/ticket-statuses']));
-    } else {
-      this.ticketService.createTicketStatus(formVals)
-      .subscribe(() => {
-        this.ticketStatusForm.reset();
-      });
-    }
-  }
-
-  onTicketStatusDelete() {
-    alertify.confirm('Caution',
-      'Are you sure you wish to delete this ticket status?',
-      () => {
-        this.ticketService.deleteTicketStatus([this.selectedTicketStatus])
-          .subscribe(() => this.router.navigate(['/settings/app/ticket-statuses']));
-      },
-      null
-    );
   }
 }
