@@ -38,7 +38,7 @@ describe('TableFormComponent', () => {
         label: 'Hidden Test Field',
         required: false,
       };
-      component.itemFormInfo = {
+      component.tableFormInfo = {
         service: undefined,
         linkColumnName: undefined,
         formFields: [
@@ -50,10 +50,11 @@ describe('TableFormComponent', () => {
           }
         ],
       };
-      component.itemFormInfo.formFields.push(hiddenField);
+      component.tableFormInfo.formFields.push(hiddenField);
+      component.items = [];
       fixture.detectChanges();
 
-      const fieldCount = component.itemFormInfo.formFields.length;
+      const fieldCount = component.tableFormInfo.formFields.length;
       const visibleFormFields = component.getNonHiddenFormFields();
       expect(visibleFormFields.length).toEqual(fieldCount - 1);
       expect(visibleFormFields).not.toContain(hiddenField);

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
 import { BaseModel } from 'src/app/models/base-model';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
@@ -13,8 +13,7 @@ import { PermissionService } from 'src/app/service/user/permission.service';
 export class PermissionGrantsComponent implements OnInit {
   @Input() role: Role;
   public permissions: Permission[];
-  public selectedPermission = null;
-  public itemFormInfo: ItemFormInfo<Permission>;
+  public tableFormInfo: TableFormInfo<Permission>;
 
   constructor(
     private service: PermissionService,
@@ -75,7 +74,7 @@ export class PermissionGrantsComponent implements OnInit {
       }
     ];
 
-    this.itemFormInfo = {
+    this.tableFormInfo = {
       service: this.service,
       linkColumnName: 'resourceName',
       formFields: itemFields,

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TicketStatus } from 'src/app/models/status';
-import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class TicketStatusesComponent implements OnInit {
   public ticketStatusesData: Observable<TicketStatus[]>;
   public ticketStatuses: TicketStatus[];
   public selectedTicketStatus: TicketStatus;
-  public itemFormInfo: ItemFormInfo<TicketStatus>;
+  public tableFormInfo: TableFormInfo<TicketStatus>;
 
   constructor(
     private service: TicketStatusService,
@@ -35,7 +35,7 @@ export class TicketStatusesComponent implements OnInit {
       },
     ];
 
-    this.itemFormInfo = {
+    this.tableFormInfo = {
       linkPrefix: '/settings/app/ticket-statuses/',
       linkColumnName: 'name',
       service: this.service,
@@ -45,16 +45,18 @@ export class TicketStatusesComponent implements OnInit {
 
   ngOnInit(): void {
     this.ticketStatusesData = this.service.getMany();
-    this.ticketStatusesData.subscribe(statuses => {
+    this.ticketStatusesData.subscribe(items => {
       this.ticketStatuses = [];
-      this.ticketStatuses.push(...statuses);
-
-      this.route.params.forEach((params: Params) => {
-        const ticketStatusId = +params.id;
-        if (!ticketStatusId) {return;}
-
-        this.selectedTicketStatus = this.ticketStatuses.find(c => c.id === +params.id);
-      });
+      this.ticketStatuses.push(...items);
     });
+  }
+
+  /**
+   * Child event for the table form component upon item selection.
+   *
+   * @param selectedItem The item for the row that was selected.
+   */
+  onItemSelected(selectedItem: TicketStatus) {
+    this.selectedTicketStatus = selectedItem;
   }
 }

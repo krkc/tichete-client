@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Role } from 'src/app/models/role';
-import { FormItemField, ItemFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
 import { RoleService } from 'src/app/service/user/role.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { RoleService } from 'src/app/service/user/role.service';
 export class RolesComponent implements OnInit {
   public rolesData: Observable<Role[]>;
   public roles: Role[];
-  public itemFormInfo: ItemFormInfo<Role>;
+  public tableFormInfo: TableFormInfo<Role>;
   public selectedRole: Role;
 
   constructor(
@@ -41,7 +41,7 @@ export class RolesComponent implements OnInit {
       },
     ];
 
-    this.itemFormInfo = {
+    this.tableFormInfo = {
       linkPrefix: '/settings/app/roles/',
       linkColumnName: 'name',
       service: this.service,
@@ -51,16 +51,19 @@ export class RolesComponent implements OnInit {
 
   ngOnInit(): void {
     this.rolesData = this.service.getMany();
-    this.rolesData.subscribe(roles => {
+    this.rolesData.subscribe(items => {
       this.roles = [];
-      this.roles.push(...roles);
-
-      this.route.params.forEach((params: Params) => {
-        const roleId = +params.id;
-        if (!roleId) {return;}
-
-        this.selectedRole = this.roles.find(r => r.id === +params.id);
-      });
+      this.roles.push(...items);
     });
   }
+
+  /**
+   * Child event for the table form component upon item selection.
+   *
+   * @param selectedItem The item for the row that was selected.
+   */
+  onItemSelected(selectedItem: Role) {
+    this.selectedRole = selectedItem;
+  }
+
 }

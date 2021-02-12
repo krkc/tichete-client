@@ -1,5 +1,5 @@
 <form class="items-form" [formGroup]="itemForm" (ngSubmit)="onItemSubmit()">
-  <div *ngFor="let itemField of itemFormInfo.formFields" [ngSwitch]="itemField.type">
+  <div *ngFor="let itemField of tableFormInfo.formFields" [ngSwitch]="itemField.type">
     <mat-form-field *ngSwitchCase="'input'" appearance="outline">
       <mat-label>{{ itemField.label }}</mat-label>
       <input matInput [formControlName]="itemField.name" [placeholder]="itemField.placeholder">
@@ -14,7 +14,7 @@
     <input [formControlName]="itemField.name" type="hidden" />
   </div>
   <div class="inline-group">
-    <button *ngIf="itemFormInfo.linkPrefix" class="btn btn-secondary" type="button" (click)="onBack()">Back</button>
+    <button *ngIf="tableFormInfo.linkPrefix" class="btn btn-secondary" type="button" (click)="onBack()">Back</button>
     <button class="btn btn-primary" type="submit" [disabled]="itemForm.pristine">{{ selectedItem?.id ? "Update" : "Add" }}</button>
     <button class="btn btn-danger" type="button" [hidden]="!selectedItem?.id" (click)="onItemDelete(); $event.stopPropagation()">Delete</button>
   </div>
@@ -32,10 +32,10 @@
       <td scope="row" *ngFor="let itemField of getNonHiddenFormFields()">
         <span *ngIf="!itemField.multiple">
           <a
-            *ngIf="itemFormInfo.linkColumnName === itemField.name; else nonLinkColumn"
-            [routerLink]="itemFormInfo.linkPrefix ? itemFormInfo.linkPrefix + item.id : undefined"
+            *ngIf="tableFormInfo.linkColumnName === itemField.name; else nonLinkColumn"
+            [routerLink]="tableFormInfo.linkPrefix ? tableFormInfo.linkPrefix + item.id : undefined"
             routerLinkActive="active"
-            (click)="itemFormInfo.linkPrefix ? undefined : onRowSelect(item.id)"
+            (click)="tableFormInfo.linkPrefix ? undefined : onRowSelect(item.id)"
           >
             {{ getItemDisplayValue(item, itemField) }}
           </a>

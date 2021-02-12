@@ -5,8 +5,9 @@
 </div>
 <app-table-form
   *ngIf="roles"
-  [itemFormInfo]="itemFormInfo"
+  [tableFormInfo]="tableFormInfo"
   [items]="roles"
+  (itemSelected)="onItemSelected($event)"
 ></app-table-form>
 <hr>
 <app-permission-grants *ngIf="selectedRole" [role]="selectedRole"></app-permission-grants>

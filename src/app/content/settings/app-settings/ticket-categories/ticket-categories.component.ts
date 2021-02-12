@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { TicketService } from 'src/app/service/ticket/ticket.service';
 import { TicketCategory } from '../../../../models/ticket-category';
-
-import * as alertify from 'alertifyjs';
+import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
+import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
+import { BaseModel } from 'src/app/models/base-model';
+import { BaseService } from 'src/app/service/base.service';
 
 @Component({
   selector: 'app-manage-ticket-categories',
@@ -16,62 +15,49 @@ export class TicketCategoriesComponent implements OnInit {
   public ticketCategoriesData: Observable<TicketCategory[]>;
   public ticketCategories: TicketCategory[];
   public selectedTicketCategory: TicketCategory;
-  public ticketCategoryForm: FormGroup;
+  public tableFormInfo: TableFormInfo<TicketCategory>;
 
   constructor(
-    private ticketService: TicketService,
-    private fb: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute
+    private service: TicketCategoryService,
   ) {
-    this.ticketCategories = [];
-    this.ticketCategoryForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
+    const itemFields: FormItemField[] = [
+      {
+        type: 'input',
+        name: 'name',
+        label: 'Name',
+        required: true,
+      },
+      {
+        type: 'input',
+        name: 'description',
+        label: 'Description',
+        required: false,
+      },
+    ];
+
+    this.tableFormInfo = {
+      linkPrefix: '/settings/app/ticket-categories/',
+      linkColumnName: 'name',
+      service: this.service,
+      formFields: itemFields,
+    };
   }
 
   ngOnInit(): void {
-    this.ticketCategoriesData = this.ticketService.getTicketCategories();
-    this.ticketCategoriesData.subscribe(categories => {
-      this.ticketCategories.push(...categories);
-
-      this.route.params.forEach((params: Params) => {
-        const ticketCategoryId = +params.id;
-        if (!ticketCategoryId) {return;}
-
-        this.selectedTicketCategory = this.ticketCategories.find(c => c.id === +params.id);
-        this.ticketCategoryForm.patchValue(this.selectedTicketCategory);
-      });
+    this.ticketCategoriesData = this.service.getMany();
+    this.ticketCategoriesData.subscribe(items => {
+      this.ticketCategories = [];
+      this.ticketCategories.push(...items);
     });
   }
 
-  goBack(): void {
-    window.history.back();
+  /**
+   * Child event for the table form component upon item selection.
+   *
+   * @param selectedItem The item for the row that was selected.
+   */
+  onItemSelected(selectedItem: TicketCategory) {
+    this.selectedTicketCategory = selectedItem;
   }
 
-  onTicketCategorySubmit() {
-    const formVals = this.ticketCategoryForm.value;
-    if (this.selectedTicketCategory) {
-      formVals.id = this.selectedTicketCategory.id;
-      this.ticketService.updateTicketCategory(formVals)
-        .subscribe(() => this.router.navigate(['/settings/app/ticket-categories']));
-    } else {
-      this.ticketService.createTicketCategory(formVals)
-      .subscribe(() => {
-        this.ticketCategoryForm.reset();
-      });
-    }
-  }
-
-  onTicketCategoryDelete() {
-    alertify.confirm('Caution',
-      'Are you sure you wish to delete this ticket category?',
-      () => {
-        this.ticketService.deleteTicketCategory([this.selectedTicketCategory])
-          .subscribe(() => this.router.navigate(['/settings/app/ticket-categories']));
-      },
-      null
-    );
-  }
 }
