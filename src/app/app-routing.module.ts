@@ -1,25 +1,11 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { TicketsComponent } from './content/tickets/tickets.component';
-import { TicketDetailComponent } from './content/tickets/detail/ticket-detail.component';
-import { TicketCreateComponent } from './content/tickets/ticket-create.component';
 import { DashboardComponent } from './content/dashboard.component';
-import { TicketAssignComponent } from './content/tickets/detail/ticket-assign.component';
-import { UsersComponent } from './content/users/users.component';
-import { UserDetailComponent } from './content/users/detail/user-detail.component';
-import { UserCreateComponent } from './content/users/user-create.component';
-import { UserAssignComponent } from './content/users/detail/user-assign.component';
 import { AuthGuard } from './guards/auth.guard';
-import { UserDetailResolverService } from './content/users/detail/user-detail-resolver.service';
-import { TicketDetailResolverService } from './content/tickets/detail/ticket-detail-resolver.service';
 import { UserSettingsComponent } from './content/settings/user-settings/user-settings.component';
-import { AppSettingsComponent } from './content/settings/app-settings/app-settings.component';
-import { TicketCategoriesComponent } from './content/settings/app-settings/ticket-categories/ticket-categories.component';
-import { TicketStatusesComponent } from './content/settings/app-settings/ticket-statuses/ticket-statuses.component';
 import { HomeLayoutComponent } from './shared-content/layouts/home-layout/home-layout.component';
 import { LoginComponent } from './shared-content/login/login.component';
-import { RolesComponent } from './content/settings/app-settings/roles/roles.component';
 
 const routes: Routes = [
   {
@@ -39,60 +25,12 @@ const routes: Routes = [
       },
       {
         path: 'tickets',
-        children: [
-          {
-            path: '',
-            component: TicketsComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'create',
-            component: TicketCreateComponent
-          },
-          {
-            path: 'detail/:id',
-            component: TicketDetailComponent,
-            resolve: {
-              ticket: TicketDetailResolverService
-            }
-          },
-          {
-            path: 'assign/:id',
-            component: TicketAssignComponent,
-            resolve: {
-              ticket: TicketDetailResolverService
-            }
-          }
-        ],
+        loadChildren: () => import('./content/tickets/tickets-routing.module').then(m => m.TicketsRoutingModule),
         canActivate: [AuthGuard]
       },
       {
         path: 'users',
-        children: [
-          {
-            path: '',
-            component: UsersComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'create',
-            component: UserCreateComponent
-          },
-          {
-            path: 'detail/:id',
-            component: UserDetailComponent,
-            resolve: {
-              user: UserDetailResolverService
-            }
-          },
-          {
-            path: 'assign/:id',
-            component: UserAssignComponent,
-            resolve: {
-              user: UserDetailResolverService
-            }
-          }
-        ],
+        loadChildren: () => import('./content/users/users-routing.module').then(m => m.UsersRoutingModule),
         canActivate: [AuthGuard]
       },
       {
@@ -107,58 +45,7 @@ const routes: Routes = [
       },
       {
         path: 'settings/app',
-        children: [
-          {
-            path: '',
-            component: AppSettingsComponent,
-            canActivate: [AuthGuard]
-          },
-          {
-            path: 'ticket-categories',
-            children: [
-              {
-                path: '',
-                component: TicketCategoriesComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: ':id',
-                component: TicketCategoriesComponent,
-                canActivate: [AuthGuard]
-              }
-            ]
-          },
-          {
-            path: 'ticket-statuses',
-            children: [
-              {
-                path: '',
-                component: TicketStatusesComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: ':id',
-                component: TicketStatusesComponent,
-                canActivate: [AuthGuard]
-              }
-            ]
-          },
-          {
-            path: 'roles',
-            children: [
-              {
-                path: '',
-                component: RolesComponent,
-                canActivate: [AuthGuard]
-              },
-              {
-                path: ':id',
-                component: RolesComponent,
-                canActivate: [AuthGuard]
-              }
-            ]
-          },
-        ]
+        loadChildren: () => import('./content/settings/app-settings/app-settings-routing.module').then(m => m.AppSettingsRoutingModule),
       },
     ]
   }
