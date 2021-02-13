@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Role } from 'src/app/models/role';
-import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/shared-content/table-form/table-form.component';
 import { RoleService } from 'src/app/service/user/role.service';
 
 @Component({
@@ -18,7 +17,6 @@ export class RolesComponent implements OnInit {
 
   constructor(
     private service: RoleService,
-    private route: ActivatedRoute,
   ) {
     const itemFields: FormItemField[] = [
       {

@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
-import { BaseModel } from 'src/app/models/base-model';
+import { FormItemField, TableFormInfo } from 'src/app/shared-content/table-form/table-form.component';
 import { Permission } from 'src/app/models/permission';
 import { Role } from 'src/app/models/role';
 import { PermissionService } from 'src/app/service/user/permission.service';

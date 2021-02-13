@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TicketStatus } from 'src/app/models/status';
-import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/shared-content/table-form/table-form.component';
 import { TicketStatusService } from 'src/app/service/ticket/ticket-status.service';
 
 @Component({

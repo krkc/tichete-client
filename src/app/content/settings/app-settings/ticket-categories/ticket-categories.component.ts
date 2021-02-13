@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TicketCategory } from '../../../../models/ticket-category';
-import { FormItemField, TableFormInfo } from 'src/app/content/table-form/table-form.component';
+import { FormItemField, TableFormInfo } from 'src/app/shared-content/table-form/table-form.component';
 import { TicketCategoryService } from 'src/app/service/ticket/ticket-category.service';
-import { BaseModel } from 'src/app/models/base-model';
-import { BaseService } from 'src/app/service/base.service';
 
 @Component({
   selector: 'app-manage-ticket-categories',

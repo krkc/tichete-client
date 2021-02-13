@@ -50,7 +50,7 @@ import { RoleService } from './service/user/role.service';
 import { RolesComponent } from './content/settings/app-settings/roles/roles.component';
 import { PermissionGrantsComponent } from './content/settings/app-settings/roles/permission-grants/permission-grants.component';
 import { PermissionService } from './service/user/permission.service';
-import { TableFormComponent } from './content/table-form/table-form.component';
+import { TableFormComponent } from './shared-content/table-form/table-form.component';
 
 export const tokenGetter = () => new User({
   ...JSON.parse(localStorage.getItem('current_user'))
